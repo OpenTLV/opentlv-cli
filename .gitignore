@@ -1,0 +1,11 @@
+/build*/
+/.venv/
+/CMakeUserPresets.json
+/.cache/
+/.cache-pre-commit/
+__pycache__/
+*.py[cod]
+/.vscode/
+/.idea/
+.DS_Store
+Thumbs.db

@@ -1,0 +1,8 @@
+blank_issues_enabled: true
+contact_links:
+  - name: OpenTLV Core
+    url: https://github.com/OpenTLV/opentlv/issues
+    about: Public C/C++ APIs and shared processing semantics.
+  - name: OpenTLV Docs
+    url: https://github.com/OpenTLV/opentlv-docs/issues
+    about: Documentation site assembly and publishing.
