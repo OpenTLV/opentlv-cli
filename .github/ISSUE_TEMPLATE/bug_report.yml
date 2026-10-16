@@ -1,0 +1,30 @@
+name: Bug report
+description: Report a CLI or standalone development problem.
+title: "[Bug]: "
+body:
+  - type: textarea
+    id: description
+    attributes:
+      label: Problem
+      description: Describe the observed behavior and expected result.
+    validations:
+      required: true
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Reproduction
+      description: Provide commands and a minimal input with sensitive data removed.
+    validations:
+      required: true
+  - type: textarea
+    id: environment
+    attributes:
+      label: Environment
+      description: Include CLI and Core revisions, OS, compiler, CMake, and build configuration.
+    validations:
+      required: true
+  - type: textarea
+    id: evidence
+    attributes:
+      label: Output and diagnostics
+      description: Include exit status, stdout, stderr, and relevant logs.
