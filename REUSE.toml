@@ -17,6 +17,8 @@ path = [
     ".github/ISSUE_TEMPLATE/feature_request.yml",
     ".github/ISSUE_TEMPLATE/config.yml",
     ".clang-format",
+    "CMakePresets.json",
+    ".github/workflows/core-dependency.yml",
     "REUSE.toml"
 ]
 precedence = "aggregate"
