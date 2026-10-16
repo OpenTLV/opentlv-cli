@@ -7,16 +7,13 @@ add_executable(core_cxx_smoke core_cxx.cpp)
 # Includes, language features and the native library are transitive.
 target_link_libraries(core_cxx_smoke PRIVATE OpenTLV::tlv++)
 
-get_target_property(_core_type OpenTLV::tlv TYPE)
-foreach(_consumer IN ITEMS core_c_smoke core_cxx_smoke)
-    if(WIN32 AND _core_type STREQUAL "SHARED_LIBRARY")
-        add_custom_command(TARGET ${_consumer} POST_BUILD
-            COMMAND ${CMAKE_COMMAND} -E copy_if_different
-                "$<TARGET_FILE:OpenTLV::tlv>" "$<TARGET_FILE_DIR:${_consumer}>"
-            VERBATIM)
-    endif()
-    add_test(NAME ${_consumer} COMMAND ${_consumer})
+add_executable(core_capabilities core_capabilities.c)
+target_link_libraries(core_capabilities PRIVATE OpenTLV::tlv)
+foreach(_consumer IN ITEMS core_c_smoke core_cxx_smoke core_capabilities)
+    opentlv_cli_copy_runtime(${_consumer})
 endforeach()
+add_test(NAME core_c_smoke COMMAND core_c_smoke)
+add_test(NAME core_cxx_smoke COMMAND core_cxx_smoke)
 
 # Evidence used by the external dependency integration runner.
 get_target_property(_core_imported OpenTLV::tlv IMPORTED)
@@ -32,6 +29,33 @@ file(WRITE "${CMAKE_CURRENT_BINARY_DIR}/core-selection.txt"
     "${_core_mode}\n${opentlv_core_SOURCE_DIR}\n"
     "${_core_c_source}\n${_core_cxx_source}\n${_core_cxx_imported}\n")
 
-if(TARGET otlv)
-    message(FATAL_ERROR "Core's CLI must not be built by the dependency tests")
-endif()
+# Read capabilities from the public headers used to build the executable. This
+# works for source and installed Core packages without private CMake variables.
+find_package(Python3 3.10 REQUIRED COMPONENTS Interpreter)
+add_test(NAME Integration_cli_migration
+    COMMAND ${Python3_EXECUTABLE} "${CMAKE_CURRENT_SOURCE_DIR}/check_migration.py")
+set_tests_properties(Integration_cli_migration PROPERTIES LABELS "integration;cli")
+function(add_cli_suite name suite)
+    set(_work_dir "${CMAKE_CURRENT_BINARY_DIR}/${name}-$<CONFIG>")
+    add_test(NAME ${name} COMMAND ${CMAKE_COMMAND}
+        "-DCLI=$<TARGET_FILE:otlv>"
+        "-DCAPABILITIES=$<TARGET_FILE:core_capabilities>"
+        "-DPYTHON=${Python3_EXECUTABLE}"
+        "-DSUITE=${suite}"
+        "-DWORK_DIR=${_work_dir}"
+        -P "${CMAKE_CURRENT_SOURCE_DIR}/run_cli_suite.cmake")
+    set_tests_properties(${name} PROPERTIES LABELS "integration;cli"
+        SKIP_REGULAR_EXPRESSION "SKIP: CLI suite")
+endfunction()
+
+add_cli_suite(Integration_cli integration)
+add_cli_suite(Integration_cli_cpp_examples examples)
+set_tests_properties(Integration_cli_cpp_examples PROPERTIES LABELS "integration;cli;examples")
+add_test(NAME Integration_cli_baseline_runner
+    COMMAND ${Python3_EXECUTABLE} -B "${CMAKE_CURRENT_SOURCE_DIR}/baseline/test_runner.py")
+set_tests_properties(Integration_cli_baseline_runner PROPERTIES LABELS "integration;cli")
+add_cli_suite(Integration_cli_baseline baseline)
+set_tests_properties(Integration_cli_baseline PROPERTIES TIMEOUT 300)
+add_cli_suite(query-cli-conformance query)
+set_tests_properties(query-cli-conformance PROPERTIES LABELS "query;conformance;memcheck-full"
+    TIMEOUT 3600)

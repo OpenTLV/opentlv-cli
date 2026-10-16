@@ -21,12 +21,13 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--build-root", type=Path, default=ROOT / "build/dependency-check")
     parser.add_argument("--core-source", type=Path, help="Core checkout for local/offline checks")
+    parser.add_argument("--json-source", type=Path, help="nlohmann/json 3.11.3 checkout for offline checks")
     parser.add_argument("--skip-git", action="store_true", help="Skip real remote fallback; requires --core-source")
     parser.add_argument("--shared", choices=("ON", "OFF"), default="ON")
     parser.add_argument("--generator")
     args = parser.parse_args()
-    if args.skip_git and not args.core_source:
-        parser.error("--skip-git requires --core-source")
+    if args.skip_git and (not args.core_source or not args.json_source):
+        parser.error("--skip-git requires --core-source and --json-source")
     args.build_root.mkdir(parents=True, exist_ok=True)
     work = Path(tempfile.mkdtemp(prefix="run-", dir=args.build_root.resolve()))
     print(f"Evidence: {work}", flush=True)
@@ -43,6 +44,8 @@ def main():
         "-DCMAKE_FIND_USE_PACKAGE_REGISTRY=OFF",
         "-DCMAKE_FIND_USE_SYSTEM_PACKAGE_REGISTRY=OFF",
     ]
+    if args.json_source:
+        common.append(f"-DFETCHCONTENT_SOURCE_DIR_NLOHMANN_JSON={args.json_source.resolve().as_posix()}")
     if args.generator:
         common += ["-G", args.generator]
 
@@ -89,7 +92,17 @@ def main():
             run("cmake", "--build", build, "--config", "Release", "--parallel", "2", env=env)
             run("ctest", "--test-dir", build, "-C", "Release",
                 "--output-on-failure", "--no-tests=error", env=env)
-        results.append({"case": build.name, "result": "passed", "mode": expected})
+        baseline_path = build / "tests/Integration_cli_baseline-Release/baseline-report.json"
+        query_path = build / "tests/query-cli-conformance-Release/query-report.json"
+        # Single-config generators also use Release via CMAKE_BUILD_TYPE.
+        baseline = json.loads(baseline_path.read_text(encoding="utf-8"))
+        query = json.loads(query_path.read_text(encoding="utf-8"))
+        if baseline["failures"] or len(baseline["observations"]) != 154:
+            raise RuntimeError(f"Incomplete CLI baseline validation: {baseline_path}")
+        if query["checks"] != 338 or len(query["exclusions"]) != 2:
+            raise RuntimeError(f"Incomplete CLI Query validation: {query_path}")
+        results.append({"case": build.name, "result": "passed", "mode": expected,
+                        "baseline_cases": len(baseline["observations"]), "query": query})
 
     # A discoverable package that must never execute in forced fallback or source-override cases.
     trap = work / "package-trap"
@@ -117,6 +130,12 @@ def main():
         check(fallback, "source", fetched)
         if core is None:
             core = fetched
+        if args.json_source is None:
+            json_source = fallback / "_deps/nlohmann_json-src"
+            json_pin = re.search(r"GIT_TAG\s+([0-9a-f]{40})", (ROOT / "cmake/Json.cmake").read_text())[1]
+            if run("git", "-C", json_source, "rev-parse", "HEAD") != json_pin:
+                raise RuntimeError("Fetched JSON does not match the migration pin")
+            common.append(f"-DFETCHCONTENT_SOURCE_DIR_NLOHMANN_JSON={json_source.as_posix()}")
     else:
         results.append({"case": "git-fallback", "result": "skipped"})
 
@@ -173,7 +192,7 @@ def main():
     preset_root = work / "preset workspace"
     cli_copy = preset_root / "opentlv-cli"
     cli_copy.mkdir(parents=True)
-    for name in ("CMakeLists.txt", "CMakePresets.json", "cmake", "tests"):
+    for name in ("CMakeLists.txt", "CMakePresets.json", "cmake", "src", "tests"):
         source = ROOT / name
         if source.is_dir():
             shutil.copytree(source, cli_copy / name, ignore=shutil.ignore_patterns("__pycache__"))

@@ -1,0 +1,1065 @@
+{
+  "version": 1,
+  "suite_sha256": "7a83259b66c60970e09cc5fd415a48bee44a488651968772a29fa0eba4f47744",
+  "origin": {
+    "repository": "https://github.com/OpenTLV/opentlv",
+    "commit": "e9cbb29897652fa75753ea89459e3f5e26671d3a",
+    "nearest_tag": "0.7.1",
+    "tag_commit": "e12a52ff69a64468eecab084795a0530c273efea",
+    "commits_since_tag": 11,
+    "platform": "Windows-10-10.0.26200-SP0",
+    "compiler": {
+      "COMPILER_ID": "MSVC",
+      "COMPILER_VERSION": "19.44.35222.0"
+    },
+    "executable_sha256": "e1a32f8252be335f7540a1ee084d01750565a19e74d5369df1b6c288ae9509a1",
+    "cmake": {
+      "CMAKE_BUILD_TYPE": "Release",
+      "CMAKE_CXX_STANDARD": "11",
+      "OPENTLV_BLUETOOTH": "ON",
+      "OPENTLV_BUILD_BENCHMARKS": "OFF",
+      "OPENTLV_BUILD_CLI": "ON",
+      "OPENTLV_BUILD_CLI_TESTS": "ON",
+      "OPENTLV_BUILD_CXX": "ON",
+      "OPENTLV_BUILD_DOCS": "OFF",
+      "OPENTLV_BUILD_EXAMPLES": "OFF",
+      "OPENTLV_BUILD_FUZZING": "OFF",
+      "OPENTLV_BUILD_INTEGRATION_TESTS": "OFF",
+      "OPENTLV_BUILD_LUA": "OFF",
+      "OPENTLV_BUILD_MEMCHECK": "OFF",
+      "OPENTLV_BUILD_PROPERTY_TESTS": "OFF",
+      "OPENTLV_BUILD_PYTHON": "OFF",
+      "OPENTLV_BUILD_QUERY_TESTS": "ON",
+      "OPENTLV_BUILD_SHARED_LIBS": "OFF",
+      "OPENTLV_BUILD_TESTS": "OFF",
+      "OPENTLV_BUILD_UNIT_TESTS": "OFF",
+      "OPENTLV_BUILD_WASM": "OFF",
+      "OPENTLV_CODEC": "ON",
+      "OPENTLV_DHCP": "ON",
+      "OPENTLV_DOCUMENT": "ON",
+      "OPENTLV_EMV": "ON",
+      "OPENTLV_FORMAT_ASN1": "ON",
+      "OPENTLV_FORMAT_BER": "ON",
+      "OPENTLV_FORMAT_CER": "ON",
+      "OPENTLV_FORMAT_DER": "ON",
+      "OPENTLV_LLDP": "ON",
+      "OPENTLV_NFC": "ON",
+      "OPENTLV_QUERY": "ON",
+      "OPENTLV_QUERY_FRONTEND": "ON",
+      "OPENTLV_QUERY_SET_OPERATIONS": "ON",
+      "OPENTLV_READER": "ON",
+      "OPENTLV_SCHEMA": "ON",
+      "OPENTLV_WARNINGS_AS_ERRORS": "ON",
+      "OPENTLV_WRITER": "ON",
+      "CMAKE_GENERATOR": "Ninja"
+    }
+  },
+  "observations": {
+    "help": {
+      "exit": 0,
+      "stderr": "",
+      "files": {},
+      "stdout": "Usage: otlv dump|validate|decode --format NAME [--input PATH|- | --hex BYTES] [OPTIONS]\r\n       otlv generate --format NAME --seed N --count N --output-dir PATH [OPTIONS]\r\n       otlv encode --format NAME --tag HEX [--value HEX] [--output-encoding hex|binary]\r\n       otlv encode --format NAME [--input JSON_PATH|-] [--output-encoding hex|binary] [--output-file PATH]\r\n       otlv query PATH --format NAME [--input PATH|- | --hex BYTES] [--value] [--output text|json]\r\n       otlv query --query EXPR --format NAME [--var NAME:TYPE=VALUE] [--count|--exists] [--backend auto|streaming|document] [--explain]\r\n       otlv diff --format NAME --input LEFT --against RIGHT [--where EXPR] [--output text|json]\r\n       otlv tag HEX --module emv [--output text|json]\r\n       otlv tags --module emv [--search TEXT] [--output text|json]\r\n       otlv completion bash|zsh|fish|powershell\r\n       otlv formats | --help | --version\r\nFormats: fixed, ber, der, emv, bluetooth-ltv, nfc-type2 (when enabled in this build)\r\nOptions:\r\n  --fixed-tag-size N     --format fixed: tag width in bytes (default 1)\r\n  --fixed-length-size N  --format fixed: length width in bytes, 1..8 (default 1)\r\n  --fixed-byte-order NAME --format fixed: length byte order, big (default) or little\r\n  --pdol                 Read raw DOL tag/one-byte-length pairs (BER)\r\n  --tree                 Print nested BER/DER elements (dump only)\r\n  --pretty               Print a graphical UTF-8 tree (implies --tree)\r\n  --module emv           Annotate BER tags (dump, decode) or check EMV data (validate)\r\n  --describe             Include EMV type and length descriptions\r\n  --module bluetooth     Annotate Bluetooth AD types; validate schema and codecs\r\n  --decode               Decode known values (requires --module emv or bluetooth)\r\n  --emv-context NAME     EMV dictionary context of the top-level elements: base (default), bit, bht, bht-format, bit-group, biometric-counters, biometric-attempts, biometric-verification\r\n  --emv-check NAME       validate: structure (default), dictionary or all\r\n  --recover              dump, decode: skip damaged bytes and keep reading; the output is marked incomplete and the exit code is 4\r\n  --output text|json     Print text (default) or a hierarchical JSON document\r\n  --diagnostics NAME     Shape of a failure diagnostic: human (default), compact or json\r\n  --input-encoding NAME  binary (default) or hex, for --input\r\n  --force-color          Emit ANSI colors even when redirected\r\n  --no-color             Disable colors (default: auto for terminals)\r\n  --max-input-size N     Maximum input bytes (default 16777216)\r\n  --max-depth N          Maximum child depth (default 64)\r\n  --max-elements N       Maximum visited elements (default 100000)\r\n  --search TEXT          tags: only tags whose name contains TEXT (case-insensitive)\r\n  --value                query: print only the values of the addressed elements\r\n  --tag HEX              encode: tag bytes in wire order\r\n  --value HEX            encode: value bytes (default: empty)\r\n  --output-encoding NAME encode: hex (default, one line) or binary\r\n  --output-file PATH     encode: write the result to PATH instead of stdout\r\n  --output-encoding NAME generate: bin (default) or json; one file per case\r\n  --seed N               generate: explicit uint64 seed (zero is valid)\r\n  --count N              generate: number of complete cases/files\r\n  --output-dir PATH      generate: create directories; never overwrite case files\r\n  --max-value-size N     generate: maximum Value bytes (default 256)\r\n  --max-case-size N      generate: maximum case bytes (default 4096)\r\ngenerate defaults: --max-depth 4, --max-elements 32; flat formats use depth 0.\r\ndecode prints the versioned JSON document that encode --input reads.\r\nquery prints every element addressed by a path of hexadecimal tags such as 6F/A5/50 (a top-level 6F, its child A5, its child 50); nested paths need --format ber or der. Exit code 5 means nothing matched.\r\ntag looks up one BER tag in the EMV dictionary; an unknown tag is a result (exit 0), not an error; tags lists the dictionary.\r\ncompletion prints a shell completion script to stdout for the given shell.\r\ndump, validate, decode, query and encode (without --tag) read binary stdin when neither --input nor --hex (--tag for encode) is given, the same as --input -, so they compose in a shell pipeline; command output always goes to stdout and diagnostics to stderr.\r\nInput is binary; hex accepts contiguous bytes or whitespace between pairs.\r\nValidation accepts empty input and checks all concatenated elements.\r\nWith --module emv, validate also checks the EMV schema structure (mandatory/forbidden/duplicate tags, lengths, and nesting) and reports a schema-labeled diagnostic distinct from format errors; --pdol skips it.\r\nExit codes: 0 success, 1 invalid TLV (or element rejected by encode), 2 invalid usage/hex/JSON/format, 3 I/O/resource error, 4 damaged data skipped by --recover.\r\n"
+    },
+    "version": {
+      "exit": 0,
+      "stderr": "",
+      "files": {},
+      "stdout": "otlv 0.7.1\r\n"
+    },
+    "formats": {
+      "exit": 0,
+      "stderr": "",
+      "files": {},
+      "stdout": "fixed\r\nemv\r\nber\r\nder\r\nbluetooth-ltv\r\nnfc-type2\r\n"
+    },
+    "completion-bash": {
+      "exit": 0,
+      "stderr": "",
+      "files": {},
+      "stdout": "# bash completion for otlv\r\n# Install: otlv completion bash > ~/.local/share/bash-completion/completions/otlv\r\n_otlv() {\r\n    local cur prev cmd\r\n    COMPREPLY=()\r\n    cur=\"${COMP_WORDS[COMP_CWORD]}\"\r\n    prev=\"${COMP_WORDS[COMP_CWORD-1]}\"\r\n    cmd=\"${COMP_WORDS[1]}\"\r\n\r\n    if [[ $COMP_CWORD -eq 1 ]]; then\r\n        COMPREPLY=( $(compgen -W \"dump validate decode encode generate query tag tags diff formats completion --help --version\" -- \"$cur\") )\r\n        return 0\r\n    fi\r\n\r\n    case \"$cmd\" in\r\n        completion)\r\n            if [[ $COMP_CWORD -eq 2 ]]; then\r\n                COMPREPLY=( $(compgen -W \"bash zsh fish powershell\" -- \"$cur\") )\r\n                return 0\r\n            fi\r\n            ;;\r\n    esac\r\n\r\n    case \"$prev\" in\r\n        --backend) COMPREPLY=( $(compgen -W \"auto streaming document\" -- \"$cur\") ); return 0 ;;\r\n        --output-dir) COMPREPLY=( $(compgen -f -- \"$cur\") ); return 0 ;;\r\n        --format) COMPREPLY=( $(compgen -W \"fixed emv ber der bluetooth-ltv nfc-type2\" -- \"$cur\") ); return 0 ;;\r\n        --input) COMPREPLY=( $(compgen -f -- \"$cur\") ); return 0 ;;\r\n        --module) COMPREPLY=( $(compgen -W \"emv bluetooth\" -- \"$cur\") ); return 0 ;;\r\n        --input-encoding) COMPREPLY=( $(compgen -W \"binary hex\" -- \"$cur\") ); return 0 ;;\r\n        --output) COMPREPLY=( $(compgen -W \"text json\" -- \"$cur\") ); return 0 ;;\r\n        --output-encoding) case \"$cmd\" in\r\n            encode) COMPREPLY=( $(compgen -W \"binary hex\" -- \"$cur\") ); return 0 ;;\r\n            generate) COMPREPLY=( $(compgen -W \"bin json\" -- \"$cur\") ); return 0 ;;\r\n        esac; return 0 ;;\r\n        --emv-context) COMPREPLY=( $(compgen -W \"base bit bht bht-format bit-group biometric-counters biometric-attempts biometric-verification\" -- \"$cur\") ); return 0 ;;\r\n        --emv-check) COMPREPLY=( $(compgen -W \"structure dictionary all\" -- \"$cur\") ); return 0 ;;\r\n        --output-file) COMPREPLY=( $(compgen -f -- \"$cur\") ); return 0 ;;\r\n        --diagnostics) COMPREPLY=( $(compgen -W \"human compact json\" -- \"$cur\") ); return 0 ;;\r\n        --fixed-byte-order) COMPREPLY=( $(compgen -W \"big little\" -- \"$cur\") ); return 0 ;;\r\n    esac\r\n\r\n    if [[ \"$cur\" == -* ]]; then\r\n        case \"$cmd\" in\r\n            dump) COMPREPLY=( $(compgen -W \"--tree --format --input --hex --max-input-size --max-depth --max-elements --pretty --describe --force-color --no-color --module --input-encoding --pdol --decode --output --recover --emv-context --diagnostics --fixed-tag-size --fixed-length-size --fixed-byte-order\" -- \"$cur\") ) ;;\r\n            validate) COMPREPLY=( $(compgen -W \"--tree --format --input --hex --max-input-size --max-depth --max-elements --pretty --describe --force-color --no-color --module --input-encoding --pdol --decode --output --emv-context --emv-check --diagnostics --fixed-tag-size --fixed-length-size --fixed-byte-order\" -- \"$cur\") ) ;;\r\n            decode) COMPREPLY=( $(compgen -W \"--format --input --hex --max-input-size --max-depth --max-elements --describe --module --input-encoding --decode --recover --emv-context --diagnostics --fixed-tag-size --fixed-length-size --fixed-byte-order\" -- \"$cur\") ) ;;\r\n            encode) COMPREPLY=( $(compgen -W \"--format --input --max-input-size --max-depth --max-elements --tag --value --output-encoding --output-file --fixed-tag-size --fixed-length-size --fixed-byte-order\" -- \"$cur\") ) ;;\r\n            generate) COMPREPLY=( $(compgen -W \"--seed --count --output-dir --max-value-size --max-case-size --format --max-depth --max-elements --output-encoding --fixed-tag-size --fixed-length-size --fixed-byte-order\" -- \"$cur\") ) ;;\r\n            query) COMPREPLY=( $(compgen -W \"--exists --explain --var --backend --query --count --format --input --hex --max-input-size --max-depth --max-elements --input-encoding --output --value --diagnostics --fixed-tag-size --fixed-length-size --fixed-byte-order\" -- \"$cur\") ) ;;\r\n            tag) COMPREPLY=( $(compgen -W \"--module --output\" -- \"$cur\") ) ;;\r\n            tags) COMPREPLY=( $(compgen -W \"--module --output --search\" -- \"$cur\") ) ;;\r\n            diff) COMPREPLY=( $(compgen -W \"--against --where --format --input --max-input-size --max-depth --max-elements --output --diagnostics --fixed-tag-size --fixed-length-size --fixed-byte-order\" -- \"$cur\") ) ;;\r\n        esac\r\n    fi\r\n}\r\ncomplete -F _otlv otlv\r\n"
+    },
+    "completion-zsh": {
+      "exit": 0,
+      "stderr": "",
+      "files": {},
+      "stdout": "#compdef otlv\r\n# Install: otlv completion zsh > \"${fpath[1]}/_otlv\"\r\n_otlv() {\r\n    local -a commands\r\n    commands=(dump validate decode encode generate query tag tags diff formats completion --help --version)\r\n    if (( CURRENT == 2 )); then\r\n        _describe 'command' commands\r\n        return\r\n    fi\r\n\r\n    local cmd=${words[2]}\r\n    local prev=${words[CURRENT-1]}\r\n    local cur=${words[CURRENT]}\r\n\r\n    case \"$cmd\" in\r\n        completion)\r\n            if (( CURRENT == 3 )); then\r\n                local -a values; values=(bash zsh fish powershell)\r\n                _describe 'value' values\r\n                return\r\n            fi\r\n            ;;\r\n    esac\r\n\r\n    case \"$prev\" in\r\n        --backend)\r\n            local -a values; values=(auto streaming document)\r\n            _describe 'value' values\r\n            return\r\n            ;;\r\n        --output-dir)\r\n            _files\r\n            return\r\n            ;;\r\n        --format)\r\n            local -a values; values=(fixed emv ber der bluetooth-ltv nfc-type2)\r\n            _describe 'value' values\r\n            return\r\n            ;;\r\n        --input)\r\n            _files\r\n            return\r\n            ;;\r\n        --module)\r\n            local -a values; values=(emv bluetooth)\r\n            _describe 'value' values\r\n            return\r\n            ;;\r\n        --input-encoding)\r\n            local -a values; values=(binary hex)\r\n            _describe 'value' values\r\n            return\r\n            ;;\r\n        --output)\r\n            local -a values; values=(text json)\r\n            _describe 'value' values\r\n            return\r\n            ;;\r\n        --output-encoding)\r\n            local -a values\r\n            case \"$cmd\" in\r\n                encode) values=(binary hex);;\r\n                generate) values=(bin json);;\r\n            esac\r\n            _describe 'value' values\r\n            return ;;\r\n        --emv-context)\r\n            local -a values; values=(base bit bht bht-format bit-group biometric-counters biometric-attempts biometric-verification)\r\n            _describe 'value' values\r\n            return\r\n            ;;\r\n        --emv-check)\r\n            local -a values; values=(structure dictionary all)\r\n            _describe 'value' values\r\n            return\r\n            ;;\r\n        --output-file)\r\n            _files\r\n            return\r\n            ;;\r\n        --diagnostics)\r\n            local -a values; values=(human compact json)\r\n            _describe 'value' values\r\n            return\r\n            ;;\r\n        --fixed-byte-order)\r\n            local -a values; values=(big little)\r\n            _describe 'value' values\r\n            return\r\n            ;;\r\n    esac\r\n\r\n    if [[ \"$cur\" == -* ]]; then\r\n        local -a opts\r\n        case \"$cmd\" in\r\n            dump) opts=(--tree --format --input --hex --max-input-size --max-depth --max-elements --pretty --describe --force-color --no-color --module --input-encoding --pdol --decode --output --recover --emv-context --diagnostics --fixed-tag-size --fixed-length-size --fixed-byte-order) ;;\r\n            validate) opts=(--tree --format --input --hex --max-input-size --max-depth --max-elements --pretty --describe --force-color --no-color --module --input-encoding --pdol --decode --output --emv-context --emv-check --diagnostics --fixed-tag-size --fixed-length-size --fixed-byte-order) ;;\r\n            decode) opts=(--format --input --hex --max-input-size --max-depth --max-elements --describe --module --input-encoding --decode --recover --emv-context --diagnostics --fixed-tag-size --fixed-length-size --fixed-byte-order) ;;\r\n            encode) opts=(--format --input --max-input-size --max-depth --max-elements --tag --value --output-encoding --output-file --fixed-tag-size --fixed-length-size --fixed-byte-order) ;;\r\n            generate) opts=(--seed --count --output-dir --max-value-size --max-case-size --format --max-depth --max-elements --output-encoding --fixed-tag-size --fixed-length-size --fixed-byte-order) ;;\r\n            query) opts=(--exists --explain --var --backend --query --count --format --input --hex --max-input-size --max-depth --max-elements --input-encoding --output --value --diagnostics --fixed-tag-size --fixed-length-size --fixed-byte-order) ;;\r\n            tag) opts=(--module --output) ;;\r\n            tags) opts=(--module --output --search) ;;\r\n            diff) opts=(--against --where --format --input --max-input-size --max-depth --max-elements --output --diagnostics --fixed-tag-size --fixed-length-size --fixed-byte-order) ;;\r\n        esac\r\n        _describe 'option' opts\r\n    fi\r\n}\r\n\r\n_otlv \"$@\"\r\n"
+    },
+    "completion-fish": {
+      "exit": 0,
+      "stderr": "",
+      "files": {},
+      "stdout": "# fish completion for otlv\r\n# Install: otlv completion fish > ~/.config/fish/completions/otlv.fish\r\ncomplete -c otlv -f\r\ncomplete -c otlv -n '__fish_use_subcommand' -a 'dump validate decode encode generate query tag tags diff formats completion --help --version'\r\ncomplete -c otlv -n '__fish_seen_subcommand_from dump' -l tree\r\ncomplete -c otlv -n '__fish_seen_subcommand_from dump' -l format -r -f -a 'fixed emv ber der bluetooth-ltv nfc-type2'\r\ncomplete -c otlv -n '__fish_seen_subcommand_from dump' -l input -r -F\r\ncomplete -c otlv -n '__fish_seen_subcommand_from dump' -l hex -r -f\r\ncomplete -c otlv -n '__fish_seen_subcommand_from dump' -l max-input-size -r -f\r\ncomplete -c otlv -n '__fish_seen_subcommand_from dump' -l max-depth -r -f\r\ncomplete -c otlv -n '__fish_seen_subcommand_from dump' -l max-elements -r -f\r\ncomplete -c otlv -n '__fish_seen_subcommand_from dump' -l pretty\r\ncomplete -c otlv -n '__fish_seen_subcommand_from dump' -l describe\r\ncomplete -c otlv -n '__fish_seen_subcommand_from dump' -l force-color\r\ncomplete -c otlv -n '__fish_seen_subcommand_from dump' -l no-color\r\ncomplete -c otlv -n '__fish_seen_subcommand_from dump' -l module -r -f -a 'emv bluetooth'\r\ncomplete -c otlv -n '__fish_seen_subcommand_from dump' -l input-encoding -r -f -a 'binary hex'\r\ncomplete -c otlv -n '__fish_seen_subcommand_from dump' -l pdol\r\ncomplete -c otlv -n '__fish_seen_subcommand_from dump' -l decode\r\ncomplete -c otlv -n '__fish_seen_subcommand_from dump' -l output -r -f -a 'text json'\r\ncomplete -c otlv -n '__fish_seen_subcommand_from dump' -l recover\r\ncomplete -c otlv -n '__fish_seen_subcommand_from dump' -l emv-context -r -f -a 'base bit bht bht-format bit-group biometric-counters biometric-attempts biometric-verification'\r\ncomplete -c otlv -n '__fish_seen_subcommand_from dump' -l diagnostics -r -f -a 'human compact json'\r\ncomplete -c otlv -n '__fish_seen_subcommand_from dump' -l fixed-tag-size -r -f\r\ncomplete -c otlv -n '__fish_seen_subcommand_from dump' -l fixed-length-size -r -f\r\ncomplete -c otlv -n '__fish_seen_subcommand_from dump' -l fixed-byte-order -r -f -a 'big little'\r\ncomplete -c otlv -n '__fish_seen_subcommand_from validate' -l tree\r\ncomplete -c otlv -n '__fish_seen_subcommand_from validate' -l format -r -f -a 'fixed emv ber der bluetooth-ltv nfc-type2'\r\ncomplete -c otlv -n '__fish_seen_subcommand_from validate' -l input -r -F\r\ncomplete -c otlv -n '__fish_seen_subcommand_from validate' -l hex -r -f\r\ncomplete -c otlv -n '__fish_seen_subcommand_from validate' -l max-input-size -r -f\r\ncomplete -c otlv -n '__fish_seen_subcommand_from validate' -l max-depth -r -f\r\ncomplete -c otlv -n '__fish_seen_subcommand_from validate' -l max-elements -r -f\r\ncomplete -c otlv -n '__fish_seen_subcommand_from validate' -l pretty\r\ncomplete -c otlv -n '__fish_seen_subcommand_from validate' -l describe\r\ncomplete -c otlv -n '__fish_seen_subcommand_from validate' -l force-color\r\ncomplete -c otlv -n '__fish_seen_subcommand_from validate' -l no-color\r\ncomplete -c otlv -n '__fish_seen_subcommand_from validate' -l module -r -f -a 'emv bluetooth'\r\ncomplete -c otlv -n '__fish_seen_subcommand_from validate' -l input-encoding -r -f -a 'binary hex'\r\ncomplete -c otlv -n '__fish_seen_subcommand_from validate' -l pdol\r\ncomplete -c otlv -n '__fish_seen_subcommand_from validate' -l decode\r\ncomplete -c otlv -n '__fish_seen_subcommand_from validate' -l output -r -f -a 'text json'\r\ncomplete -c otlv -n '__fish_seen_subcommand_from validate' -l emv-context -r -f -a 'base bit bht bht-format bit-group biometric-counters biometric-attempts biometric-verification'\r\ncomplete -c otlv -n '__fish_seen_subcommand_from validate' -l emv-check -r -f -a 'structure dictionary all'\r\ncomplete -c otlv -n '__fish_seen_subcommand_from validate' -l diagnostics -r -f -a 'human compact json'\r\ncomplete -c otlv -n '__fish_seen_subcommand_from validate' -l fixed-tag-size -r -f\r\ncomplete -c otlv -n '__fish_seen_subcommand_from validate' -l fixed-length-size -r -f\r\ncomplete -c otlv -n '__fish_seen_subcommand_from validate' -l fixed-byte-order -r -f -a 'big little'\r\ncomplete -c otlv -n '__fish_seen_subcommand_from decode' -l format -r -f -a 'fixed emv ber der bluetooth-ltv nfc-type2'\r\ncomplete -c otlv -n '__fish_seen_subcommand_from decode' -l input -r -F\r\ncomplete -c otlv -n '__fish_seen_subcommand_from decode' -l hex -r -f\r\ncomplete -c otlv -n '__fish_seen_subcommand_from decode' -l max-input-size -r -f\r\ncomplete -c otlv -n '__fish_seen_subcommand_from decode' -l max-depth -r -f\r\ncomplete -c otlv -n '__fish_seen_subcommand_from decode' -l max-elements -r -f\r\ncomplete -c otlv -n '__fish_seen_subcommand_from decode' -l describe\r\ncomplete -c otlv -n '__fish_seen_subcommand_from decode' -l module -r -f -a 'emv bluetooth'\r\ncomplete -c otlv -n '__fish_seen_subcommand_from decode' -l input-encoding -r -f -a 'binary hex'\r\ncomplete -c otlv -n '__fish_seen_subcommand_from decode' -l decode\r\ncomplete -c otlv -n '__fish_seen_subcommand_from decode' -l recover\r\ncomplete -c otlv -n '__fish_seen_subcommand_from decode' -l emv-context -r -f -a 'base bit bht bht-format bit-group biometric-counters biometric-attempts biometric-verification'\r\ncomplete -c otlv -n '__fish_seen_subcommand_from decode' -l diagnostics -r -f -a 'human compact json'\r\ncomplete -c otlv -n '__fish_seen_subcommand_from decode' -l fixed-tag-size -r -f\r\ncomplete -c otlv -n '__fish_seen_subcommand_from decode' -l fixed-length-size -r -f\r\ncomplete -c otlv -n '__fish_seen_subcommand_from decode' -l fixed-byte-order -r -f -a 'big little'\r\ncomplete -c otlv -n '__fish_seen_subcommand_from encode' -l format -r -f -a 'fixed emv ber der bluetooth-ltv nfc-type2'\r\ncomplete -c otlv -n '__fish_seen_subcommand_from encode' -l input -r -F\r\ncomplete -c otlv -n '__fish_seen_subcommand_from encode' -l max-input-size -r -f\r\ncomplete -c otlv -n '__fish_seen_subcommand_from encode' -l max-depth -r -f\r\ncomplete -c otlv -n '__fish_seen_subcommand_from encode' -l max-elements -r -f\r\ncomplete -c otlv -n '__fish_seen_subcommand_from encode' -l tag -r -f\r\ncomplete -c otlv -n '__fish_seen_subcommand_from encode' -l value -r -f\r\ncomplete -c otlv -n '__fish_seen_subcommand_from encode' -l output-encoding -r -f -a 'binary hex'\r\ncomplete -c otlv -n '__fish_seen_subcommand_from encode' -l output-file -r -F\r\ncomplete -c otlv -n '__fish_seen_subcommand_from encode' -l fixed-tag-size -r -f\r\ncomplete -c otlv -n '__fish_seen_subcommand_from encode' -l fixed-length-size -r -f\r\ncomplete -c otlv -n '__fish_seen_subcommand_from encode' -l fixed-byte-order -r -f -a 'big little'\r\ncomplete -c otlv -n '__fish_seen_subcommand_from generate' -l seed -r -f\r\ncomplete -c otlv -n '__fish_seen_subcommand_from generate' -l count -r -f\r\ncomplete -c otlv -n '__fish_seen_subcommand_from generate' -l output-dir -r -F\r\ncomplete -c otlv -n '__fish_seen_subcommand_from generate' -l max-value-size -r -f\r\ncomplete -c otlv -n '__fish_seen_subcommand_from generate' -l max-case-size -r -f\r\ncomplete -c otlv -n '__fish_seen_subcommand_from generate' -l format -r -f -a 'fixed emv ber der bluetooth-ltv nfc-type2'\r\ncomplete -c otlv -n '__fish_seen_subcommand_from generate' -l max-depth -r -f\r\ncomplete -c otlv -n '__fish_seen_subcommand_from generate' -l max-elements -r -f\r\ncomplete -c otlv -n '__fish_seen_subcommand_from generate' -l output-encoding -r -f -a 'bin json'\r\ncomplete -c otlv -n '__fish_seen_subcommand_from generate' -l fixed-tag-size -r -f\r\ncomplete -c otlv -n '__fish_seen_subcommand_from generate' -l fixed-length-size -r -f\r\ncomplete -c otlv -n '__fish_seen_subcommand_from generate' -l fixed-byte-order -r -f -a 'big little'\r\ncomplete -c otlv -n '__fish_seen_subcommand_from query' -l exists\r\ncomplete -c otlv -n '__fish_seen_subcommand_from query' -l explain\r\ncomplete -c otlv -n '__fish_seen_subcommand_from query' -l var -r -f\r\ncomplete -c otlv -n '__fish_seen_subcommand_from query' -l backend -r -f -a 'auto streaming document'\r\ncomplete -c otlv -n '__fish_seen_subcommand_from query' -l query -r -f\r\ncomplete -c otlv -n '__fish_seen_subcommand_from query' -l count\r\ncomplete -c otlv -n '__fish_seen_subcommand_from query' -l format -r -f -a 'fixed emv ber der bluetooth-ltv nfc-type2'\r\ncomplete -c otlv -n '__fish_seen_subcommand_from query' -l input -r -F\r\ncomplete -c otlv -n '__fish_seen_subcommand_from query' -l hex -r -f\r\ncomplete -c otlv -n '__fish_seen_subcommand_from query' -l max-input-size -r -f\r\ncomplete -c otlv -n '__fish_seen_subcommand_from query' -l max-depth -r -f\r\ncomplete -c otlv -n '__fish_seen_subcommand_from query' -l max-elements -r -f\r\ncomplete -c otlv -n '__fish_seen_subcommand_from query' -l input-encoding -r -f -a 'binary hex'\r\ncomplete -c otlv -n '__fish_seen_subcommand_from query' -l output -r -f -a 'text json'\r\ncomplete -c otlv -n '__fish_seen_subcommand_from query' -l value\r\ncomplete -c otlv -n '__fish_seen_subcommand_from query' -l diagnostics -r -f -a 'human compact json'\r\ncomplete -c otlv -n '__fish_seen_subcommand_from query' -l fixed-tag-size -r -f\r\ncomplete -c otlv -n '__fish_seen_subcommand_from query' -l fixed-length-size -r -f\r\ncomplete -c otlv -n '__fish_seen_subcommand_from query' -l fixed-byte-order -r -f -a 'big little'\r\ncomplete -c otlv -n '__fish_seen_subcommand_from tag' -l module -r -f -a 'emv bluetooth'\r\ncomplete -c otlv -n '__fish_seen_subcommand_from tag' -l output -r -f -a 'text json'\r\ncomplete -c otlv -n '__fish_seen_subcommand_from tags' -l module -r -f -a 'emv bluetooth'\r\ncomplete -c otlv -n '__fish_seen_subcommand_from tags' -l output -r -f -a 'text json'\r\ncomplete -c otlv -n '__fish_seen_subcommand_from tags' -l search -r -f\r\ncomplete -c otlv -n '__fish_seen_subcommand_from diff' -l against -r -f\r\ncomplete -c otlv -n '__fish_seen_subcommand_from diff' -l where -r -f\r\ncomplete -c otlv -n '__fish_seen_subcommand_from diff' -l format -r -f -a 'fixed emv ber der bluetooth-ltv nfc-type2'\r\ncomplete -c otlv -n '__fish_seen_subcommand_from diff' -l input -r -F\r\ncomplete -c otlv -n '__fish_seen_subcommand_from diff' -l max-input-size -r -f\r\ncomplete -c otlv -n '__fish_seen_subcommand_from diff' -l max-depth -r -f\r\ncomplete -c otlv -n '__fish_seen_subcommand_from diff' -l max-elements -r -f\r\ncomplete -c otlv -n '__fish_seen_subcommand_from diff' -l output -r -f -a 'text json'\r\ncomplete -c otlv -n '__fish_seen_subcommand_from diff' -l diagnostics -r -f -a 'human compact json'\r\ncomplete -c otlv -n '__fish_seen_subcommand_from diff' -l fixed-tag-size -r -f\r\ncomplete -c otlv -n '__fish_seen_subcommand_from diff' -l fixed-length-size -r -f\r\ncomplete -c otlv -n '__fish_seen_subcommand_from diff' -l fixed-byte-order -r -f -a 'big little'\r\ncomplete -c otlv -n '__fish_seen_subcommand_from completion' -a 'bash zsh fish powershell'\r\n"
+    },
+    "completion-powershell": {
+      "exit": 0,
+      "stderr": "",
+      "files": {},
+      "stdout": "# PowerShell completion for otlv\r\n# Install: otlv completion powershell >> $PROFILE\r\nRegister-ArgumentCompleter -Native -CommandName otlv -ScriptBlock {\r\n    param($wordToComplete, $commandAst, $cursorPosition)\r\n\r\n    function Complete-Values([string[]]$Values) {\r\n        $Values | Where-Object { $_ -like \"$wordToComplete*\" } | ForEach-Object {\r\n            [System.Management.Automation.CompletionResult]::new($_, $_, 'ParameterValue', $_)\r\n        }\r\n    }\r\n    function Complete-Files() {\r\n        Get-ChildItem -Path \"$wordToComplete*\" -ErrorAction SilentlyContinue | ForEach-Object {\r\n            [System.Management.Automation.CompletionResult]::new($_.Name, $_.Name, 'ParameterValue', $_.Name)\r\n        }\r\n    }\r\n\r\n    $raw = @($commandAst.CommandElements | ForEach-Object { $_.Extent.Text })\r\n    if ($wordToComplete -ne '' -and $raw.Count -gt 0 -and $raw[$raw.Count - 1] -eq $wordToComplete) {\r\n        $raw = @($raw | Select-Object -SkipLast 1)\r\n    }\r\n    $words = @($raw | Select-Object -Skip 1)\r\n    $cmd = if ($words.Count -ge 1) { $words[0] } else { $null }\r\n    $prev = if ($words.Count -ge 1) { $words[$words.Count - 1] } else { $null }\r\n\r\n    if (-not $cmd) {\r\n        Complete-Values @('dump validate decode encode generate query tag tags diff formats completion --help --version'.Split(' '))\r\n        return\r\n    }\r\n\r\n    switch ($prev) {\r\n        '--backend' { Complete-Values @('auto streaming document'.Split(' ')); return }\r\n        '--output-dir' { Complete-Files; return }\r\n        '--format' { Complete-Values @('fixed emv ber der bluetooth-ltv nfc-type2'.Split(' ')); return }\r\n        '--input' { Complete-Files; return }\r\n        '--module' { Complete-Values @('emv bluetooth'.Split(' ')); return }\r\n        '--input-encoding' { Complete-Values @('binary hex'.Split(' ')); return }\r\n        '--output' { Complete-Values @('text json'.Split(' ')); return }\r\n        '--output-encoding' { switch ($cmd) {\r\n            'encode' { Complete-Values @('binary hex'.Split(' ')); return }\r\n            'generate' { Complete-Values @('bin json'.Split(' ')); return }\r\n        }; return }\r\n        '--emv-context' { Complete-Values @('base bit bht bht-format bit-group biometric-counters biometric-attempts biometric-verification'.Split(' ')); return }\r\n        '--emv-check' { Complete-Values @('structure dictionary all'.Split(' ')); return }\r\n        '--output-file' { Complete-Files; return }\r\n        '--diagnostics' { Complete-Values @('human compact json'.Split(' ')); return }\r\n        '--fixed-byte-order' { Complete-Values @('big little'.Split(' ')); return }\r\n    }\r\n\r\n    switch ($cmd) {\r\n        'completion' { if ($words.Count -eq 1) { Complete-Values @('bash zsh fish powershell'.Split(' ')); return } }\r\n    }\r\n\r\n    if ($wordToComplete -like '-*') {\r\n        switch ($cmd) {\r\n            'dump' { Complete-Values @('--tree --format --input --hex --max-input-size --max-depth --max-elements --pretty --describe --force-color --no-color --module --input-encoding --pdol --decode --output --recover --emv-context --diagnostics --fixed-tag-size --fixed-length-size --fixed-byte-order'.Split(' ')) }\r\n            'validate' { Complete-Values @('--tree --format --input --hex --max-input-size --max-depth --max-elements --pretty --describe --force-color --no-color --module --input-encoding --pdol --decode --output --emv-context --emv-check --diagnostics --fixed-tag-size --fixed-length-size --fixed-byte-order'.Split(' ')) }\r\n            'decode' { Complete-Values @('--format --input --hex --max-input-size --max-depth --max-elements --describe --module --input-encoding --decode --recover --emv-context --diagnostics --fixed-tag-size --fixed-length-size --fixed-byte-order'.Split(' ')) }\r\n            'encode' { Complete-Values @('--format --input --max-input-size --max-depth --max-elements --tag --value --output-encoding --output-file --fixed-tag-size --fixed-length-size --fixed-byte-order'.Split(' ')) }\r\n            'generate' { Complete-Values @('--seed --count --output-dir --max-value-size --max-case-size --format --max-depth --max-elements --output-encoding --fixed-tag-size --fixed-length-size --fixed-byte-order'.Split(' ')) }\r\n            'query' { Complete-Values @('--exists --explain --var --backend --query --count --format --input --hex --max-input-size --max-depth --max-elements --input-encoding --output --value --diagnostics --fixed-tag-size --fixed-length-size --fixed-byte-order'.Split(' ')) }\r\n            'tag' { Complete-Values @('--module --output'.Split(' ')) }\r\n            'tags' { Complete-Values @('--module --output --search'.Split(' ')) }\r\n            'diff' { Complete-Values @('--against --where --format --input --max-input-size --max-depth --max-elements --output --diagnostics --fixed-tag-size --fixed-length-size --fixed-byte-order'.Split(' ')) }\r\n        }\r\n    }\r\n}\r\n"
+    },
+    "missing-command": {
+      "exit": 2,
+      "stderr": "otlv: missing command; use --help\r\n",
+      "files": {},
+      "stdout": ""
+    },
+    "unknown-command": {
+      "exit": 2,
+      "stderr": "otlv: unknown command; use --help\r\n",
+      "files": {},
+      "stdout": ""
+    },
+    "missing-shell": {
+      "exit": 2,
+      "stderr": "otlv: completion requires a shell: bash, zsh, fish or powershell\r\n",
+      "files": {},
+      "stdout": ""
+    },
+    "unknown-shell": {
+      "exit": 2,
+      "stderr": "otlv: unknown shell; use bash, zsh, fish or powershell\r\n",
+      "files": {},
+      "stdout": ""
+    },
+    "extra-shell": {
+      "exit": 2,
+      "stderr": "otlv: completion takes exactly one shell argument\r\n",
+      "files": {},
+      "stdout": ""
+    },
+    "missing-format": {
+      "exit": 2,
+      "stderr": "otlv: requires --format\r\n",
+      "files": {},
+      "stdout": ""
+    },
+    "unknown-format": {
+      "exit": 2,
+      "stderr": "otlv: unknown or disabled format; use otlv formats\r\n",
+      "files": {},
+      "stdout": ""
+    },
+    "missing-value": {
+      "exit": 2,
+      "stderr": "otlv: missing option value\r\n",
+      "files": {},
+      "stdout": ""
+    },
+    "duplicate-option": {
+      "exit": 2,
+      "stderr": "otlv: duplicate option\r\n",
+      "files": {},
+      "stdout": ""
+    },
+    "conflicting-inputs": {
+      "exit": 2,
+      "stderr": "otlv: --input and --hex cannot both be given\r\n",
+      "files": {},
+      "stdout": ""
+    },
+    "invalid-number": {
+      "exit": 2,
+      "stderr": "otlv: limits must be nonnegative decimal integers fitting size_t\r\n",
+      "files": {},
+      "stdout": ""
+    },
+    "unknown-option": {
+      "exit": 2,
+      "stderr": "otlv: unknown option; use --help\r\n",
+      "files": {},
+      "stdout": ""
+    },
+    "conflicting-color": {
+      "exit": 2,
+      "stderr": "otlv: conflicting color options\r\n",
+      "files": {},
+      "stdout": ""
+    },
+    "fixed-dump": {
+      "exit": 0,
+      "stderr": "",
+      "files": {},
+      "stdout": "offset=0 tag=04 length=1 value=AA\r\n"
+    },
+    "fixed-decode": {
+      "exit": 0,
+      "stderr": "",
+      "files": {},
+      "stdout": "{\"schema\":\"opentlv.tlv\",\"version\":1,\"format\":\"fixed\",\"elements\":[{\"tag\":\"04\",\"value\":\"AA\"}]}\r\n"
+    },
+    "fixed-validate": {
+      "exit": 0,
+      "stderr": "",
+      "files": {},
+      "stdout": ""
+    },
+    "fixed-json": {
+      "exit": 0,
+      "stderr": "",
+      "files": {},
+      "stdout": "{\"elements\":[{\"length\":1,\"offset\":0,\"tag\":\"04\",\"value\":\"AA\"}]}\r\n"
+    },
+    "fixed-invalid-human": {
+      "exit": 1,
+      "stderr": "otlv: error: truncated input\r\n\r\ncode: TLV_ERR_TRUNCATED\r\nlocation: input point\r\noffset: 0x2 (2)\r\ntag: 04\r\nwhile reading: value\r\nraw length: 02\r\ndeclared length: 2\r\navailable: 1\r\n",
+      "files": {},
+      "stdout": ""
+    },
+    "fixed-invalid-compact": {
+      "exit": 1,
+      "stderr": "otlv: TLV_ERR_TRUNCATED at byte 2 tag=04 while reading value; raw_length=02; declared_length=2; available=1: truncated input; location=input:point\r\n",
+      "files": {},
+      "stdout": ""
+    },
+    "fixed-invalid-json": {
+      "exit": 1,
+      "stderr": "{\"available\":1,\"code\":\"TLV_ERR_TRUNCATED\",\"declared_length\":2,\"enclosing_end\":3,\"length_offset\":1,\"location\":{\"begin\":2,\"domain\":\"input\",\"end\":2,\"kind\":\"point\"},\"message\":\"truncated input\",\"offset\":2,\"operation\":\"value\",\"raw_length\":\"02\",\"required\":2,\"severity\":\"error\",\"tag\":\"04\",\"tag_offset\":0,\"value_offset\":2}\r\n",
+      "files": {},
+      "stdout": ""
+    },
+    "fixed-generate-bin": {
+      "exit": 0,
+      "stderr": "",
+      "files": {
+        "generated/000000.bin": "0108aa795084a8560eaf01000107d65a9791c7d4f30108c6e5fb9151b81c5201057ad8de56a3010886defbc7076b51a10108a62d6dc11297db500100",
+        "generated/000001.bin": "01000101420100"
+      },
+      "stdout": ""
+    },
+    "fixed-generate-json": {
+      "exit": 0,
+      "stderr": "",
+      "files": {
+        "generated/000000.json": "7b22736368656d61223a226f70656e746c762e746c76222c2276657273696f6e223a312c22666f726d6174223a226669786564222c22656c656d656e7473223a5b7b22746167223a223031222c2276616c7565223a2241413739353038344138353630454146227d2c7b22746167223a223031222c2276616c7565223a22227d2c7b22746167223a223031222c2276616c7565223a224436354139373931433744344633227d2c7b22746167223a223031222c2276616c7565223a2243364535464239313531423831433532227d2c7b22746167223a223031222c2276616c7565223a2237414438444535364133227d2c7b22746167223a223031222c2276616c7565223a2238364445464243373037364235314131227d2c7b22746167223a223031222c2276616c7565223a2241363244364443313132393744423530227d2c7b22746167223a223031222c2276616c7565223a22227d5d7d0a",
+        "generated/000001.json": "7b22736368656d61223a226f70656e746c762e746c76222c2276657273696f6e223a312c22666f726d6174223a226669786564222c22656c656d656e7473223a5b7b22746167223a223031222c2276616c7565223a22227d2c7b22746167223a223031222c2276616c7565223a223432227d2c7b22746167223a223031222c2276616c7565223a22227d5d7d0a"
+      },
+      "stdout": ""
+    },
+    "ber-dump": {
+      "exit": 0,
+      "stderr": "",
+      "files": {},
+      "stdout": "offset=0 tag=04 length=1 value=AA\r\n"
+    },
+    "ber-decode": {
+      "exit": 0,
+      "stderr": "",
+      "files": {},
+      "stdout": "{\"schema\":\"opentlv.tlv\",\"version\":1,\"format\":\"ber\",\"elements\":[{\"tag\":\"04\",\"value\":\"AA\"}]}\r\n"
+    },
+    "ber-validate": {
+      "exit": 0,
+      "stderr": "",
+      "files": {},
+      "stdout": ""
+    },
+    "ber-json": {
+      "exit": 0,
+      "stderr": "",
+      "files": {},
+      "stdout": "{\"elements\":[{\"length\":1,\"offset\":0,\"tag\":\"04\",\"value\":\"AA\"}]}\r\n"
+    },
+    "ber-invalid-human": {
+      "exit": 1,
+      "stderr": "otlv: error: truncated input\r\n\r\ncode: TLV_ERR_TRUNCATED\r\nlocation: input point\r\noffset: 0x2 (2)\r\ntag: 04\r\nwhile reading: value\r\nraw length: 02\r\ndeclared length: 2\r\navailable: 1\r\n",
+      "files": {},
+      "stdout": ""
+    },
+    "ber-invalid-compact": {
+      "exit": 1,
+      "stderr": "otlv: TLV_ERR_TRUNCATED at byte 2 tag=04 while reading value; raw_length=02; declared_length=2; available=1: truncated input; location=input:point\r\n",
+      "files": {},
+      "stdout": ""
+    },
+    "ber-invalid-json": {
+      "exit": 1,
+      "stderr": "{\"available\":1,\"code\":\"TLV_ERR_TRUNCATED\",\"declared_length\":2,\"enclosing_end\":3,\"length_offset\":1,\"location\":{\"begin\":2,\"domain\":\"input\",\"end\":2,\"kind\":\"point\"},\"message\":\"truncated input\",\"offset\":2,\"operation\":\"value\",\"raw_length\":\"02\",\"required\":2,\"severity\":\"error\",\"tag\":\"04\",\"tag_offset\":0,\"value_offset\":2}\r\n",
+      "files": {},
+      "stdout": ""
+    },
+    "ber-generate-bin": {
+      "exit": 0,
+      "stderr": "",
+      "files": {
+        "generated/000000.bin": "0408aa795084a8560eaf3005a0038001fb",
+        "generated/000001.bin": "80000401428000"
+      },
+      "stdout": ""
+    },
+    "ber-generate-json": {
+      "exit": 0,
+      "stderr": "",
+      "files": {
+        "generated/000000.json": "7b22736368656d61223a226f70656e746c762e746c76222c2276657273696f6e223a312c22666f726d6174223a22626572222c22656c656d656e7473223a5b7b22746167223a223034222c2276616c7565223a2241413739353038344138353630454146227d2c7b22746167223a223330222c226c656e6774685f6d6f6465223a22646566696e697465222c226368696c6472656e223a5b7b22746167223a224130222c226c656e6774685f6d6f6465223a22646566696e697465222c226368696c6472656e223a5b7b22746167223a223830222c2276616c7565223a224642227d5d7d5d7d5d7d0a",
+        "generated/000001.json": "7b22736368656d61223a226f70656e746c762e746c76222c2276657273696f6e223a312c22666f726d6174223a22626572222c22656c656d656e7473223a5b7b22746167223a223830222c2276616c7565223a22227d2c7b22746167223a223034222c2276616c7565223a223432227d2c7b22746167223a223830222c2276616c7565223a22227d5d7d0a"
+      },
+      "stdout": ""
+    },
+    "der-dump": {
+      "exit": 0,
+      "stderr": "",
+      "files": {},
+      "stdout": "offset=0 tag=04 length=1 value=AA\r\n"
+    },
+    "der-decode": {
+      "exit": 0,
+      "stderr": "",
+      "files": {},
+      "stdout": "{\"schema\":\"opentlv.tlv\",\"version\":1,\"format\":\"der\",\"elements\":[{\"tag\":\"04\",\"value\":\"AA\"}]}\r\n"
+    },
+    "der-validate": {
+      "exit": 0,
+      "stderr": "",
+      "files": {},
+      "stdout": ""
+    },
+    "der-json": {
+      "exit": 0,
+      "stderr": "",
+      "files": {},
+      "stdout": "{\"elements\":[{\"length\":1,\"offset\":0,\"tag\":\"04\",\"value\":\"AA\"}]}\r\n"
+    },
+    "der-invalid-human": {
+      "exit": 1,
+      "stderr": "otlv: error: truncated input\r\n\r\ncode: TLV_ERR_TRUNCATED\r\nlocation: input point\r\noffset: 0x2 (2)\r\nwhile reading: tag\r\n",
+      "files": {},
+      "stdout": ""
+    },
+    "der-invalid-compact": {
+      "exit": 1,
+      "stderr": "otlv: TLV_ERR_TRUNCATED at byte 2 while reading tag: truncated input; location=input:point\r\n",
+      "files": {},
+      "stdout": ""
+    },
+    "der-invalid-json": {
+      "exit": 1,
+      "stderr": "{\"code\":\"TLV_ERR_TRUNCATED\",\"location\":{\"begin\":2,\"domain\":\"input\",\"end\":2,\"kind\":\"point\"},\"message\":\"truncated input\",\"offset\":2,\"operation\":\"tag\",\"severity\":\"error\"}\r\n",
+      "files": {},
+      "stdout": ""
+    },
+    "der-generate-bin": {
+      "exit": 0,
+      "stderr": "",
+      "files": {
+        "generated/000000.bin": "0408aa795084a8560eaf3005a0038001fb",
+        "generated/000001.bin": "80000401428000"
+      },
+      "stdout": ""
+    },
+    "der-generate-json": {
+      "exit": 0,
+      "stderr": "",
+      "files": {
+        "generated/000000.json": "7b22736368656d61223a226f70656e746c762e746c76222c2276657273696f6e223a312c22666f726d6174223a22646572222c22656c656d656e7473223a5b7b22746167223a223034222c2276616c7565223a2241413739353038344138353630454146227d2c7b22746167223a223330222c226368696c6472656e223a5b7b22746167223a224130222c226368696c6472656e223a5b7b22746167223a223830222c2276616c7565223a224642227d5d7d5d7d5d7d0a",
+        "generated/000001.json": "7b22736368656d61223a226f70656e746c762e746c76222c2276657273696f6e223a312c22666f726d6174223a22646572222c22656c656d656e7473223a5b7b22746167223a223830222c2276616c7565223a22227d2c7b22746167223a223034222c2276616c7565223a223432227d2c7b22746167223a223830222c2276616c7565223a22227d5d7d0a"
+      },
+      "stdout": ""
+    },
+    "emv-dump": {
+      "exit": 0,
+      "stderr": "",
+      "files": {},
+      "stdout": "offset=0 tag=9F02 length=1 value=42\r\n"
+    },
+    "emv-decode": {
+      "exit": 0,
+      "stderr": "",
+      "files": {},
+      "stdout": "{\"schema\":\"opentlv.tlv\",\"version\":1,\"format\":\"emv\",\"elements\":[{\"tag\":\"9F02\",\"value\":\"42\"}]}\r\n"
+    },
+    "emv-validate": {
+      "exit": 0,
+      "stderr": "",
+      "files": {},
+      "stdout": ""
+    },
+    "emv-json": {
+      "exit": 0,
+      "stderr": "",
+      "files": {},
+      "stdout": "{\"elements\":[{\"length\":1,\"offset\":0,\"tag\":\"9F02\",\"value\":\"42\"}]}\r\n"
+    },
+    "emv-invalid-human": {
+      "exit": 1,
+      "stderr": "otlv: error: invalid length encoding\r\n\r\ncode: TLV_ERR_INVALID_LENGTH\r\nlocation: input point\r\noffset: 0x1 (1)\r\ntag: 70\r\nwhile reading: length\r\nraw length: 80\r\navailable: 3\r\n",
+      "files": {},
+      "stdout": ""
+    },
+    "emv-invalid-compact": {
+      "exit": 1,
+      "stderr": "otlv: TLV_ERR_INVALID_LENGTH at byte 1 tag=70 while reading length; raw_length=80; available=3: invalid length encoding; location=input:point\r\n",
+      "files": {},
+      "stdout": ""
+    },
+    "emv-invalid-json": {
+      "exit": 1,
+      "stderr": "{\"available\":3,\"code\":\"TLV_ERR_INVALID_LENGTH\",\"enclosing_end\":4,\"length_offset\":1,\"location\":{\"begin\":1,\"domain\":\"input\",\"end\":1,\"kind\":\"point\"},\"message\":\"invalid length encoding\",\"offset\":1,\"operation\":\"length\",\"raw_length\":\"80\",\"severity\":\"error\",\"tag\":\"70\",\"tag_offset\":0}\r\n",
+      "files": {},
+      "stdout": ""
+    },
+    "emv-generate-bin": {
+      "exit": 0,
+      "stderr": "",
+      "files": {
+        "generated/000000.bin": "0408aa795084a8560eaf3005a0038001fb",
+        "generated/000001.bin": "80000401428000"
+      },
+      "stdout": ""
+    },
+    "emv-generate-json": {
+      "exit": 0,
+      "stderr": "",
+      "files": {
+        "generated/000000.json": "7b22736368656d61223a226f70656e746c762e746c76222c2276657273696f6e223a312c22666f726d6174223a22656d76222c22656c656d656e7473223a5b7b22746167223a223034222c2276616c7565223a2241413739353038344138353630454146227d2c7b22746167223a223330222c226368696c6472656e223a5b7b22746167223a224130222c226368696c6472656e223a5b7b22746167223a223830222c2276616c7565223a224642227d5d7d5d7d5d7d0a",
+        "generated/000001.json": "7b22736368656d61223a226f70656e746c762e746c76222c2276657273696f6e223a312c22666f726d6174223a22656d76222c22656c656d656e7473223a5b7b22746167223a223830222c2276616c7565223a22227d2c7b22746167223a223034222c2276616c7565223a223432227d2c7b22746167223a223830222c2276616c7565223a22227d5d7d0a"
+      },
+      "stdout": ""
+    },
+    "bluetooth-ltv-dump": {
+      "exit": 0,
+      "stderr": "",
+      "files": {},
+      "stdout": "offset=0 tag=01 length=1 value=06\r\noffset=3 tag=09 length=2 value=4869\r\n"
+    },
+    "bluetooth-ltv-decode": {
+      "exit": 0,
+      "stderr": "",
+      "files": {},
+      "stdout": "{\"schema\":\"opentlv.tlv\",\"version\":1,\"format\":\"bluetooth-ltv\",\"elements\":[{\"tag\":\"01\",\"value\":\"06\"},{\"tag\":\"09\",\"value\":\"4869\"}]}\r\n"
+    },
+    "bluetooth-ltv-validate": {
+      "exit": 0,
+      "stderr": "",
+      "files": {},
+      "stdout": ""
+    },
+    "bluetooth-ltv-json": {
+      "exit": 0,
+      "stderr": "",
+      "files": {},
+      "stdout": "{\"elements\":[{\"length\":1,\"offset\":0,\"tag\":\"01\",\"value\":\"06\"},{\"length\":2,\"offset\":3,\"tag\":\"09\",\"value\":\"4869\"}]}\r\n"
+    },
+    "bluetooth-ltv-invalid-human": {
+      "exit": 1,
+      "stderr": "otlv: error: truncated input\r\n\r\ncode: TLV_ERR_TRUNCATED\r\nlocation: input point\r\noffset: 0x2 (2)\r\ntag: 09\r\nwhile reading: value\r\nraw length: 03\r\ndeclared length: 2\r\navailable: 1\r\n",
+      "files": {},
+      "stdout": ""
+    },
+    "bluetooth-ltv-invalid-compact": {
+      "exit": 1,
+      "stderr": "otlv: TLV_ERR_TRUNCATED at byte 2 tag=09 while reading value; raw_length=03; declared_length=2; available=1: truncated input; location=input:point\r\n",
+      "files": {},
+      "stdout": ""
+    },
+    "bluetooth-ltv-invalid-json": {
+      "exit": 1,
+      "stderr": "{\"available\":1,\"code\":\"TLV_ERR_TRUNCATED\",\"declared_length\":2,\"enclosing_end\":3,\"length_offset\":0,\"location\":{\"begin\":2,\"domain\":\"input\",\"end\":2,\"kind\":\"point\"},\"message\":\"truncated input\",\"offset\":2,\"operation\":\"value\",\"raw_length\":\"03\",\"required\":2,\"severity\":\"error\",\"tag\":\"09\",\"tag_offset\":1,\"value_offset\":2}\r\n",
+      "files": {},
+      "stdout": ""
+    },
+    "bluetooth-ltv-generate-bin": {
+      "exit": 0,
+      "stderr": "",
+      "files": {
+        "generated/000000.bin": "0909aa795084a8560eaf010908ffd65a9791c7d4f30909c6e5fb9151b81c5206ff7ad8de56a309ff86defbc7076b51a10909a62d6dc11297db500109",
+        "generated/000001.bin": "01ff02094201ff"
+      },
+      "stdout": ""
+    },
+    "bluetooth-ltv-generate-json": {
+      "exit": 0,
+      "stderr": "",
+      "files": {
+        "generated/000000.json": "7b22736368656d61223a226f70656e746c762e746c76222c2276657273696f6e223a312c22666f726d6174223a22626c7565746f6f74682d6c7476222c22656c656d656e7473223a5b7b22746167223a223039222c2276616c7565223a2241413739353038344138353630454146227d2c7b22746167223a223039222c2276616c7565223a22227d2c7b22746167223a224646222c2276616c7565223a224436354139373931433744344633227d2c7b22746167223a223039222c2276616c7565223a2243364535464239313531423831433532227d2c7b22746167223a224646222c2276616c7565223a2237414438444535364133227d2c7b22746167223a224646222c2276616c7565223a2238364445464243373037364235314131227d2c7b22746167223a223039222c2276616c7565223a2241363244364443313132393744423530227d2c7b22746167223a223039222c2276616c7565223a22227d5d7d0a",
+        "generated/000001.json": "7b22736368656d61223a226f70656e746c762e746c76222c2276657273696f6e223a312c22666f726d6174223a22626c7565746f6f74682d6c7476222c22656c656d656e7473223a5b7b22746167223a224646222c2276616c7565223a22227d2c7b22746167223a223039222c2276616c7565223a223432227d2c7b22746167223a224646222c2276616c7565223a22227d5d7d0a"
+      },
+      "stdout": ""
+    },
+    "nfc-type2-dump": {
+      "exit": 0,
+      "stderr": "",
+      "files": {},
+      "stdout": "offset=0 tag=00 length=0 value=\r\noffset=1 tag=03 length=1 value=AA\r\noffset=4 tag=FE length=0 value=\r\n"
+    },
+    "nfc-type2-decode": {
+      "exit": 0,
+      "stderr": "",
+      "files": {},
+      "stdout": "{\"schema\":\"opentlv.tlv\",\"version\":1,\"format\":\"nfc-type2\",\"elements\":[{\"tag\":\"00\",\"value\":\"\"},{\"tag\":\"03\",\"value\":\"AA\"},{\"tag\":\"FE\",\"value\":\"\"}]}\r\n"
+    },
+    "nfc-type2-validate": {
+      "exit": 0,
+      "stderr": "",
+      "files": {},
+      "stdout": ""
+    },
+    "nfc-type2-json": {
+      "exit": 0,
+      "stderr": "",
+      "files": {},
+      "stdout": "{\"elements\":[{\"length\":0,\"offset\":0,\"tag\":\"00\",\"value\":\"\"},{\"length\":1,\"offset\":1,\"tag\":\"03\",\"value\":\"AA\"},{\"length\":0,\"offset\":4,\"tag\":\"FE\",\"value\":\"\"}]}\r\n"
+    },
+    "nfc-type2-invalid-human": {
+      "exit": 1,
+      "stderr": "otlv: error: truncated input\r\n\r\ncode: TLV_ERR_TRUNCATED\r\nlocation: input point\r\noffset: 0x1 (1)\r\ntag: 03\r\nwhile reading: length\r\nraw length: FF00\r\navailable: 2\r\n",
+      "files": {},
+      "stdout": ""
+    },
+    "nfc-type2-invalid-compact": {
+      "exit": 1,
+      "stderr": "otlv: TLV_ERR_TRUNCATED at byte 1 tag=03 while reading length; raw_length=FF00; available=2: truncated input; location=input:point\r\n",
+      "files": {},
+      "stdout": ""
+    },
+    "nfc-type2-invalid-json": {
+      "exit": 1,
+      "stderr": "{\"available\":2,\"code\":\"TLV_ERR_TRUNCATED\",\"enclosing_end\":3,\"length_offset\":1,\"location\":{\"begin\":1,\"domain\":\"input\",\"end\":1,\"kind\":\"point\"},\"message\":\"truncated input\",\"offset\":1,\"operation\":\"length\",\"raw_length\":\"FF00\",\"severity\":\"error\",\"tag\":\"03\",\"tag_offset\":0}\r\n",
+      "files": {},
+      "stdout": ""
+    },
+    "nfc-type2-generate-bin": {
+      "exit": 0,
+      "stderr": "",
+      "files": {
+        "generated/000000.bin": "0308aa795084a8560eaf0300fd07d65a9791c7d4f30308c6e5fb9151b81c52fd057ad8de56a3fd0886defbc7076b51a10308a62d6dc11297db500300",
+        "generated/000001.bin": "fd00030142fd00"
+      },
+      "stdout": ""
+    },
+    "nfc-type2-generate-json": {
+      "exit": 0,
+      "stderr": "",
+      "files": {
+        "generated/000000.json": "7b22736368656d61223a226f70656e746c762e746c76222c2276657273696f6e223a312c22666f726d6174223a226e66632d7479706532222c22656c656d656e7473223a5b7b22746167223a223033222c2276616c7565223a2241413739353038344138353630454146227d2c7b22746167223a223033222c2276616c7565223a22227d2c7b22746167223a224644222c2276616c7565223a224436354139373931433744344633227d2c7b22746167223a223033222c2276616c7565223a2243364535464239313531423831433532227d2c7b22746167223a224644222c2276616c7565223a2237414438444535364133227d2c7b22746167223a224644222c2276616c7565223a2238364445464243373037364235314131227d2c7b22746167223a223033222c2276616c7565223a2241363244364443313132393744423530227d2c7b22746167223a223033222c2276616c7565223a22227d5d7d0a",
+        "generated/000001.json": "7b22736368656d61223a226f70656e746c762e746c76222c2276657273696f6e223a312c22666f726d6174223a226e66632d7479706532222c22656c656d656e7473223a5b7b22746167223a224644222c2276616c7565223a22227d2c7b22746167223a223033222c2276616c7565223a223432227d2c7b22746167223a224644222c2276616c7565223a22227d5d7d0a"
+      },
+      "stdout": ""
+    },
+    "partial-dump-human": {
+      "exit": 1,
+      "stderr": "otlv: error: truncated input\r\n\r\ncode: TLV_ERR_TRUNCATED\r\nlocation: input point\r\noffset: 0x4 (4)\r\ntag: 04\r\nwhile reading: length\r\navailable: 0\r\n",
+      "files": {},
+      "stdout": "offset=0 tag=04 length=1 value=AA\r\n"
+    },
+    "recovery-human": {
+      "exit": 4,
+      "stderr": "otlv: skipped 2 byte(s) at offset 3: warning: invalid tag\r\n\r\ncode: TLV_ERR_INVALID_TAG\r\nlocation: input point\r\noffset: 0x3 (3)\r\nwhile reading: tag\r\navailable: 5\r\notlv: output is incomplete: recovery skipped 1 range(s), 2 byte(s) in total\r\n",
+      "files": {},
+      "stdout": "offset=0 tag=5A length=1 value=12\r\nskipped offset=3 length=2 error=TLV_ERR_INVALID_TAG error-location=input:point:3\r\noffset=5 tag=5A length=1 value=34\r\n"
+    },
+    "query-syntax-human": {
+      "exit": 2,
+      "stderr": "otlv: query TLV_ERR_SYNTAX at byte 3: syntax error; location=expression:span:3..4; expected=valid Query operand/arity; kind=syntax\r\n",
+      "files": {},
+      "stdout": ""
+    },
+    "emv-schema-human": {
+      "exit": 1,
+      "stderr": "otlv: error: schema constraint violated\r\n\r\ncode: TLV_ERR_SCHEMA\r\nlocation: input point\r\noffset: 0x0 (0)\r\ntag: 9F02\r\nstage: dictionary\r\nexpected: 6..6\r\nactual: 5\r\ndictionary field: amount_authorised\r\n",
+      "files": {},
+      "stdout": ""
+    },
+    "partial-dump-compact": {
+      "exit": 1,
+      "stderr": "otlv: TLV_ERR_TRUNCATED at byte 4 tag=04 while reading length; available=0: truncated input; location=input:point\r\n",
+      "files": {},
+      "stdout": "offset=0 tag=04 length=1 value=AA\r\n"
+    },
+    "recovery-compact": {
+      "exit": 4,
+      "stderr": "otlv: skipped 2 byte(s) at offset 3: TLV_ERR_INVALID_TAG at byte 3 while reading tag; available=5: invalid tag; location=input:point\r\notlv: output is incomplete: recovery skipped 1 range(s), 2 byte(s) in total\r\n",
+      "files": {},
+      "stdout": "offset=0 tag=5A length=1 value=12\r\nskipped offset=3 length=2 error=TLV_ERR_INVALID_TAG error-location=input:point:3\r\noffset=5 tag=5A length=1 value=34\r\n"
+    },
+    "query-syntax-compact": {
+      "exit": 2,
+      "stderr": "otlv: query TLV_ERR_SYNTAX at byte 3: syntax error; location=expression:span:3..4; expected=valid Query operand/arity; kind=syntax\r\n",
+      "files": {},
+      "stdout": ""
+    },
+    "emv-schema-compact": {
+      "exit": 1,
+      "stderr": "otlv: dictionary TLV_ERR_SCHEMA at byte 0 tag=9F02: schema constraint violated; location=input:point; expected=6..6; actual=5; dictionary field=amount_authorised\r\n",
+      "files": {},
+      "stdout": ""
+    },
+    "partial-dump-json": {
+      "exit": 1,
+      "stderr": "{\"available\":0,\"code\":\"TLV_ERR_TRUNCATED\",\"enclosing_end\":4,\"length_offset\":4,\"location\":{\"begin\":4,\"domain\":\"input\",\"end\":4,\"kind\":\"point\"},\"message\":\"truncated input\",\"offset\":4,\"operation\":\"length\",\"severity\":\"error\",\"tag\":\"04\",\"tag_offset\":3}\r\n",
+      "files": {},
+      "stdout": "offset=0 tag=04 length=1 value=AA\r\n"
+    },
+    "recovery-json": {
+      "exit": 4,
+      "stderr": "{\"available\":5,\"code\":\"TLV_ERR_INVALID_TAG\",\"enclosing_end\":8,\"location\":{\"begin\":3,\"domain\":\"input\",\"end\":3,\"kind\":\"point\"},\"message\":\"invalid tag\",\"offset\":3,\"operation\":\"tag\",\"severity\":\"warning\",\"skipped_length\":2,\"skipped_offset\":3}\r\notlv: output is incomplete: recovery skipped 1 range(s), 2 byte(s) in total\r\n",
+      "files": {},
+      "stdout": "offset=0 tag=5A length=1 value=12\r\nskipped offset=3 length=2 error=TLV_ERR_INVALID_TAG error-location=input:point:3\r\noffset=5 tag=5A length=1 value=34\r\n"
+    },
+    "query-syntax-json": {
+      "exit": 2,
+      "stderr": "{\"cause\":\"none\",\"code\":8,\"diagnostic\":{\"code\":\"TLV_ERR_SYNTAX\",\"expected\":\"valid Query operand/arity\",\"location\":{\"begin\":3,\"domain\":\"expression\",\"end\":4,\"kind\":\"span\"},\"message\":\"syntax error\",\"offset\":3,\"severity\":\"error\",\"stage\":\"query\"},\"error\":\"syntax error\",\"kind\":1,\"kind_name\":\"syntax\",\"location\":{\"begin\":3,\"domain\":\"expression\",\"end\":4,\"kind\":\"span\"}}\r\n",
+      "files": {},
+      "stdout": ""
+    },
+    "emv-schema-json": {
+      "exit": 1,
+      "stderr": "{\"actual\":\"5\",\"code\":\"TLV_ERR_SCHEMA\",\"contexts\":[{\"key\":\"field\",\"layer\":\"dictionary\",\"value\":\"amount_authorised\"}],\"expected\":\"6..6\",\"location\":{\"begin\":0,\"domain\":\"input\",\"end\":0,\"kind\":\"point\"},\"message\":\"schema constraint violated\",\"offset\":0,\"severity\":\"error\",\"stage\":\"dictionary\",\"tag\":\"9F02\"}\r\n",
+      "files": {},
+      "stdout": ""
+    },
+    "empty-input": {
+      "exit": 0,
+      "stderr": "",
+      "files": {},
+      "stdout": ""
+    },
+    "invalid-hex-87": {
+      "exit": 2,
+      "stderr": "otlv: hex input requires complete hexadecimal byte pairs\r\n",
+      "files": {},
+      "stdout": ""
+    },
+    "invalid-hex-88": {
+      "exit": 2,
+      "stderr": "otlv: hex input requires complete hexadecimal byte pairs\r\n",
+      "files": {},
+      "stdout": ""
+    },
+    "invalid-hex-89": {
+      "exit": 2,
+      "stderr": "otlv: hex input requires complete hexadecimal byte pairs\r\n",
+      "files": {},
+      "stdout": ""
+    },
+    "invalid-hex-90": {
+      "exit": 2,
+      "stderr": "otlv: hex input requires complete hexadecimal byte pairs\r\n",
+      "files": {},
+      "stdout": ""
+    },
+    "missing-input-file": {
+      "exit": 3,
+      "stderr": "otlv: cannot open input file\r\n",
+      "files": {},
+      "stdout": ""
+    },
+    "input-limit": {
+      "exit": 3,
+      "stderr": "otlv: input-size limit exceeded\r\n",
+      "files": {},
+      "stdout": ""
+    },
+    "element-limit": {
+      "exit": 3,
+      "stderr": "otlv: error: resource limit exceeded\r\n\r\ncode: TLV_ERR_LIMIT\r\nlocation: unknown unknown\r\nwhile reading: tag\r\n",
+      "files": {},
+      "stdout": ""
+    },
+    "depth-limit": {
+      "exit": 3,
+      "stderr": "otlv: error: resource limit exceeded\r\n\r\ncode: TLV_ERR_LIMIT\r\nlocation: unknown unknown\r\npath: E1\r\nwhile reading: tag\r\n",
+      "files": {},
+      "stdout": "offset=0 tag=E1 length=3 value=5A0112\r\n"
+    },
+    "input-file": {
+      "exit": 0,
+      "stderr": "",
+      "files": {
+        "input.bin": "04040a0d1aff"
+      },
+      "stdout": "offset=0 tag=04 length=4 value=0A0D1AFF\r\n"
+    },
+    "input-stdin": {
+      "exit": 0,
+      "stderr": "",
+      "files": {},
+      "stdout": "offset=0 tag=04 length=4 value=0A0D1AFF\r\n"
+    },
+    "input-implicit-stdin": {
+      "exit": 0,
+      "stderr": "",
+      "files": {},
+      "stdout": "offset=0 tag=04 length=4 value=0A0D1AFF\r\n"
+    },
+    "input-hex-stdin": {
+      "exit": 0,
+      "stderr": "",
+      "files": {},
+      "stdout": "offset=0 tag=04 length=1 value=AA\r\n"
+    },
+    "force-color": {
+      "exit": 0,
+      "stderr": "",
+      "files": {},
+      "stdout": "offset=0 tag=\u001b[36m04\u001b[0m length=1 value=AA\r\n"
+    },
+    "no-color": {
+      "exit": 0,
+      "stderr": "",
+      "files": {},
+      "stdout": "offset=0 tag=04 length=1 value=AA\r\n"
+    },
+    "pretty-tree": {
+      "exit": 0,
+      "stderr": "",
+      "files": {},
+      "stdout": "offset=0 tag=E1 length=3 value=5A0112\r\n\u2514\u2500\u2500 offset=2 tag=5A length=1 value=12\r\n"
+    },
+    "indefinite-ber": {
+      "exit": 0,
+      "stderr": "",
+      "files": {},
+      "stdout": "offset=0 tag=30 length=3 encoding=indefinite value=0401AA\r\n  offset=2 tag=04 length=1 value=AA\r\n"
+    },
+    "der-rejects-indefinite": {
+      "exit": 1,
+      "stderr": "otlv: error: invalid length encoding\r\n\r\ncode: TLV_ERR_INVALID_LENGTH\r\nlocation: input point\r\noffset: 0x1 (1)\r\nwhile reading: tag\r\n",
+      "files": {},
+      "stdout": ""
+    },
+    "fixed-wide-le": {
+      "exit": 0,
+      "stderr": "",
+      "files": {},
+      "stdout": "01020300AABBCC\r\n"
+    },
+    "encode-hex": {
+      "exit": 0,
+      "stderr": "",
+      "files": {},
+      "stdout": "04040A0D1AFF\r\n"
+    },
+    "encode-binary": {
+      "exit": 0,
+      "stderr": "",
+      "files": {},
+      "stdout_hex": "04040a0d1aff"
+    },
+    "encode-file": {
+      "exit": 0,
+      "stderr": "",
+      "files": {
+        "out.bin": "04040a0d1aff"
+      },
+      "stdout": ""
+    },
+    "encode-json-stdin": {
+      "exit": 0,
+      "stderr": "",
+      "files": {},
+      "stdout": "0401AA\r\n"
+    },
+    "encode-json-file": {
+      "exit": 0,
+      "stderr": "",
+      "files": {
+        "model.json": "7b22736368656d61223a226f70656e746c762e746c76222c2276657273696f6e223a312c22666f726d6174223a22626572222c22656c656d656e7473223a5b7b22746167223a223034222c2276616c7565223a224141227d5d7d"
+      },
+      "stdout": "0401AA\r\n"
+    },
+    "invalid-json": {
+      "exit": 2,
+      "stderr": "otlv: invalid JSON document: invalid JSON at byte 2: [json.exception.parse_error.101] parse error at line 1, column 2: syntax error while parsing object key - invalid literal; last read: '{b'; expected string literal\r\n",
+      "files": {},
+      "stdout": ""
+    },
+    "invalid-json-version": {
+      "exit": 2,
+      "stderr": "otlv: invalid JSON document: unsupported JSON schema version 2; this otlv reads version 1\r\n",
+      "files": {},
+      "stdout": ""
+    },
+    "encode-invalid-element": {
+      "exit": 1,
+      "stderr": "otlv: cannot encode element 0: invalid tag\r\n",
+      "files": {},
+      "stdout": ""
+    },
+    "encode-output-error": {
+      "exit": 3,
+      "stderr": "otlv: cannot open output file\r\n",
+      "files": {},
+      "stdout": ""
+    },
+    "generate-invalid-seed": {
+      "exit": 2,
+      "stderr": "otlv: seed/count must be decimal uint64 integers\r\n",
+      "files": {},
+      "stdout": ""
+    },
+    "generate-impossible": {
+      "exit": 3,
+      "stderr": "otlv: cannot generate case 0 for selected format/limits: resource limit exceeded\r\n",
+      "files": {},
+      "stdout": ""
+    },
+    "generate-no-overwrite": {
+      "exit": 3,
+      "stderr": "otlv: refusing to overwrite case: out/000000.bin\r\n",
+      "files": {
+        "out/000000.bin": "abcd"
+      },
+      "stdout": ""
+    },
+    "generate-zero-seed": {
+      "exit": 0,
+      "stderr": "",
+      "files": {
+        "out/000000.bin": "010001000100010001000100010001000100010001000100010001000100010001000100010001000100"
+      },
+      "stdout": ""
+    },
+    "emv-semantic-describe": {
+      "exit": 0,
+      "stderr": "",
+      "files": {},
+      "stdout": "offset=0 tag=9F02 length=6 value=000000001000 name=\"Amount Authorised\" description=\"Numeric value (binary or decimal BCD, tag-dependent); dictionary length: 6 bytes; step: 1\"\r\n"
+    },
+    "emv-semantic-decode": {
+      "exit": 0,
+      "stderr": "",
+      "files": {},
+      "stdout": "offset=0 tag=9F02 length=6 value=000000001000 name=\"Amount Authorised\" decoded=\"1000\"\r\n"
+    },
+    "emv-context": {
+      "exit": 0,
+      "stderr": "",
+      "files": {},
+      "stdout": "offset=0 tag=80 length=1 value=00 name=\"Unknown EMV tag in this context\"\r\n"
+    },
+    "pdol": {
+      "exit": 0,
+      "stderr": "",
+      "files": {},
+      "stdout": "offset=0 tag=9F02 requested-length=6\r\noffset=3 tag=5F2A requested-length=2\r\n"
+    },
+    "bluetooth-decode": {
+      "exit": 0,
+      "stderr": "",
+      "files": {},
+      "stdout": "{\"elements\":[{\"decoded\":\"0x06\",\"length\":1,\"name\":\"Flags\",\"offset\":0,\"tag\":\"01\",\"value\":\"06\"},{\"decoded\":\"-4 dBm\",\"length\":1,\"name\":\"Tx Power Level\",\"offset\":3,\"tag\":\"0A\",\"value\":\"FC\"},{\"length\":1,\"name\":\"Unknown AD Type\",\"offset\":6,\"tag\":\"FE\",\"value\":\"00\"}]}\r\n"
+    },
+    "bluetooth-invalid-schema": {
+      "exit": 1,
+      "stderr": "{\"code\":\"TLV_ERR_INVALID_VALUE\",\"location\":{\"begin\":0,\"domain\":\"input\",\"end\":0,\"kind\":\"point\"},\"message\":\"invalid data or application representation\",\"offset\":0,\"severity\":\"error\",\"stage\":\"codec\",\"tag\":\"01\"}\r\n",
+      "files": {},
+      "stdout": ""
+    },
+    "tag-known": {
+      "exit": 0,
+      "stderr": "",
+      "files": {},
+      "stdout": "Tag:         9F02\r\nName:        Amount Authorised\r\nType:        Numeric value (binary or decimal BCD, tag-dependent)\r\nForm:        Primitive\r\nLength:      6\r\n"
+    },
+    "tag-unknown": {
+      "exit": 0,
+      "stderr": "",
+      "files": {},
+      "stdout": "Tag:         DF01\r\nResult:      Unknown tag in the EMV module (base context)\r\n"
+    },
+    "tags-search": {
+      "exit": 0,
+      "stderr": "",
+      "files": {},
+      "stdout": "{\"module\":\"emv\",\"tags\":[{\"constructed\":false,\"known\":true,\"length_step\":1,\"max_length\":4,\"min_length\":4,\"name\":\"Amount Authorised Binary\",\"symbol\":\"amount_authorised_binary\",\"tag\":\"81\",\"type\":\"Numeric value (binary or decimal BCD, tag-dependent)\"},{\"constructed\":false,\"known\":true,\"length_step\":1,\"max_length\":6,\"min_length\":6,\"name\":\"Amount Authorised\",\"symbol\":\"amount_authorised\",\"tag\":\"9F02\",\"type\":\"Numeric value (binary or decimal BCD, tag-dependent)\"},{\"constructed\":false,\"known\":true,\"length_step\":1,\"max_length\":6,\"min_length\":6,\"name\":\"Amount Other\",\"symbol\":\"amount_other\",\"tag\":\"9F03\",\"type\":\"Numeric value (binary or decimal BCD, tag-dependent)\"},{\"constructed\":false,\"known\":true,\"length_step\":1,\"max_length\":4,\"min_length\":4,\"name\":\"Amount Other Binary\",\"symbol\":\"amount_other_binary\",\"tag\":\"9F04\",\"type\":\"Numeric value (binary or decimal BCD, tag-dependent)\"},{\"constructed\":false,\"known\":true,\"length_step\":1,\"max_length\":4,\"min_length\":4,\"name\":\"Amount Reference Currency\",\"symbol\":\"amount_reference_currency\",\"tag\":\"9F3A\",\"type\":\"Numeric value (binary or decimal BCD, tag-dependent)\"}]}\r\n"
+    },
+    "query-path": {
+      "exit": 0,
+      "stderr": "",
+      "files": {},
+      "stdout": "offset=8 tag=50 length=2 value=4142\r\noffset=19 tag=50 length=1 value=01\r\noffset=22 tag=50 length=1 value=02\r\n"
+    },
+    "query-values": {
+      "exit": 0,
+      "stderr": "",
+      "files": {},
+      "stdout": "4142\r\n01\r\n02\r\n"
+    },
+    "query-json": {
+      "exit": 0,
+      "stderr": "",
+      "files": {},
+      "stdout": "{\"matches\":[{\"length\":2,\"offset\":8,\"path\":\"6F/A5/50\",\"tag\":\"50\",\"value\":\"4142\"},{\"length\":1,\"offset\":19,\"path\":\"6F/A5/50\",\"tag\":\"50\",\"value\":\"01\"},{\"length\":1,\"offset\":22,\"path\":\"6F/A5/50\",\"tag\":\"50\",\"value\":\"02\"}]}\r\n"
+    },
+    "query-missing": {
+      "exit": 5,
+      "stderr": "otlv: no match for query 6F/A5/51\r\n",
+      "files": {},
+      "stdout": ""
+    },
+    "query-count": {
+      "exit": 0,
+      "stderr": "",
+      "files": {},
+      "stdout": "5\r\n"
+    },
+    "query-exists": {
+      "exit": 0,
+      "stderr": "",
+      "files": {},
+      "stdout": "false\r\n"
+    },
+    "query-scalar": {
+      "exit": 0,
+      "stderr": "",
+      "files": {},
+      "stdout": "{\"type\":2,\"value\":0}\r\n"
+    },
+    "query-variable": {
+      "exit": 0,
+      "stderr": "",
+      "files": {},
+      "stdout": "1\r\n"
+    },
+    "query-explain": {
+      "exit": 0,
+      "stderr": "{\"backend\":\"streaming-retained\",\"candidates\":100000,\"ir_unstable\":\"0 op=1 type=0 level=0 reuse=4294967295 hook=0\\n1 op=0 type=0 level=0 reuse=4294967295 hook=0\\n2 op=9 type=0 level=0 reuse=4294967295 hook=0\\n\",\"language\":1,\"level\":0,\"max_depth\":64,\"max_work\":100000000,\"program_alignment\":4,\"program_bytes\":407,\"query\":\"//50\",\"result_kind\":0,\"scratch_alignment\":4,\"scratch_bytes\":1820,\"stable_input_required\":true,\"validation\":\"complete structural traversal\"}\r\n",
+      "files": {},
+      "stdout": "offset=8 tag=50 length=2 value=4142\r\noffset=12 tag=50 length=1 value=FF\r\noffset=19 tag=50 length=1 value=01\r\noffset=22 tag=50 length=1 value=02\r\noffset=31 tag=50 length=1 value=09\r\n"
+    },
+    "query-document": {
+      "exit": 0,
+      "stderr": "",
+      "files": {},
+      "stdout": "{\"matches\":[{\"length\":1,\"offset\":12,\"path\":\"//50/following::50\",\"tag\":\"50\",\"value\":\"FF\"},{\"length\":1,\"offset\":19,\"path\":\"//50/following::50\",\"tag\":\"50\",\"value\":\"01\"},{\"length\":1,\"offset\":22,\"path\":\"//50/following::50\",\"tag\":\"50\",\"value\":\"02\"},{\"length\":1,\"offset\":31,\"path\":\"//50/following::50\",\"tag\":\"50\",\"value\":\"09\"}]}\r\n"
+    },
+    "query-streaming-rejection": {
+      "exit": 2,
+      "stderr": "otlv: Query requires Document; streaming backend does not materialize input\r\n",
+      "files": {},
+      "stdout": ""
+    },
+    "diff-same": {
+      "exit": 0,
+      "stderr": "",
+      "files": {
+        "left.bin": "0401aa",
+        "right.bin": "0401aa"
+      },
+      "stdout": ""
+    },
+    "diff-changed": {
+      "exit": 0,
+      "stderr": "",
+      "files": {
+        "left.bin": "0401aa",
+        "right.bin": "0401bb"
+      },
+      "stdout": "changed /04[1]\r\n"
+    },
+    "diff-json": {
+      "exit": 0,
+      "stderr": "",
+      "files": {
+        "left.bin": "0401aa",
+        "right.bin": "0401bb"
+      },
+      "stdout": "{\"changes\":[{\"kind\":\"changed\",\"left\":{\"constructed\":false,\"value\":\"AA\"},\"path\":\"/04[1]\",\"right\":{\"constructed\":false,\"value\":\"BB\"}}]}\r\n"
+    },
+    "diff-filtered": {
+      "exit": 0,
+      "stderr": "",
+      "files": {
+        "left.bin": "0401aa",
+        "right.bin": "0401bb"
+      },
+      "stdout": ""
+    },
+    "fixture-nfc-controls": {
+      "exit": 0,
+      "stderr": "",
+      "files": {
+        "input.bin": "0103a010440203b004040300fd0300fefffe"
+      },
+      "stdout": "{\"schema\":\"opentlv.tlv\",\"version\":1,\"format\":\"nfc-type2\",\"elements\":[{\"tag\":\"01\",\"value\":\"A01044\"},{\"tag\":\"02\",\"value\":\"B00404\"},{\"tag\":\"03\",\"value\":\"\"},{\"tag\":\"FD\",\"value\":\"00FEFF\"},{\"tag\":\"FE\",\"value\":\"\"}]}\r\n"
+    },
+    "fixture-nfc-empty-ndef": {
+      "exit": 0,
+      "stderr": "",
+      "files": {
+        "input.bin": "0300fe"
+      },
+      "stdout": "{\"schema\":\"opentlv.tlv\",\"version\":1,\"format\":\"nfc-type2\",\"elements\":[{\"tag\":\"03\",\"value\":\"\"},{\"tag\":\"FE\",\"value\":\"\"}]}\r\n"
+    },
+    "fixture-nfc-extended-255": {
+      "exit": 0,
+      "stderr": "",
+      "files": {
+        "input.bin": "fdff00ff000102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f202122232425262728292a2b2c2d2e2f303132333435363738393a3b3c3d3e3f404142434445464748494a4b4c4d4e4f505152535455565758595a5b5c5d5e5f606162636465666768696a6b6c6d6e6f707172737475767778797a7b7c7d7e7f808182838485868788898a8b8c8d8e8f909192939495969798999a9b9c9d9e9fa0a1a2a3a4a5a6a7a8a9aaabacadaeafb0b1b2b3b4b5b6b7b8b9babbbcbdbebfc0c1c2c3c4c5c6c7c8c9cacbcccdcecfd0d1d2d3d4d5d6d7d8d9dadbdcdddedfe0e1e2e3e4e5e6e7e8e9eaebecedeeeff0f1f2f3f4f5f6f7f8f9fafbfcfdfefe"
+      },
+      "stdout": "{\"schema\":\"opentlv.tlv\",\"version\":1,\"format\":\"nfc-type2\",\"elements\":[{\"tag\":\"FD\",\"value\":\"000102030405060708090A0B0C0D0E0F101112131415161718191A1B1C1D1E1F202122232425262728292A2B2C2D2E2F303132333435363738393A3B3C3D3E3F404142434445464748494A4B4C4D4E4F505152535455565758595A5B5C5D5E5F606162636465666768696A6B6C6D6E6F707172737475767778797A7B7C7D7E7F808182838485868788898A8B8C8D8E8F909192939495969798999A9B9C9D9E9FA0A1A2A3A4A5A6A7A8A9AAABACADAEAFB0B1B2B3B4B5B6B7B8B9BABBBCBDBEBFC0C1C2C3C4C5C6C7C8C9CACBCCCDCECFD0D1D2D3D4D5D6D7D8D9DADBDCDDDEDFE0E1E2E3E4E5E6E7E8E9EAEBECEDEEEFF0F1F2F3F4F5F6F7F8F9FAFBFCFDFE\"},{\"tag\":\"FE\",\"value\":\"\"}]}\r\n"
+    },
+    "fixture-nfc-extended-256": {
+      "exit": 0,
+      "stderr": "",
+      "files": {
+        "input.bin": "fdff0100000102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f202122232425262728292a2b2c2d2e2f303132333435363738393a3b3c3d3e3f404142434445464748494a4b4c4d4e4f505152535455565758595a5b5c5d5e5f606162636465666768696a6b6c6d6e6f707172737475767778797a7b7c7d7e7f808182838485868788898a8b8c8d8e8f909192939495969798999a9b9c9d9e9fa0a1a2a3a4a5a6a7a8a9aaabacadaeafb0b1b2b3b4b5b6b7b8b9babbbcbdbebfc0c1c2c3c4c5c6c7c8c9cacbcccdcecfd0d1d2d3d4d5d6d7d8d9dadbdcdddedfe0e1e2e3e4e5e6e7e8e9eaebecedeeeff0f1f2f3f4f5f6f7f8f9fafbfcfdfefffe"
+      },
+      "stdout": "{\"schema\":\"opentlv.tlv\",\"version\":1,\"format\":\"nfc-type2\",\"elements\":[{\"tag\":\"FD\",\"value\":\"000102030405060708090A0B0C0D0E0F101112131415161718191A1B1C1D1E1F202122232425262728292A2B2C2D2E2F303132333435363738393A3B3C3D3E3F404142434445464748494A4B4C4D4E4F505152535455565758595A5B5C5D5E5F606162636465666768696A6B6C6D6E6F707172737475767778797A7B7C7D7E7F808182838485868788898A8B8C8D8E8F909192939495969798999A9B9C9D9E9FA0A1A2A3A4A5A6A7A8A9AAABACADAEAFB0B1B2B3B4B5B6B7B8B9BABBBCBDBEBFC0C1C2C3C4C5C6C7C8C9CACBCCCDCECFD0D1D2D3D4D5D6D7D8D9DADBDCDDDEDFE0E1E2E3E4E5E6E7E8E9EAEBECEDEEEFF0F1F2F3F4F5F6F7F8F9FAFBFCFDFEFF\"},{\"tag\":\"FE\",\"value\":\"\"}]}\r\n"
+    },
+    "fixture-nfc-framing-policy": {
+      "exit": 0,
+      "stderr": "",
+      "files": {
+        "input.bin": "00fe002a00ff01a5"
+      },
+      "stdout": "{\"schema\":\"opentlv.tlv\",\"version\":1,\"format\":\"nfc-type2\",\"elements\":[{\"tag\":\"00\",\"value\":\"\"},{\"tag\":\"FE\",\"value\":\"\"},{\"tag\":\"00\",\"value\":\"\"},{\"tag\":\"2A\",\"value\":\"\"},{\"tag\":\"FF\",\"value\":\"A5\"}]}\r\n"
+    },
+    "fixture-nfc-missing-length": {
+      "exit": 1,
+      "stderr": "otlv: error: truncated input\r\n\r\ncode: TLV_ERR_TRUNCATED\r\nlocation: input point\r\noffset: 0x1 (1)\r\ntag: 03\r\nwhile reading: length\r\navailable: 0\r\n",
+      "files": {
+        "input.bin": "03"
+      },
+      "stdout": ""
+    },
+    "fixture-nfc-nonminimal-extended": {
+      "exit": 1,
+      "stderr": "otlv: error: invalid length encoding\r\n\r\ncode: TLV_ERR_INVALID_LENGTH\r\nlocation: input point\r\noffset: 0x1 (1)\r\ntag: 03\r\nwhile reading: length\r\nraw length: FF00FE\r\navailable: 3\r\n",
+      "files": {
+        "input.bin": "03ff00fe"
+      },
+      "stdout": ""
+    },
+    "fixture-nfc-reserved-length": {
+      "exit": 1,
+      "stderr": "otlv: error: invalid length encoding\r\n\r\ncode: TLV_ERR_INVALID_LENGTH\r\nlocation: input point\r\noffset: 0x1 (1)\r\ntag: 03\r\nwhile reading: length\r\nraw length: FFFFFF\r\navailable: 3\r\n",
+      "files": {
+        "input.bin": "03ffffff"
+      },
+      "stdout": ""
+    },
+    "fixture-nfc-truncated-extended": {
+      "exit": 1,
+      "stderr": "otlv: error: truncated input\r\n\r\ncode: TLV_ERR_TRUNCATED\r\nlocation: input point\r\noffset: 0x1 (1)\r\ntag: 03\r\nwhile reading: length\r\nraw length: FF01\r\navailable: 2\r\n",
+      "files": {
+        "input.bin": "03ff01"
+      },
+      "stdout": ""
+    },
+    "fixture-nfc-truncated-value": {
+      "exit": 1,
+      "stderr": "otlv: error: truncated input\r\n\r\ncode: TLV_ERR_TRUNCATED\r\nlocation: input point\r\noffset: 0x2 (2)\r\ntag: 03\r\nwhile reading: value\r\nraw length: 03\r\ndeclared length: 3\r\navailable: 2\r\n",
+      "files": {
+        "input.bin": "0303d000"
+      },
+      "stdout": ""
+    },
+    "fixture-nfc-sample": {
+      "exit": 0,
+      "stderr": "",
+      "files": {
+        "input.bin": "000309d101055402656e4869fe"
+      },
+      "stdout": "{\"schema\":\"opentlv.tlv\",\"version\":1,\"format\":\"nfc-type2\",\"elements\":[{\"tag\":\"00\",\"value\":\"\"},{\"tag\":\"03\",\"value\":\"D101055402656E4869\"},{\"tag\":\"FE\",\"value\":\"\"}]}\r\n"
+    },
+    "fixture-nfc-short-254": {
+      "exit": 0,
+      "stderr": "",
+      "files": {
+        "input.bin": "fdfe000102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f202122232425262728292a2b2c2d2e2f303132333435363738393a3b3c3d3e3f404142434445464748494a4b4c4d4e4f505152535455565758595a5b5c5d5e5f606162636465666768696a6b6c6d6e6f707172737475767778797a7b7c7d7e7f808182838485868788898a8b8c8d8e8f909192939495969798999a9b9c9d9e9fa0a1a2a3a4a5a6a7a8a9aaabacadaeafb0b1b2b3b4b5b6b7b8b9babbbcbdbebfc0c1c2c3c4c5c6c7c8c9cacbcccdcecfd0d1d2d3d4d5d6d7d8d9dadbdcdddedfe0e1e2e3e4e5e6e7e8e9eaebecedeeeff0f1f2f3f4f5f6f7f8f9fafbfcfdfe"
+      },
+      "stdout": "{\"schema\":\"opentlv.tlv\",\"version\":1,\"format\":\"nfc-type2\",\"elements\":[{\"tag\":\"FD\",\"value\":\"000102030405060708090A0B0C0D0E0F101112131415161718191A1B1C1D1E1F202122232425262728292A2B2C2D2E2F303132333435363738393A3B3C3D3E3F404142434445464748494A4B4C4D4E4F505152535455565758595A5B5C5D5E5F606162636465666768696A6B6C6D6E6F707172737475767778797A7B7C7D7E7F808182838485868788898A8B8C8D8E8F909192939495969798999A9B9C9D9E9FA0A1A2A3A4A5A6A7A8A9AAABACADAEAFB0B1B2B3B4B5B6B7B8B9BABBBCBDBEBFC0C1C2C3C4C5C6C7C8C9CACBCCCDCECFD0D1D2D3D4D5D6D7D8D9DADBDCDDDEDFE0E1E2E3E4E5E6E7E8E9EAEBECEDEEEFF0F1F2F3F4F5F6F7F8F9FAFBFCFD\"},{\"tag\":\"FE\",\"value\":\"\"}]}\r\n"
+    }
+  }
+}

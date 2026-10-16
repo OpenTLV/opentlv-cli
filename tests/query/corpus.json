@@ -1,0 +1,2120 @@
+{
+  "version": 1,
+  "format": {
+    "tag_bytes": 1,
+    "length_bytes": 1,
+    "constructed_tags": [
+      112
+    ]
+  },
+  "cases": [
+    {
+      "id": "document-following-source-location",
+      "rules": ["Q-NODE-03"],
+      "query": "//50[1]/following::*[@offset > 0 and @hlen = 2]",
+      "wire": "700550005701095000",
+      "matches": [4, 7]
+    },
+    {
+      "id": "document-preceding-source-location",
+      "rules": ["Q-NODE-03"],
+      "query": "//57/preceding::*[@offset = 2 and @hlen = 2]",
+      "wire": "700550005701095000",
+      "matches": [2]
+    },
+    {
+      "id": "set-precedence",
+      "rules": [
+        "Q-GRAMMAR-02",
+        "Q-NODE-03"
+      ],
+      "query": "//5A | //5A except //5A",
+      "wire": "5A00",
+      "matches": [
+        0
+      ]
+    },
+    {
+      "id": "explicit-set-grouping",
+      "rules": [
+        "Q-GRAMMAR-02",
+        "Q-NODE-03"
+      ],
+      "query": "(//5A | //5A) except //5A",
+      "wire": "5A00",
+      "matches": []
+    },
+    {
+      "id": "signed-boundaries",
+      "rules": [
+        "Q-VALUE-01",
+        "Q-FUNCTION-02"
+      ],
+      "query": "//5A[@len > -1 and -9223372036854775808 < 9223372036854775807]",
+      "wire": "5A001201FF5A0112",
+      "matches": [
+        0,
+        5
+      ]
+    },
+    {
+      "id": "identity-intersection",
+      "rules": [
+        "Q-NODE-03",
+        "Q-FUNCTION-02"
+      ],
+      "query": "//5A intersect //70//5A",
+      "wire": "70035A01125A0112",
+      "matches": [
+        2
+      ]
+    },
+    {
+      "id": "identity-difference",
+      "rules": [
+        "Q-NODE-03",
+        "Q-FUNCTION-02"
+      ],
+      "query": "//5A except //70//5A",
+      "wire": "70035A01125A0112",
+      "matches": [
+        5
+      ]
+    },
+    {
+      "id": "v1-root",
+      "rules": [
+        "Q-V1-01"
+      ],
+      "query": "5A",
+      "wire": "70035A01125A0134",
+      "matches": [
+        5
+      ],
+      "v1": true
+    },
+    {
+      "id": "v1-child",
+      "rules": [
+        "Q-V1-01",
+        "Q-NODE-03"
+      ],
+      "query": "70/5A",
+      "wire": "70065A01125A01345A0156",
+      "matches": [
+        2,
+        5
+      ],
+      "v1": true
+    },
+    {
+      "id": "desc-union",
+      "rules": [
+        "Q-NODE-03"
+      ],
+      "query": "//70//5A | //5A",
+      "wire": "70035A01125A0134",
+      "matches": [
+        2,
+        5
+      ]
+    },
+    {
+      "id": "wildcard",
+      "rules": [
+        "Q-NODE-02"
+      ],
+      "query": "//??",
+      "wire": "70035A01125A0134",
+      "matches": [
+        0,
+        2,
+        5
+      ]
+    },
+    {
+      "id": "metadata",
+      "rules": [
+        "Q-VALUE-03"
+      ],
+      "query": "//5A[@depth = 1 and @index = 1]",
+      "wire": "70065A01125A01345A0156",
+      "matches": [
+        5
+      ]
+    },
+    {
+      "id": "source-header",
+      "rules": [
+        "Q-VALUE-03"
+      ],
+      "query": "//5A[@hlen = 2 and @offset = 2]",
+      "wire": "70035A0112",
+      "matches": [
+        2
+      ]
+    },
+    {
+      "id": "ancestor",
+      "rules": [
+        "Q-CONTEXT-02"
+      ],
+      "query": "//5A[ancestor::70]",
+      "wire": "70035A01125A0134",
+      "matches": [
+        2
+      ]
+    },
+    {
+      "id": "prefix",
+      "rules": [
+        "Q-VALUE-02"
+      ],
+      "query": "//5A[starts-with(value(), x'12')]",
+      "wire": "5A0212345A0156",
+      "matches": [
+        0
+      ]
+    },
+    {
+      "id": "suffix",
+      "rules": [
+        "Q-VALUE-02"
+      ],
+      "query": "//5A[ends-with(value(), x'34')]",
+      "wire": "5A0212345A0156",
+      "matches": [
+        0
+      ]
+    },
+    {
+      "id": "contains",
+      "rules": [
+        "Q-VALUE-02",
+        "Q-COST-01"
+      ],
+      "query": "//5A[contains(value(), x'1234')]",
+      "wire": "5A039912345A0112",
+      "matches": [
+        0
+      ]
+    },
+    {
+      "id": "empty-pattern",
+      "rules": [
+        "Q-VALUE-02"
+      ],
+      "query": "//5A[contains(value(), x'')]",
+      "wire": "5A005A0112",
+      "matches": [
+        0,
+        2
+      ]
+    },
+    {
+      "id": "substring",
+      "rules": [
+        "Q-VALUE-02"
+      ],
+      "query": "//5A[substr(value(), 1, 1) = x'34']",
+      "wire": "5A0212345A0112",
+      "matches": [
+        0
+      ]
+    },
+    {
+      "id": "mask",
+      "rules": [
+        "Q-NODE-02"
+      ],
+      "query": "//tag-mask(x'50', x'F0')",
+      "wire": "5A01127000",
+      "matches": [
+        0
+      ]
+    },
+    {
+      "id": "range",
+      "rules": [
+        "Q-NODE-02"
+      ],
+      "query": "//tag-range(x'50', x'60')",
+      "wire": "5A01127000",
+      "matches": [
+        0
+      ]
+    },
+    {
+      "id": "empty-container",
+      "rules": [
+        "Q-EVENT-01"
+      ],
+      "query": "//70[@len = 0]",
+      "wire": "7000",
+      "matches": [
+        0
+      ]
+    },
+    {
+      "id": "missing-bracket",
+      "rules": [
+        "Q-GRAMMAR-01"
+      ],
+      "query": "//5A[@len=1",
+      "wire": "",
+      "diagnostic": {
+        "code": 8,
+        "kind": 1,
+        "begin": 11,
+        "end": 11
+      }
+    },
+    {
+      "id": "deferred-union",
+      "rules": [
+        "Q-PLAN-01"
+      ],
+      "query": "//70[not(5A)] | //5A",
+      "wire": "70035A011270005A0113",
+      "matches": [
+        2,
+        5,
+        7
+      ]
+    },
+    {
+      "id": "typed-function",
+      "rules": [
+        "Q-FUNCTION-02"
+      ],
+      "query": "//5A[num(.) > 10]",
+      "wire": "5A010B5A0109",
+      "matches": [
+        0
+      ]
+    },
+    {
+      "id": "variable",
+      "rules": [
+        "Q-FUNCTION-02"
+      ],
+      "query": "//5A[@len > $min]",
+      "wire": "",
+      "diagnostic": {
+        "code": 7,
+        "kind": 8
+      }
+    },
+    {
+      "id": "grouped-child-chain",
+      "rules": [
+        "Q-GRAMMAR-02"
+      ],
+      "query": "70/(70/5A)",
+      "wire": "700870035A01125A0134",
+      "matches": [
+        4
+      ]
+    },
+    {
+      "id": "grouped-union-chain",
+      "rules": [
+        "Q-GRAMMAR-02",
+        "Q-NODE-03"
+      ],
+      "query": "70/(70/5A | 5A)",
+      "wire": "700870035A01125A0134",
+      "matches": [
+        4,
+        7
+      ]
+    },
+    {
+      "id": "rejected-root-prefix",
+      "rules": [
+        "Q-NODE-01"
+      ],
+      "query": "5A//5A",
+      "wire": "700570035A0112",
+      "matches": []
+    },
+    {
+      "id": "ancestor-only",
+      "rules": [
+        "Q-CONTEXT-02"
+      ],
+      "query": "//5A[ancestor::70]",
+      "wire": "70035A01125A0112",
+      "matches": [
+        2
+      ]
+    },
+    {
+      "id": "byte-order-length-and-not",
+      "rules": [
+        "Q-VALUE-02",
+        "Q-FUNCTION-02"
+      ],
+      "query": "//5A[not(@len=0) and len(value())=2 and value()>=x'10']",
+      "wire": "5A0212345A00",
+      "matches": [
+        0
+      ]
+    },
+    {
+      "id": "f2-count",
+      "rules": [
+        "Q-FUNCTION-02"
+      ],
+      "query": "count(//5A)",
+      "wire": "5A01125A0134",
+      "matches": "int:2"
+    },
+    {
+      "id": "f2-empty",
+      "rules": [
+        "Q-FUNCTION-02"
+      ],
+      "query": "empty(//84)",
+      "wire": "5A0112",
+      "matches": "bool:1"
+    },
+    {
+      "id": "f2-exists",
+      "rules": [
+        "Q-FUNCTION-02"
+      ],
+      "query": "exists(//5A)",
+      "wire": "5A0112",
+      "matches": "bool:1"
+    },
+    {
+      "id": "f2-bcd",
+      "rules": [
+        "Q-FUNCTION-02"
+      ],
+      "query": "bcd(x'1234')",
+      "wire": "",
+      "matches": "int:1234"
+    },
+    {
+      "id": "f2-num",
+      "rules": [
+        "Q-FUNCTION-02"
+      ],
+      "query": "num(x'FF')",
+      "wire": "",
+      "matches": "int:-1"
+    },
+    {
+      "id": "f2-text",
+      "rules": [
+        "Q-FUNCTION-02"
+      ],
+      "query": "text(x'610062')",
+      "wire": "",
+      "matches": "string:610062"
+    },
+    {
+      "id": "f2-value",
+      "rules": [
+        "Q-FUNCTION-02"
+      ],
+      "query": "value(//5A)",
+      "wire": "5A021234",
+      "matches": "bytes:1234"
+    },
+    {
+      "id": "f2-tag",
+      "rules": [
+        "Q-FUNCTION-02"
+      ],
+      "query": "tag(//5A)",
+      "wire": "5A0112",
+      "matches": "bytes:5a"
+    },
+    {
+      "id": "f2-boolean",
+      "rules": [
+        "Q-FUNCTION-02"
+      ],
+      "query": "true and not(false)",
+      "wire": "",
+      "matches": "bool:1"
+    },
+    {
+      "id": "f2-last",
+      "rules": [
+        "Q-FUNCTION-02"
+      ],
+      "query": "(//5A)[position()=last()]",
+      "wire": "5A01125A0134",
+      "matches": [
+        3
+      ]
+    },
+    {
+      "id": "f2-step-position",
+      "rules": [
+        "Q-FUNCTION-02"
+      ],
+      "query": "//5A[2]",
+      "wire": "70065A01125A01345A0156",
+      "matches": [
+        5
+      ]
+    },
+    {
+      "id": "f2-global-position",
+      "rules": [
+        "Q-FUNCTION-02"
+      ],
+      "query": "(//5A)[2]",
+      "wire": "70035A01125A0134",
+      "matches": [
+        5
+      ]
+    },
+    {
+      "id": "f2-deferred-except",
+      "rules": [
+        "Q-FUNCTION-02"
+      ],
+      "query": "//70[empty(5A)] except //70[@len>0]",
+      "wire": "70005A0112",
+      "matches": [
+        0
+      ]
+    },
+    {
+      "id": "f2-deferred-intersect",
+      "rules": [
+        "Q-FUNCTION-02"
+      ],
+      "query": "//70[exists(5A)] intersect //70[@len>0]",
+      "wire": "70035A01127000",
+      "matches": [
+        0
+      ]
+    },
+    {
+      "id": "f2-string",
+      "rules": [
+        "Q-FUNCTION-02"
+      ],
+      "query": "'a\\'b' = \"a'b\"",
+      "wire": "",
+      "matches": "bool:1"
+    },
+    {
+      "id": "f2-dynamic-pattern",
+      "rules": [
+        "Q-FUNCTION-02"
+      ],
+      "query": "contains(x'12341234', substr(x'003412', 1))",
+      "wire": "",
+      "matches": "bool:1"
+    },
+    {
+      "id": "f2-candidate-bool",
+      "rules": [
+        "Q-FUNCTION-02"
+      ],
+      "query": "//5A[true != false]",
+      "wire": "5A0112",
+      "matches": [
+        0
+      ]
+    },
+    {
+      "id": "f2-candidate-string",
+      "rules": [
+        "Q-FUNCTION-02"
+      ],
+      "query": "//5A['a' < 'b']",
+      "wire": "5A0112",
+      "matches": [
+        0
+      ]
+    },
+    {
+      "id": "f2-candidate-tag",
+      "rules": [
+        "Q-FUNCTION-02"
+      ],
+      "query": "//5A[tag() = x'5A']",
+      "wire": "5A0112",
+      "matches": [
+        0
+      ]
+    },
+    {
+      "id": "f3-parent-positive",
+      "rules": [
+        "Q-F3-parent"
+      ],
+      "phase_rule": "parent",
+      "coverage": "positive",
+      "query": "//5A/..",
+      "wire": "700C70045A0050005A0050005A005000",
+      "matches": [
+        0,
+        2
+      ]
+    },
+    {
+      "id": "f3-parent-negative",
+      "rules": [
+        "Q-F3-parent"
+      ],
+      "phase_rule": "parent",
+      "coverage": "negative",
+      "query": "//5A/..",
+      "wire": "5100",
+      "matches": []
+    },
+    {
+      "id": "f3-ancestor-positive",
+      "rules": [
+        "Q-F3-ancestor"
+      ],
+      "phase_rule": "ancestor",
+      "coverage": "positive",
+      "query": "//5A/ancestor::70",
+      "wire": "700C70045A0050005A0050005A005000",
+      "matches": [
+        0,
+        2
+      ]
+    },
+    {
+      "id": "f3-ancestor-negative",
+      "rules": [
+        "Q-F3-ancestor"
+      ],
+      "phase_rule": "ancestor",
+      "coverage": "negative",
+      "query": "//5A/ancestor::70",
+      "wire": "5100",
+      "matches": []
+    },
+    {
+      "id": "f3-ancestor-or-self-positive",
+      "rules": [
+        "Q-F3-ancestor-or-self"
+      ],
+      "phase_rule": "ancestor-or-self",
+      "coverage": "positive",
+      "query": "//70/ancestor-or-self::70",
+      "wire": "700C70045A0050005A0050005A005000",
+      "matches": [
+        0,
+        2
+      ]
+    },
+    {
+      "id": "f3-ancestor-or-self-negative",
+      "rules": [
+        "Q-F3-ancestor-or-self"
+      ],
+      "phase_rule": "ancestor-or-self",
+      "coverage": "negative",
+      "query": "//70/ancestor-or-self::70",
+      "wire": "5100",
+      "matches": []
+    },
+    {
+      "id": "f3-descendant-positive",
+      "rules": [
+        "Q-F3-descendant"
+      ],
+      "phase_rule": "descendant",
+      "coverage": "positive",
+      "query": "/70/descendant::5A",
+      "wire": "700C70045A0050005A0050005A005000",
+      "matches": [
+        4,
+        8,
+        12
+      ]
+    },
+    {
+      "id": "f3-descendant-negative",
+      "rules": [
+        "Q-F3-descendant"
+      ],
+      "phase_rule": "descendant",
+      "coverage": "negative",
+      "query": "/70/descendant::5A",
+      "wire": "5100",
+      "matches": []
+    },
+    {
+      "id": "f3-descendant-or-self-positive",
+      "rules": [
+        "Q-F3-descendant-or-self"
+      ],
+      "phase_rule": "descendant-or-self",
+      "coverage": "positive",
+      "query": "/70/descendant-or-self::70",
+      "wire": "700C70045A0050005A0050005A005000",
+      "matches": [
+        0,
+        2
+      ]
+    },
+    {
+      "id": "f3-descendant-or-self-negative",
+      "rules": [
+        "Q-F3-descendant-or-self"
+      ],
+      "phase_rule": "descendant-or-self",
+      "coverage": "negative",
+      "query": "/70/descendant-or-self::70",
+      "wire": "5100",
+      "matches": []
+    },
+    {
+      "id": "f3-self-positive",
+      "rules": [
+        "Q-F3-self"
+      ],
+      "phase_rule": "self",
+      "coverage": "positive",
+      "query": "//5A/self::5A",
+      "wire": "700C70045A0050005A0050005A005000",
+      "matches": [
+        4,
+        8,
+        12
+      ]
+    },
+    {
+      "id": "f3-self-negative",
+      "rules": [
+        "Q-F3-self"
+      ],
+      "phase_rule": "self",
+      "coverage": "negative",
+      "query": "//5A/self::5A",
+      "wire": "5100",
+      "matches": []
+    },
+    {
+      "id": "f3-child-positive",
+      "rules": [
+        "Q-F3-child"
+      ],
+      "phase_rule": "child",
+      "coverage": "positive",
+      "query": "/70/child::50",
+      "wire": "700C70045A0050005A0050005A005000",
+      "matches": [
+        10
+      ]
+    },
+    {
+      "id": "f3-child-negative",
+      "rules": [
+        "Q-F3-child"
+      ],
+      "phase_rule": "child",
+      "coverage": "negative",
+      "query": "/70/child::50",
+      "wire": "5100",
+      "matches": []
+    },
+    {
+      "id": "f3-preceding-sibling-positive",
+      "rules": [
+        "Q-F3-preceding-sibling"
+      ],
+      "phase_rule": "preceding-sibling",
+      "coverage": "positive",
+      "query": "//5A/preceding-sibling::*[1]",
+      "wire": "700C70045A0050005A0050005A005000",
+      "matches": [
+        2,
+        10
+      ]
+    },
+    {
+      "id": "f3-preceding-sibling-negative",
+      "rules": [
+        "Q-F3-preceding-sibling"
+      ],
+      "phase_rule": "preceding-sibling",
+      "coverage": "negative",
+      "query": "//5A/preceding-sibling::*[1]",
+      "wire": "5100",
+      "matches": []
+    },
+    {
+      "id": "f3-following-sibling-positive",
+      "rules": [
+        "Q-F3-following-sibling"
+      ],
+      "phase_rule": "following-sibling",
+      "coverage": "positive",
+      "query": "//5A/following-sibling::*[1]",
+      "wire": "700C70045A0050005A0050005A005000",
+      "matches": [
+        6,
+        10
+      ]
+    },
+    {
+      "id": "f3-following-sibling-negative",
+      "rules": [
+        "Q-F3-following-sibling"
+      ],
+      "phase_rule": "following-sibling",
+      "coverage": "negative",
+      "query": "//5A/following-sibling::*[1]",
+      "wire": "5100",
+      "matches": []
+    },
+    {
+      "id": "f3-following-positive",
+      "rules": [
+        "Q-F3-following"
+      ],
+      "phase_rule": "following",
+      "coverage": "positive",
+      "query": "/70/70/following::*",
+      "wire": "700C70045A0050005A0050005A005000",
+      "matches": [
+        8,
+        10,
+        12,
+        14
+      ]
+    },
+    {
+      "id": "f3-following-negative",
+      "rules": [
+        "Q-F3-following"
+      ],
+      "phase_rule": "following",
+      "coverage": "negative",
+      "query": "/70/70/following::*",
+      "wire": "5100",
+      "matches": []
+    },
+    {
+      "id": "f3-preceding-positive",
+      "rules": [
+        "Q-F3-preceding"
+      ],
+      "phase_rule": "preceding",
+      "coverage": "positive",
+      "query": "/70/5A[1]/preceding::*",
+      "wire": "700C70045A0050005A0050005A005000",
+      "matches": [
+        2,
+        4,
+        6
+      ]
+    },
+    {
+      "id": "f3-preceding-negative",
+      "rules": [
+        "Q-F3-preceding"
+      ],
+      "phase_rule": "preceding",
+      "coverage": "negative",
+      "query": "/70/5A[1]/preceding::*",
+      "wire": "5100",
+      "matches": []
+    },
+    {
+      "id": "f3-reverse-position-positive",
+      "rules": [
+        "Q-F3-reverse-position"
+      ],
+      "phase_rule": "reverse-position",
+      "coverage": "positive",
+      "query": "/70/5A[last()]/preceding-sibling::*[1]",
+      "wire": "700C70045A0050005A0050005A005000",
+      "matches": [
+        10
+      ]
+    },
+    {
+      "id": "f3-reverse-position-negative",
+      "rules": [
+        "Q-F3-reverse-position"
+      ],
+      "phase_rule": "reverse-position",
+      "coverage": "negative",
+      "query": "/70/5A[last()]/preceding-sibling::*[1]",
+      "wire": "5100",
+      "matches": []
+    },
+    {
+      "id": "f3-global-position-positive",
+      "rules": [
+        "Q-F3-global-position"
+      ],
+      "phase_rule": "global-position",
+      "coverage": "positive",
+      "query": "(//5A)[1]",
+      "wire": "700C70045A0050005A0050005A005000",
+      "matches": [
+        4
+      ]
+    },
+    {
+      "id": "f3-global-position-negative",
+      "rules": [
+        "Q-F3-global-position"
+      ],
+      "phase_rule": "global-position",
+      "coverage": "negative",
+      "query": "(//5A)[1]",
+      "wire": "5100",
+      "matches": []
+    },
+    {
+      "id": "f3-last-positive",
+      "rules": [
+        "Q-F3-last"
+      ],
+      "phase_rule": "last",
+      "coverage": "positive",
+      "query": "//70/5A[last()]",
+      "wire": "700C70045A0050005A0050005A005000",
+      "matches": [
+        4,
+        12
+      ]
+    },
+    {
+      "id": "f3-last-negative",
+      "rules": [
+        "Q-F3-last"
+      ],
+      "phase_rule": "last",
+      "coverage": "negative",
+      "query": "//70/5A[last()]",
+      "wire": "5100",
+      "matches": []
+    },
+    {
+      "id": "f3-ordered-frontier-positive",
+      "rules": [
+        "Q-F3-ordered-frontier"
+      ],
+      "phase_rule": "ordered-frontier",
+      "coverage": "positive",
+      "query": "//70[not(5A)] | //50",
+      "wire": "700C70045A0050005A0050005A005000",
+      "matches": [
+        6,
+        10,
+        14
+      ]
+    },
+    {
+      "id": "f3-ordered-frontier-negative",
+      "rules": [
+        "Q-F3-ordered-frontier"
+      ],
+      "phase_rule": "ordered-frontier",
+      "coverage": "negative",
+      "query": "//70[not(5A)] | //50",
+      "wire": "5100",
+      "matches": []
+    },
+    {
+      "id": "f3-deduplication-positive",
+      "rules": [
+        "Q-F3-deduplication"
+      ],
+      "phase_rule": "deduplication",
+      "coverage": "positive",
+      "query": "//5A/.. | //70",
+      "wire": "700C70045A0050005A0050005A005000",
+      "matches": [
+        0,
+        2
+      ]
+    },
+    {
+      "id": "f3-deduplication-negative",
+      "rules": [
+        "Q-F3-deduplication"
+      ],
+      "phase_rule": "deduplication",
+      "coverage": "negative",
+      "query": "//5A/.. | //70",
+      "wire": "5100",
+      "matches": []
+    },
+    {
+      "id": "f3-root-parent-positive",
+      "rules": [
+        "Q-F3-root-parent"
+      ],
+      "phase_rule": "root-parent",
+      "coverage": "positive",
+      "query": "/50/../70",
+      "wire": "700C70045A0050005A0050005A005000",
+      "matches": [
+        0
+      ]
+    },
+    {
+      "id": "f3-root-parent-negative",
+      "rules": [
+        "Q-F3-root-parent"
+      ],
+      "phase_rule": "root-parent",
+      "coverage": "negative",
+      "query": "/50/../70",
+      "wire": "5100",
+      "matches": []
+    },
+    {
+      "id": "f3-nested-absolute-positive",
+      "rules": [
+        "Q-F3-nested-absolute"
+      ],
+      "phase_rule": "nested-absolute",
+      "coverage": "positive",
+      "query": "70/(//5A)",
+      "wire": "700C70045A0050005A0050005A005000",
+      "matches": [
+        4,
+        8,
+        12
+      ]
+    },
+    {
+      "id": "f3-nested-absolute-negative",
+      "rules": [
+        "Q-F3-nested-absolute"
+      ],
+      "phase_rule": "nested-absolute",
+      "coverage": "negative",
+      "query": "70/(//5A)",
+      "wire": "5100",
+      "matches": []
+    },
+    {
+      "id": "f3-s1-child-count-positive",
+      "rules": [
+        "Q-F3-s1-child-count"
+      ],
+      "phase_rule": "s1-child-count",
+      "coverage": "positive",
+      "query": "70[count(5A)=2]",
+      "wire": "700C70045A0050005A0050005A005000",
+      "matches": [
+        0
+      ]
+    },
+    {
+      "id": "f3-s1-child-count-negative",
+      "rules": [
+        "Q-F3-s1-child-count"
+      ],
+      "phase_rule": "s1-child-count",
+      "coverage": "negative",
+      "query": "70[count(5A)=2]",
+      "wire": "5100",
+      "matches": []
+    },
+    {
+      "id": "f3-s1-descendant-count-positive",
+      "rules": [
+        "Q-F3-s1-descendant-count"
+      ],
+      "phase_rule": "s1-descendant-count",
+      "coverage": "positive",
+      "query": "70[count(descendant::5A)=3]",
+      "wire": "700C70045A0050005A0050005A005000",
+      "matches": [
+        0
+      ]
+    },
+    {
+      "id": "f3-s1-descendant-count-negative",
+      "rules": [
+        "Q-F3-s1-descendant-count"
+      ],
+      "phase_rule": "s1-descendant-count",
+      "coverage": "negative",
+      "query": "70[count(descendant::5A)=3]",
+      "wire": "5100",
+      "matches": []
+    },
+    {
+      "id": "f3-s0-predecessor-positive",
+      "rules": [
+        "Q-F3-s0-predecessor"
+      ],
+      "phase_rule": "s0-predecessor",
+      "coverage": "positive",
+      "query": "//50[preceding-sibling::5A]",
+      "wire": "700C70045A0050005A0050005A005000",
+      "matches": [
+        6,
+        10
+      ]
+    },
+    {
+      "id": "f3-s0-predecessor-negative",
+      "rules": [
+        "Q-F3-s0-predecessor"
+      ],
+      "phase_rule": "s0-predecessor",
+      "coverage": "negative",
+      "query": "//50[preceding-sibling::5A]",
+      "wire": "5100",
+      "matches": []
+    },
+    {
+      "id": "f3-reverse-group-positive",
+      "rules": [
+        "Q-F3-reverse-group"
+      ],
+      "phase_rule": "reverse-group",
+      "coverage": "positive",
+      "query": "//5A[(preceding-sibling::*)[1][self::70]]",
+      "wire": "700C70045A0050005A0050005A005000",
+      "matches": [
+        8,
+        12
+      ]
+    },
+    {
+      "id": "f3-reverse-group-negative",
+      "rules": [
+        "Q-F3-reverse-group"
+      ],
+      "phase_rule": "reverse-group",
+      "coverage": "negative",
+      "query": "//5A[(preceding-sibling::*)[1][self::70]]",
+      "wire": "5100",
+      "matches": []
+    },
+    {
+      "id": "f3-nested-absence",
+      "rules": [
+        "Q-F3-semantics"
+      ],
+      "query": "//70[not(5A)] | //50",
+      "wire": "700470025000",
+      "matches": [
+        0,
+        2,
+        4
+      ]
+    },
+    {
+      "id": "f3-empty-root-s1",
+      "rules": [
+        "Q-F3-semantics"
+      ],
+      "query": "70[not(5A)]",
+      "wire": "7000",
+      "matches": [
+        0
+      ]
+    },
+    {
+      "id": "f3-primitive-root-s1",
+      "rules": [
+        "Q-F3-semantics"
+      ],
+      "query": "50[not(5A)]",
+      "wire": "5000",
+      "matches": [
+        0
+      ]
+    },
+    {
+      "id": "f3-empty-count",
+      "rules": [
+        "Q-F3-semantics"
+      ],
+      "query": "70[count(5A)=0]",
+      "wire": "7000",
+      "matches": [
+        0
+      ]
+    },
+    {
+      "id": "f3-eager-s1-booleans",
+      "rules": [
+        "Q-F3-semantics"
+      ],
+      "query": "70[not(5A) or count(descendant::50)>0]",
+      "wire": "700470025000",
+      "matches": [
+        0
+      ]
+    },
+    {
+      "id": "f3-reverse-nearest-ancestor",
+      "rules": [
+        "Q-F3-semantics"
+      ],
+      "query": "//5A/ancestor::70[1]",
+      "wire": "700C70045A0050005A0050005A005000",
+      "matches": [
+        0,
+        2
+      ]
+    },
+    {
+      "id": "f3-preceding-excludes-ancestor",
+      "rules": [
+        "Q-F3-semantics"
+      ],
+      "query": "//70/preceding::70",
+      "wire": "70027000",
+      "matches": []
+    },
+    {
+      "id": "f3-following-excludes-descendant",
+      "rules": [
+        "Q-F3-semantics"
+      ],
+      "query": "/70/following::5A",
+      "wire": "70025A00",
+      "matches": []
+    },
+    {
+      "id": "f3-sibling-excludes-descendant",
+      "rules": [
+        "Q-F3-semantics"
+      ],
+      "query": "/70/5A[preceding-sibling::5A]",
+      "wire": "700470025A00",
+      "matches": []
+    },
+    {
+      "id": "f3-absence-false",
+      "rules": [
+        "Q-F3-semantics"
+      ],
+      "query": "70[not(5A)]",
+      "wire": "70025A00",
+      "matches": []
+    },
+    {
+      "id": "f3-sequential-reverse",
+      "rules": [
+        "Q-F3-semantics"
+      ],
+      "query": "/70/5A[last()]/preceding-sibling::*[position()>1][1]",
+      "wire": "700C70045A0050005A0050005A005000",
+      "matches": [
+        8
+      ]
+    },
+    {
+      "id": "f3-numeric-is-positional",
+      "rules": [
+        "Q-F3-semantics"
+      ],
+      "query": "70[88]",
+      "wire": "70028800",
+      "matches": []
+    },
+    {
+      "id": "f3-explicit-numeric-child",
+      "rules": [
+        "Q-F3-semantics"
+      ],
+      "query": "70[child::88]",
+      "wire": "70028800",
+      "matches": [
+        0
+      ]
+    },
+    {
+      "id": "f3-function-count-positive",
+      "rules": [
+        "Q-FUNCTION-01",
+        "Q-FUNCTION-02"
+      ],
+      "phase_rule": "function-count",
+      "coverage": "positive",
+      "query": "70[count(5A)=1]",
+      "wire": "70025A00",
+      "matches": [
+        0
+      ]
+    },
+    {
+      "id": "f3-function-count-negative",
+      "rules": [
+        "Q-FUNCTION-01",
+        "Q-FUNCTION-02"
+      ],
+      "phase_rule": "function-count",
+      "coverage": "negative",
+      "query": "70[count(5A)=1]",
+      "wire": "7000",
+      "matches": []
+    },
+    {
+      "id": "f3-function-exists-positive",
+      "rules": [
+        "Q-FUNCTION-01",
+        "Q-FUNCTION-02"
+      ],
+      "phase_rule": "function-exists",
+      "coverage": "positive",
+      "query": "70[exists(5A)]",
+      "wire": "70025A00",
+      "matches": [
+        0
+      ]
+    },
+    {
+      "id": "f3-function-exists-negative",
+      "rules": [
+        "Q-FUNCTION-01",
+        "Q-FUNCTION-02"
+      ],
+      "phase_rule": "function-exists",
+      "coverage": "negative",
+      "query": "70[exists(5A)]",
+      "wire": "7000",
+      "matches": []
+    },
+    {
+      "id": "f3-function-empty-positive",
+      "rules": [
+        "Q-FUNCTION-01",
+        "Q-FUNCTION-02"
+      ],
+      "phase_rule": "function-empty",
+      "coverage": "positive",
+      "query": "70[empty(5A)]",
+      "wire": "7000",
+      "matches": [
+        0
+      ]
+    },
+    {
+      "id": "f3-function-empty-negative",
+      "rules": [
+        "Q-FUNCTION-01",
+        "Q-FUNCTION-02"
+      ],
+      "phase_rule": "function-empty",
+      "coverage": "negative",
+      "query": "70[empty(5A)]",
+      "wire": "70025A00",
+      "matches": []
+    },
+    {
+      "id": "f3-function-not-positive",
+      "rules": [
+        "Q-FUNCTION-01",
+        "Q-FUNCTION-02"
+      ],
+      "phase_rule": "function-not",
+      "coverage": "positive",
+      "query": "70[not(5A)]",
+      "wire": "7000",
+      "matches": [
+        0
+      ]
+    },
+    {
+      "id": "f3-function-not-negative",
+      "rules": [
+        "Q-FUNCTION-01",
+        "Q-FUNCTION-02"
+      ],
+      "phase_rule": "function-not",
+      "coverage": "negative",
+      "query": "70[not(5A)]",
+      "wire": "70025A00",
+      "matches": []
+    },
+    {
+      "id": "f3-function-position-positive",
+      "rules": [
+        "Q-FUNCTION-01",
+        "Q-FUNCTION-02"
+      ],
+      "phase_rule": "function-position",
+      "coverage": "positive",
+      "query": "//5A[position()=1]",
+      "wire": "5A00",
+      "matches": [
+        0
+      ]
+    },
+    {
+      "id": "f3-function-position-negative",
+      "rules": [
+        "Q-FUNCTION-01",
+        "Q-FUNCTION-02"
+      ],
+      "phase_rule": "function-position",
+      "coverage": "negative",
+      "query": "//5A[position()=1]",
+      "wire": "5100",
+      "matches": []
+    },
+    {
+      "id": "f3-function-last-positive",
+      "rules": [
+        "Q-FUNCTION-01",
+        "Q-FUNCTION-02"
+      ],
+      "phase_rule": "function-last",
+      "coverage": "positive",
+      "query": "//5A[last()]",
+      "wire": "5A00",
+      "matches": [
+        0
+      ]
+    },
+    {
+      "id": "f3-function-last-negative",
+      "rules": [
+        "Q-FUNCTION-01",
+        "Q-FUNCTION-02"
+      ],
+      "phase_rule": "function-last",
+      "coverage": "negative",
+      "query": "//5A[last()]",
+      "wire": "5100",
+      "matches": []
+    },
+    {
+      "id": "f3-function-value-positive",
+      "rules": [
+        "Q-FUNCTION-01",
+        "Q-FUNCTION-02"
+      ],
+      "phase_rule": "function-value",
+      "coverage": "positive",
+      "query": "//5A[value()=x'12']",
+      "wire": "5A0112",
+      "matches": [
+        0
+      ]
+    },
+    {
+      "id": "f3-function-value-negative",
+      "rules": [
+        "Q-FUNCTION-01",
+        "Q-FUNCTION-02"
+      ],
+      "phase_rule": "function-value",
+      "coverage": "negative",
+      "query": "//5A[value()=x'12']",
+      "wire": "5A0113",
+      "matches": []
+    },
+    {
+      "id": "f3-function-len-positive",
+      "rules": [
+        "Q-FUNCTION-01",
+        "Q-FUNCTION-02"
+      ],
+      "phase_rule": "function-len",
+      "coverage": "positive",
+      "query": "//5A[len()=1]",
+      "wire": "5A0112",
+      "matches": [
+        0
+      ]
+    },
+    {
+      "id": "f3-function-len-negative",
+      "rules": [
+        "Q-FUNCTION-01",
+        "Q-FUNCTION-02"
+      ],
+      "phase_rule": "function-len",
+      "coverage": "negative",
+      "query": "//5A[len()=1]",
+      "wire": "5A00",
+      "matches": []
+    },
+    {
+      "id": "f3-function-starts-with-positive",
+      "rules": [
+        "Q-FUNCTION-01",
+        "Q-FUNCTION-02"
+      ],
+      "phase_rule": "function-starts-with",
+      "coverage": "positive",
+      "query": "//5A[starts-with(value(),x'12')]",
+      "wire": "5A021234",
+      "matches": [
+        0
+      ]
+    },
+    {
+      "id": "f3-function-starts-with-negative",
+      "rules": [
+        "Q-FUNCTION-01",
+        "Q-FUNCTION-02"
+      ],
+      "phase_rule": "function-starts-with",
+      "coverage": "negative",
+      "query": "//5A[starts-with(value(),x'12')]",
+      "wire": "5A021334",
+      "matches": []
+    },
+    {
+      "id": "f3-function-ends-with-positive",
+      "rules": [
+        "Q-FUNCTION-01",
+        "Q-FUNCTION-02"
+      ],
+      "phase_rule": "function-ends-with",
+      "coverage": "positive",
+      "query": "//5A[ends-with(value(),x'34')]",
+      "wire": "5A021234",
+      "matches": [
+        0
+      ]
+    },
+    {
+      "id": "f3-function-ends-with-negative",
+      "rules": [
+        "Q-FUNCTION-01",
+        "Q-FUNCTION-02"
+      ],
+      "phase_rule": "function-ends-with",
+      "coverage": "negative",
+      "query": "//5A[ends-with(value(),x'34')]",
+      "wire": "5A021235",
+      "matches": []
+    },
+    {
+      "id": "f3-function-contains-positive",
+      "rules": [
+        "Q-FUNCTION-01",
+        "Q-FUNCTION-02"
+      ],
+      "phase_rule": "function-contains",
+      "coverage": "positive",
+      "query": "//5A[contains(value(),x'23')]",
+      "wire": "5A03122334",
+      "matches": [
+        0
+      ]
+    },
+    {
+      "id": "f3-function-contains-negative",
+      "rules": [
+        "Q-FUNCTION-01",
+        "Q-FUNCTION-02"
+      ],
+      "phase_rule": "function-contains",
+      "coverage": "negative",
+      "query": "//5A[contains(value(),x'23')]",
+      "wire": "5A03122434",
+      "matches": []
+    },
+    {
+      "id": "f3-function-substr-positive",
+      "rules": [
+        "Q-FUNCTION-01",
+        "Q-FUNCTION-02"
+      ],
+      "phase_rule": "function-substr",
+      "coverage": "positive",
+      "query": "//5A[substr(value(),1,2)=x'0203']",
+      "wire": "5A03010203",
+      "matches": [
+        0
+      ]
+    },
+    {
+      "id": "f3-function-substr-negative",
+      "rules": [
+        "Q-FUNCTION-01",
+        "Q-FUNCTION-02"
+      ],
+      "phase_rule": "function-substr",
+      "coverage": "negative",
+      "query": "//5A[substr(value(),1,2)=x'0203']",
+      "wire": "5A03010204",
+      "matches": []
+    },
+    {
+      "id": "f3-function-num-positive",
+      "rules": [
+        "Q-FUNCTION-01",
+        "Q-FUNCTION-02"
+      ],
+      "phase_rule": "function-num",
+      "coverage": "positive",
+      "query": "//5A[num(.)=18]",
+      "wire": "5A0112",
+      "matches": [
+        0
+      ]
+    },
+    {
+      "id": "f3-function-num-negative",
+      "rules": [
+        "Q-FUNCTION-01",
+        "Q-FUNCTION-02"
+      ],
+      "phase_rule": "function-num",
+      "coverage": "negative",
+      "query": "//5A[num(.)=18]",
+      "wire": "5A0113",
+      "matches": []
+    },
+    {
+      "id": "f3-function-bcd-positive",
+      "rules": [
+        "Q-FUNCTION-01",
+        "Q-FUNCTION-02"
+      ],
+      "phase_rule": "function-bcd",
+      "coverage": "positive",
+      "query": "//5A[bcd(.)=12]",
+      "wire": "5A0112",
+      "matches": [
+        0
+      ]
+    },
+    {
+      "id": "f3-function-bcd-negative",
+      "rules": [
+        "Q-FUNCTION-01",
+        "Q-FUNCTION-02"
+      ],
+      "phase_rule": "function-bcd",
+      "coverage": "negative",
+      "query": "//5A[bcd(.)=12]",
+      "wire": "5A0113",
+      "matches": []
+    },
+    {
+      "id": "f3-function-text-positive",
+      "rules": [
+        "Q-FUNCTION-01",
+        "Q-FUNCTION-02"
+      ],
+      "phase_rule": "function-text",
+      "coverage": "positive",
+      "query": "//5A[text(.)='a']",
+      "wire": "5A0161",
+      "matches": [
+        0
+      ]
+    },
+    {
+      "id": "f3-function-text-negative",
+      "rules": [
+        "Q-FUNCTION-01",
+        "Q-FUNCTION-02"
+      ],
+      "phase_rule": "function-text",
+      "coverage": "negative",
+      "query": "//5A[text(.)='a']",
+      "wire": "5A0162",
+      "matches": []
+    },
+    {
+      "id": "f3-function-date-positive",
+      "rules": [
+        "Q-FUNCTION-01",
+        "Q-FUNCTION-02"
+      ],
+      "phase_rule": "function-date",
+      "coverage": "positive",
+      "query": "//5A[date(.)=1704067200]",
+      "wire": "5a0f32303234303130313030303030305a",
+      "matches": [
+        0
+      ],
+      "requires": [
+        "asn1"
+      ]
+    },
+    {
+      "id": "f3-function-date-negative",
+      "rules": [
+        "Q-FUNCTION-01",
+        "Q-FUNCTION-02"
+      ],
+      "phase_rule": "function-date",
+      "coverage": "negative",
+      "query": "//5A[date(.)=1704067200]",
+      "wire": "5a0f32303235303130313030303030305a",
+      "matches": [],
+      "requires": [
+        "asn1"
+      ]
+    },
+    {
+      "id": "f3-function-tag-positive",
+      "rules": [
+        "Q-FUNCTION-01",
+        "Q-FUNCTION-02"
+      ],
+      "phase_rule": "function-tag",
+      "coverage": "positive",
+      "query": "//*[tag()=x'5A']",
+      "wire": "5A00",
+      "matches": [
+        0
+      ]
+    },
+    {
+      "id": "f3-function-tag-negative",
+      "rules": [
+        "Q-FUNCTION-01",
+        "Q-FUNCTION-02"
+      ],
+      "phase_rule": "function-tag",
+      "coverage": "negative",
+      "query": "//*[tag()=x'5A']",
+      "wire": "5000",
+      "matches": []
+    },
+    {
+      "id": "f3-function-class-positive",
+      "rules": [
+        "Q-FUNCTION-01",
+        "Q-FUNCTION-02"
+      ],
+      "phase_rule": "function-class",
+      "coverage": "positive",
+      "query": "//*[class()=1]",
+      "wire": "5A00",
+      "matches": [
+        0
+      ],
+      "requires": [
+        "asn1"
+      ]
+    },
+    {
+      "id": "f3-function-class-negative",
+      "rules": [
+        "Q-FUNCTION-01",
+        "Q-FUNCTION-02"
+      ],
+      "phase_rule": "function-class",
+      "coverage": "negative",
+      "query": "//*[class()=1]",
+      "wire": "9A00",
+      "matches": [],
+      "requires": [
+        "asn1"
+      ]
+    },
+    {
+      "id": "f3-function-constructed-positive",
+      "rules": [
+        "Q-FUNCTION-01",
+        "Q-FUNCTION-02"
+      ],
+      "phase_rule": "function-constructed",
+      "coverage": "positive",
+      "query": "//*[constructed()]",
+      "wire": "7000",
+      "matches": [
+        0
+      ]
+    },
+    {
+      "id": "f3-function-constructed-negative",
+      "rules": [
+        "Q-FUNCTION-01",
+        "Q-FUNCTION-02"
+      ],
+      "phase_rule": "function-constructed",
+      "coverage": "negative",
+      "query": "//*[constructed()]",
+      "wire": "5000",
+      "matches": []
+    },
+    {
+      "id": "f3-function-number-positive",
+      "rules": [
+        "Q-FUNCTION-01",
+        "Q-FUNCTION-02"
+      ],
+      "phase_rule": "function-number",
+      "coverage": "positive",
+      "query": "//*[number()=26]",
+      "wire": "5A00",
+      "matches": [
+        0
+      ],
+      "requires": [
+        "asn1"
+      ]
+    },
+    {
+      "id": "f3-function-number-negative",
+      "rules": [
+        "Q-FUNCTION-01",
+        "Q-FUNCTION-02"
+      ],
+      "phase_rule": "function-number",
+      "coverage": "negative",
+      "query": "//*[number()=26]",
+      "wire": "5000",
+      "matches": [],
+      "requires": [
+        "asn1"
+      ]
+    },
+    {
+      "id": "f3-function-name-positive",
+      "rules": [
+        "Q-FUNCTION-01",
+        "Q-FUNCTION-02"
+      ],
+      "phase_rule": "function-name",
+      "coverage": "positive",
+      "query": "//name('fixture','leaf')",
+      "wire": "5A00",
+      "matches": [
+        0
+      ]
+    },
+    {
+      "id": "f3-function-name-negative",
+      "rules": [
+        "Q-FUNCTION-01",
+        "Q-FUNCTION-02"
+      ],
+      "phase_rule": "function-name",
+      "coverage": "negative",
+      "query": "//name('fixture','leaf')",
+      "wire": "5000",
+      "matches": []
+    },
+    {
+      "id": "f3-function-tag-mask-positive",
+      "rules": [
+        "Q-FUNCTION-01",
+        "Q-FUNCTION-02"
+      ],
+      "phase_rule": "function-tag-mask",
+      "coverage": "positive",
+      "query": "//tag-mask(x'50',x'F0')",
+      "wire": "5A00",
+      "matches": [
+        0
+      ]
+    },
+    {
+      "id": "f3-function-tag-mask-negative",
+      "rules": [
+        "Q-FUNCTION-01",
+        "Q-FUNCTION-02"
+      ],
+      "phase_rule": "function-tag-mask",
+      "coverage": "negative",
+      "query": "//tag-mask(x'50',x'F0')",
+      "wire": "4A00",
+      "matches": []
+    },
+    {
+      "id": "f3-function-tag-range-positive",
+      "rules": [
+        "Q-FUNCTION-01",
+        "Q-FUNCTION-02"
+      ],
+      "phase_rule": "function-tag-range",
+      "coverage": "positive",
+      "query": "//tag-range(x'50',x'5F')",
+      "wire": "5A00",
+      "matches": [
+        0
+      ]
+    },
+    {
+      "id": "f3-function-tag-range-negative",
+      "rules": [
+        "Q-FUNCTION-01",
+        "Q-FUNCTION-02"
+      ],
+      "phase_rule": "function-tag-range",
+      "coverage": "negative",
+      "query": "//tag-range(x'50',x'5F')",
+      "wire": "4A00",
+      "matches": []
+    },
+    {
+      "id": "f3-explicit-descendant-position-positive",
+      "rules": [
+        "Q-CONTEXT-01"
+      ],
+      "phase_rule": "explicit-descendant-position",
+      "coverage": "positive",
+      "query": "70/descendant::5A[1]",
+      "wire": "700C70045A0050005A0050005A005000",
+      "matches": [
+        4
+      ]
+    },
+    {
+      "id": "f3-explicit-descendant-position-negative",
+      "rules": [
+        "Q-CONTEXT-01"
+      ],
+      "phase_rule": "explicit-descendant-position",
+      "coverage": "negative",
+      "query": "70/descendant::5A[1]",
+      "wire": "5100",
+      "matches": []
+    },
+    {
+      "id": "f3-set-union-positive",
+      "rules": [
+        "Q-FUNCTION-02"
+      ],
+      "phase_rule": "set-union",
+      "coverage": "positive",
+      "query": "//5A | //50",
+      "wire": "5A005000",
+      "matches": [
+        0,
+        2
+      ]
+    },
+    {
+      "id": "f3-set-union-negative",
+      "rules": [
+        "Q-FUNCTION-02"
+      ],
+      "phase_rule": "set-union",
+      "coverage": "negative",
+      "query": "//5A | //50",
+      "wire": "5100",
+      "matches": []
+    },
+    {
+      "id": "f3-set-intersection-positive",
+      "rules": [
+        "Q-FUNCTION-02"
+      ],
+      "phase_rule": "set-intersection",
+      "coverage": "positive",
+      "query": "//5A intersect //*",
+      "wire": "5A005000",
+      "matches": [
+        0
+      ]
+    },
+    {
+      "id": "f3-set-intersection-negative",
+      "rules": [
+        "Q-FUNCTION-02"
+      ],
+      "phase_rule": "set-intersection",
+      "coverage": "negative",
+      "query": "//5A intersect //*",
+      "wire": "5100",
+      "matches": []
+    },
+    {
+      "id": "f3-set-difference-positive",
+      "rules": [
+        "Q-FUNCTION-02"
+      ],
+      "phase_rule": "set-difference",
+      "coverage": "positive",
+      "query": "//* except //50",
+      "wire": "5A005000",
+      "matches": [
+        0
+      ]
+    },
+    {
+      "id": "f3-set-difference-negative",
+      "rules": [
+        "Q-FUNCTION-02"
+      ],
+      "phase_rule": "set-difference",
+      "coverage": "negative",
+      "query": "//* except //50",
+      "wire": "5000",
+      "matches": []
+    },
+    {
+      "id": "f3-numeric-predicate-positive",
+      "rules": [
+        "Q-FUNCTION-02"
+      ],
+      "phase_rule": "numeric-predicate",
+      "coverage": "positive",
+      "query": "//5A[2]",
+      "wire": "5A005A00",
+      "matches": [
+        2
+      ]
+    },
+    {
+      "id": "f3-numeric-predicate-negative",
+      "rules": [
+        "Q-FUNCTION-02"
+      ],
+      "phase_rule": "numeric-predicate",
+      "coverage": "negative",
+      "query": "//5A[2]",
+      "wire": "5100",
+      "matches": []
+    },
+    {
+      "id": "f3-scalar-bool-positive",
+      "rules": [
+        "Q-VALUE-01"
+      ],
+      "phase_rule": "scalar-bool",
+      "coverage": "positive",
+      "query": "true",
+      "wire": "",
+      "matches": "bool:1"
+    },
+    {
+      "id": "f3-scalar-bool-negative",
+      "rules": [
+        "Q-VALUE-01"
+      ],
+      "phase_rule": "scalar-bool",
+      "coverage": "negative",
+      "query": "false",
+      "wire": "",
+      "matches": "bool:0"
+    },
+    {
+      "id": "f3-scalar-integer-positive",
+      "rules": [
+        "Q-VALUE-01"
+      ],
+      "phase_rule": "scalar-integer",
+      "coverage": "positive",
+      "query": "count(//5A)",
+      "wire": "5A00",
+      "matches": "int:1"
+    },
+    {
+      "id": "f3-scalar-integer-negative",
+      "rules": [
+        "Q-VALUE-01"
+      ],
+      "phase_rule": "scalar-integer",
+      "coverage": "negative",
+      "query": "count(//5A)",
+      "wire": "",
+      "matches": "int:0"
+    },
+    {
+      "id": "f3-scalar-bytes-positive",
+      "rules": [
+        "Q-VALUE-01"
+      ],
+      "phase_rule": "scalar-bytes",
+      "coverage": "positive",
+      "query": "x'12'",
+      "wire": "",
+      "matches": "bytes:12"
+    },
+    {
+      "id": "f3-scalar-bytes-negative",
+      "rules": [
+        "Q-VALUE-01"
+      ],
+      "phase_rule": "scalar-bytes",
+      "coverage": "negative",
+      "query": "x''",
+      "wire": "",
+      "matches": "bytes:"
+    },
+    {
+      "id": "f3-scalar-string-positive",
+      "rules": [
+        "Q-VALUE-01"
+      ],
+      "phase_rule": "scalar-string",
+      "coverage": "positive",
+      "query": "'a'",
+      "wire": "",
+      "matches": "string:61"
+    },
+    {
+      "id": "f3-scalar-string-negative",
+      "rules": [
+        "Q-VALUE-01"
+      ],
+      "phase_rule": "scalar-string",
+      "coverage": "negative",
+      "query": "''",
+      "wire": "",
+      "matches": "string:"
+    }
+  ],
+  "f3_rules": [
+    "parent",
+    "ancestor",
+    "ancestor-or-self",
+    "descendant",
+    "descendant-or-self",
+    "self",
+    "child",
+    "preceding-sibling",
+    "following-sibling",
+    "following",
+    "preceding",
+    "reverse-position",
+    "global-position",
+    "last",
+    "ordered-frontier",
+    "deduplication",
+    "root-parent",
+    "nested-absolute",
+    "s1-child-count",
+    "s1-descendant-count",
+    "s0-predecessor",
+    "reverse-group",
+    "function-count",
+    "function-exists",
+    "function-empty",
+    "function-not",
+    "function-position",
+    "function-last",
+    "function-value",
+    "function-len",
+    "function-starts-with",
+    "function-ends-with",
+    "function-contains",
+    "function-substr",
+    "function-num",
+    "function-bcd",
+    "function-text",
+    "function-date",
+    "function-tag",
+    "function-class",
+    "function-constructed",
+    "function-number",
+    "function-name",
+    "function-tag-mask",
+    "function-tag-range",
+    "explicit-descendant-position",
+    "set-union",
+    "set-intersection",
+    "set-difference",
+    "numeric-predicate",
+    "scalar-bool",
+    "scalar-integer",
+    "scalar-bytes",
+    "scalar-string"
+  ]
+}

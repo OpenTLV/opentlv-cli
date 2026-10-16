@@ -8,15 +8,16 @@ diagnostics, and the executable name `otlv`.
 ## Development
 
 Follow the [README](README.md#standalone-build) to configure and build.
-Core dependency smoke tests are available; run the matrix in
-[tests/README.md](tests/README.md). The CLI executable and command regression
-suite are migrated in #3. Dependency checks do not establish command parity.
+Run CTest for the dependency smoke tests, original CLI suites, Query facade,
+and frozen migration comparison. Run the shared/static dependency matrix in
+[tests/README.md](tests/README.md) before changing dependency integration.
+Supply both Core and nlohmann/json sources or packages for offline builds.
 
 Use a local `feature/<issue>_<description>` branch. Include the relevant issue
 in the pull request and complete the [template](.github/PULL_REQUEST_TEMPLATE.md).
 Describe local checks separately from hosted CI and release validation.
 
-Consume Core only through its public CMake targets and APIs. Migration and
+Consume Core only through its public CMake targets and APIs. Independent versioning and
 release automation remain separate issues. Do not add dependency shims,
 package-manager publishing, or placeholder CLI behavior.
 
@@ -64,8 +65,11 @@ comments; preserve third-party attribution. `LICENSES/MIT.txt` supplies the
 license text for REUSE.
 
 The [changelog](CHANGELOG.md) records the baseline Core SHA and preceding tag.
-Migration must preserve original file notices and regression provenance without
-importing Core Git history. Shared Core tests remain in Core.
+The [migration manifest](tests/migration.json) records the imported files and
+fixture revisions. Preserve original notices and regression provenance without
+importing Core Git history. Shared Core tests and canonical fixtures remain in
+Core; CLI tests consume immutable snapshots. The frozen baseline is historical
+evidence: do not regenerate `tests/baseline/expected.json` from a candidate.
 
 ## Changelog
 
@@ -78,6 +82,8 @@ and do not use pull-request numbers. Preserve released history.
 
 For dependency changes, run the shared and static integration matrix,
 pre-commit checks, and `git diff --check`. The Core dependency workflow runs
-on Windows and Linux. After migration, also run the CLI command tests.
+on Windows and Linux and runs the CLI command tests for successful dependency
+selections. Keep the existing command suites alongside the 154-case baseline;
+a build or dependency smoke-test pass alone does not establish command parity.
 State missing coverage explicitly; independent versioning and release gates
 are introduced by issue #4.

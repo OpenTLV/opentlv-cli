@@ -1,0 +1,2139 @@
+{
+  "version": 1,
+  "origin": {
+    "repository": "https://github.com/OpenTLV/opentlv",
+    "commit": "e9cbb29897652fa75753ea89459e3f5e26671d3a",
+    "nearest_tag": "0.7.1",
+    "tag_commit": "e12a52ff69a64468eecab084795a0530c273efea",
+    "commits_since_tag": 11
+  },
+  "source_blob_sha256": {
+    "tools/cli/test.cmake": "7b38f3ad3a2f12d9f4bf11a8fde81a81fbea2f7ea301d6fe18ee21abf43b8b54",
+    "tools/cli/examples.cmake": "0934b851e2ed139d08a4c0aef5b501c00db72a27f9079ba525e27c3498dd190f",
+    "tools/cli/input.bin": "a06c68d40f54e50096f0d7f30112721fd87532472353271be553e3ee8e82a3ac",
+    "tests/query/cli_facade.py": "9f16db88065b8a74b23cf5c27f38a837c0c9f8902df43484bd53bc2b4728675d",
+    "tests/query/corpus.json": "5e9d24f37a31562246959bfaeab23029337d539f5b5e1b6b3ad955040ad23612",
+    "docs/cli/README.md": "f14b3eec6a50ea9bb23edf1c9088ab7b3648f658f84f0f629a998d23cafa711a",
+    "docs/cli/json-schema.md": "490c040a60fe7a097388c79026e8bda8e87a50480d78a9017f45010cd4266110",
+    "examples/nfc/type2/controls.bin": "2be001c48db20a538f56902cdf0f806087414599395d1bf3cbebe25dbdb2e83c",
+    "examples/nfc/type2/empty-ndef.bin": "37fc1b7654165ce37572474d78b0dd5ff5248a66f7bb4fe9d74672f44c2bee3a",
+    "examples/nfc/type2/extended-255.bin": "5b786a25b0218b0ce49c7b0aa8b05e14b43b2d9e8e2ca4c8e880afb10e464915",
+    "examples/nfc/type2/extended-256.bin": "e7cbb7b61e1327c01ee94332546d5dea4db3719637d84b736ddfd4115b64debd",
+    "examples/nfc/type2/framing-policy.bin": "b24f121941a8255bfab0ea5f4abaa924abc7eb6c9d90dc68b6a79a0021edd777",
+    "examples/nfc/type2/invalid/missing-length.bin": "084fed08b978af4d7d196a7446a86b58009e636b611db16211b65a9aadff29c5",
+    "examples/nfc/type2/invalid/nonminimal-extended.bin": "8f4a7081ae6e7e167e1b9e7411c55ff43c6a86167a457e91ab675da036ed8cc8",
+    "examples/nfc/type2/invalid/reserved-length.bin": "4cf9725cdd535cc7761a2231fefd506e46c3939cc9a8019802551c257c896450",
+    "examples/nfc/type2/invalid/truncated-extended.bin": "25b4803d292cc181e4aad1fe01273de60932b8cafe2e5a4c8d000d5367cefe2b",
+    "examples/nfc/type2/invalid/truncated-value.bin": "52027f89a779c7a50c7dcd3976c57d7f28e5e9336050431a509a84931144b51e",
+    "examples/nfc/type2/sample.bin": "659634ac9bcc508f97ba2f8706a19fa989f16733aa504e0d738ec23ecacf081d",
+    "examples/nfc/type2/short-254.bin": "e0529e0c848ae21fc6713e9d68bf45cacdf6408af78289238d73e8fd5949b8c7"
+  },
+  "cases": [
+    {
+      "id": "help",
+      "argv": [
+        "--help"
+      ],
+      "exit": 0
+    },
+    {
+      "id": "version",
+      "argv": [
+        "--version"
+      ],
+      "exit": 0
+    },
+    {
+      "id": "formats",
+      "argv": [
+        "formats"
+      ],
+      "exit": 0
+    },
+    {
+      "id": "completion-bash",
+      "argv": [
+        "completion",
+        "bash"
+      ],
+      "exit": 0
+    },
+    {
+      "id": "completion-zsh",
+      "argv": [
+        "completion",
+        "zsh"
+      ],
+      "exit": 0
+    },
+    {
+      "id": "completion-fish",
+      "argv": [
+        "completion",
+        "fish"
+      ],
+      "exit": 0
+    },
+    {
+      "id": "completion-powershell",
+      "argv": [
+        "completion",
+        "powershell"
+      ],
+      "exit": 0
+    },
+    {
+      "id": "missing-command",
+      "argv": [],
+      "exit": 2
+    },
+    {
+      "id": "unknown-command",
+      "argv": [
+        "unknown"
+      ],
+      "exit": 2
+    },
+    {
+      "id": "missing-shell",
+      "argv": [
+        "completion"
+      ],
+      "exit": 2
+    },
+    {
+      "id": "unknown-shell",
+      "argv": [
+        "completion",
+        "unknown"
+      ],
+      "exit": 2
+    },
+    {
+      "id": "extra-shell",
+      "argv": [
+        "completion",
+        "bash",
+        "extra"
+      ],
+      "exit": 2
+    },
+    {
+      "id": "missing-format",
+      "argv": [
+        "dump",
+        "--hex",
+        "0400"
+      ],
+      "exit": 2
+    },
+    {
+      "id": "unknown-format",
+      "argv": [
+        "validate",
+        "--format",
+        "unknown",
+        "--hex",
+        ""
+      ],
+      "exit": 2
+    },
+    {
+      "id": "missing-value",
+      "argv": [
+        "dump",
+        "--hex"
+      ],
+      "exit": 2
+    },
+    {
+      "id": "duplicate-option",
+      "argv": [
+        "dump",
+        "--format",
+        "fixed",
+        "--format",
+        "fixed"
+      ],
+      "exit": 2
+    },
+    {
+      "id": "conflicting-inputs",
+      "argv": [
+        "dump",
+        "--format",
+        "fixed",
+        "--hex",
+        "0400",
+        "--input",
+        "-"
+      ],
+      "exit": 2
+    },
+    {
+      "id": "invalid-number",
+      "argv": [
+        "dump",
+        "--format",
+        "fixed",
+        "--hex",
+        "0400",
+        "--max-elements",
+        "-1"
+      ],
+      "exit": 2
+    },
+    {
+      "id": "unknown-option",
+      "argv": [
+        "dump",
+        "--format",
+        "fixed",
+        "--profile",
+        "emv"
+      ],
+      "exit": 2
+    },
+    {
+      "id": "conflicting-color",
+      "argv": [
+        "dump",
+        "--format",
+        "fixed",
+        "--hex",
+        "0400",
+        "--force-color",
+        "--no-color"
+      ],
+      "exit": 2
+    },
+    {
+      "id": "fixed-dump",
+      "argv": [
+        "dump",
+        "--format",
+        "fixed",
+        "--hex",
+        "0401AA"
+      ],
+      "exit": 0
+    },
+    {
+      "id": "fixed-decode",
+      "argv": [
+        "decode",
+        "--format",
+        "fixed",
+        "--hex",
+        "0401AA"
+      ],
+      "exit": 0
+    },
+    {
+      "id": "fixed-validate",
+      "argv": [
+        "validate",
+        "--format",
+        "fixed",
+        "--hex",
+        "0401AA"
+      ],
+      "exit": 0
+    },
+    {
+      "id": "fixed-json",
+      "argv": [
+        "dump",
+        "--format",
+        "fixed",
+        "--hex",
+        "0401AA",
+        "--output",
+        "json"
+      ],
+      "exit": 0
+    },
+    {
+      "id": "fixed-invalid-human",
+      "argv": [
+        "validate",
+        "--format",
+        "fixed",
+        "--hex",
+        "0402AA",
+        "--diagnostics",
+        "human"
+      ],
+      "exit": 1
+    },
+    {
+      "id": "fixed-invalid-compact",
+      "argv": [
+        "validate",
+        "--format",
+        "fixed",
+        "--hex",
+        "0402AA",
+        "--diagnostics",
+        "compact"
+      ],
+      "exit": 1
+    },
+    {
+      "id": "fixed-invalid-json",
+      "argv": [
+        "validate",
+        "--format",
+        "fixed",
+        "--hex",
+        "0402AA",
+        "--diagnostics",
+        "json"
+      ],
+      "exit": 1
+    },
+    {
+      "id": "fixed-generate-bin",
+      "argv": [
+        "generate",
+        "--format",
+        "fixed",
+        "--seed",
+        "42",
+        "--count",
+        "2",
+        "--output-dir",
+        "generated",
+        "--output-encoding",
+        "bin",
+        "--max-depth",
+        "3",
+        "--max-elements",
+        "10",
+        "--max-value-size",
+        "8",
+        "--max-case-size",
+        "128"
+      ],
+      "exit": 0
+    },
+    {
+      "id": "fixed-generate-json",
+      "argv": [
+        "generate",
+        "--format",
+        "fixed",
+        "--seed",
+        "42",
+        "--count",
+        "2",
+        "--output-dir",
+        "generated",
+        "--output-encoding",
+        "json",
+        "--max-depth",
+        "3",
+        "--max-elements",
+        "10",
+        "--max-value-size",
+        "8",
+        "--max-case-size",
+        "128"
+      ],
+      "exit": 0
+    },
+    {
+      "id": "ber-dump",
+      "argv": [
+        "dump",
+        "--format",
+        "ber",
+        "--hex",
+        "0401AA"
+      ],
+      "exit": 0
+    },
+    {
+      "id": "ber-decode",
+      "argv": [
+        "decode",
+        "--format",
+        "ber",
+        "--hex",
+        "0401AA"
+      ],
+      "exit": 0
+    },
+    {
+      "id": "ber-validate",
+      "argv": [
+        "validate",
+        "--format",
+        "ber",
+        "--hex",
+        "0401AA"
+      ],
+      "exit": 0
+    },
+    {
+      "id": "ber-json",
+      "argv": [
+        "dump",
+        "--format",
+        "ber",
+        "--hex",
+        "0401AA",
+        "--output",
+        "json"
+      ],
+      "exit": 0
+    },
+    {
+      "id": "ber-invalid-human",
+      "argv": [
+        "validate",
+        "--format",
+        "ber",
+        "--hex",
+        "0402AA",
+        "--diagnostics",
+        "human"
+      ],
+      "exit": 1
+    },
+    {
+      "id": "ber-invalid-compact",
+      "argv": [
+        "validate",
+        "--format",
+        "ber",
+        "--hex",
+        "0402AA",
+        "--diagnostics",
+        "compact"
+      ],
+      "exit": 1
+    },
+    {
+      "id": "ber-invalid-json",
+      "argv": [
+        "validate",
+        "--format",
+        "ber",
+        "--hex",
+        "0402AA",
+        "--diagnostics",
+        "json"
+      ],
+      "exit": 1
+    },
+    {
+      "id": "ber-generate-bin",
+      "argv": [
+        "generate",
+        "--format",
+        "ber",
+        "--seed",
+        "42",
+        "--count",
+        "2",
+        "--output-dir",
+        "generated",
+        "--output-encoding",
+        "bin",
+        "--max-depth",
+        "3",
+        "--max-elements",
+        "10",
+        "--max-value-size",
+        "8",
+        "--max-case-size",
+        "128"
+      ],
+      "exit": 0
+    },
+    {
+      "id": "ber-generate-json",
+      "argv": [
+        "generate",
+        "--format",
+        "ber",
+        "--seed",
+        "42",
+        "--count",
+        "2",
+        "--output-dir",
+        "generated",
+        "--output-encoding",
+        "json",
+        "--max-depth",
+        "3",
+        "--max-elements",
+        "10",
+        "--max-value-size",
+        "8",
+        "--max-case-size",
+        "128"
+      ],
+      "exit": 0
+    },
+    {
+      "id": "der-dump",
+      "argv": [
+        "dump",
+        "--format",
+        "der",
+        "--hex",
+        "0401AA"
+      ],
+      "exit": 0
+    },
+    {
+      "id": "der-decode",
+      "argv": [
+        "decode",
+        "--format",
+        "der",
+        "--hex",
+        "0401AA"
+      ],
+      "exit": 0
+    },
+    {
+      "id": "der-validate",
+      "argv": [
+        "validate",
+        "--format",
+        "der",
+        "--hex",
+        "0401AA"
+      ],
+      "exit": 0
+    },
+    {
+      "id": "der-json",
+      "argv": [
+        "dump",
+        "--format",
+        "der",
+        "--hex",
+        "0401AA",
+        "--output",
+        "json"
+      ],
+      "exit": 0
+    },
+    {
+      "id": "der-invalid-human",
+      "argv": [
+        "validate",
+        "--format",
+        "der",
+        "--hex",
+        "0402AA",
+        "--diagnostics",
+        "human"
+      ],
+      "exit": 1
+    },
+    {
+      "id": "der-invalid-compact",
+      "argv": [
+        "validate",
+        "--format",
+        "der",
+        "--hex",
+        "0402AA",
+        "--diagnostics",
+        "compact"
+      ],
+      "exit": 1
+    },
+    {
+      "id": "der-invalid-json",
+      "argv": [
+        "validate",
+        "--format",
+        "der",
+        "--hex",
+        "0402AA",
+        "--diagnostics",
+        "json"
+      ],
+      "exit": 1
+    },
+    {
+      "id": "der-generate-bin",
+      "argv": [
+        "generate",
+        "--format",
+        "der",
+        "--seed",
+        "42",
+        "--count",
+        "2",
+        "--output-dir",
+        "generated",
+        "--output-encoding",
+        "bin",
+        "--max-depth",
+        "3",
+        "--max-elements",
+        "10",
+        "--max-value-size",
+        "8",
+        "--max-case-size",
+        "128"
+      ],
+      "exit": 0
+    },
+    {
+      "id": "der-generate-json",
+      "argv": [
+        "generate",
+        "--format",
+        "der",
+        "--seed",
+        "42",
+        "--count",
+        "2",
+        "--output-dir",
+        "generated",
+        "--output-encoding",
+        "json",
+        "--max-depth",
+        "3",
+        "--max-elements",
+        "10",
+        "--max-value-size",
+        "8",
+        "--max-case-size",
+        "128"
+      ],
+      "exit": 0
+    },
+    {
+      "id": "emv-dump",
+      "argv": [
+        "dump",
+        "--format",
+        "emv",
+        "--hex",
+        "9F020142"
+      ],
+      "exit": 0
+    },
+    {
+      "id": "emv-decode",
+      "argv": [
+        "decode",
+        "--format",
+        "emv",
+        "--hex",
+        "9F020142"
+      ],
+      "exit": 0
+    },
+    {
+      "id": "emv-validate",
+      "argv": [
+        "validate",
+        "--format",
+        "emv",
+        "--hex",
+        "9F020142"
+      ],
+      "exit": 0
+    },
+    {
+      "id": "emv-json",
+      "argv": [
+        "dump",
+        "--format",
+        "emv",
+        "--hex",
+        "9F020142",
+        "--output",
+        "json"
+      ],
+      "exit": 0
+    },
+    {
+      "id": "emv-invalid-human",
+      "argv": [
+        "validate",
+        "--format",
+        "emv",
+        "--hex",
+        "70800000",
+        "--diagnostics",
+        "human"
+      ],
+      "exit": 1
+    },
+    {
+      "id": "emv-invalid-compact",
+      "argv": [
+        "validate",
+        "--format",
+        "emv",
+        "--hex",
+        "70800000",
+        "--diagnostics",
+        "compact"
+      ],
+      "exit": 1
+    },
+    {
+      "id": "emv-invalid-json",
+      "argv": [
+        "validate",
+        "--format",
+        "emv",
+        "--hex",
+        "70800000",
+        "--diagnostics",
+        "json"
+      ],
+      "exit": 1
+    },
+    {
+      "id": "emv-generate-bin",
+      "argv": [
+        "generate",
+        "--format",
+        "emv",
+        "--seed",
+        "42",
+        "--count",
+        "2",
+        "--output-dir",
+        "generated",
+        "--output-encoding",
+        "bin",
+        "--max-depth",
+        "3",
+        "--max-elements",
+        "10",
+        "--max-value-size",
+        "8",
+        "--max-case-size",
+        "128"
+      ],
+      "exit": 0
+    },
+    {
+      "id": "emv-generate-json",
+      "argv": [
+        "generate",
+        "--format",
+        "emv",
+        "--seed",
+        "42",
+        "--count",
+        "2",
+        "--output-dir",
+        "generated",
+        "--output-encoding",
+        "json",
+        "--max-depth",
+        "3",
+        "--max-elements",
+        "10",
+        "--max-value-size",
+        "8",
+        "--max-case-size",
+        "128"
+      ],
+      "exit": 0
+    },
+    {
+      "id": "bluetooth-ltv-dump",
+      "argv": [
+        "dump",
+        "--format",
+        "bluetooth-ltv",
+        "--hex",
+        "02010603094869"
+      ],
+      "exit": 0
+    },
+    {
+      "id": "bluetooth-ltv-decode",
+      "argv": [
+        "decode",
+        "--format",
+        "bluetooth-ltv",
+        "--hex",
+        "02010603094869"
+      ],
+      "exit": 0
+    },
+    {
+      "id": "bluetooth-ltv-validate",
+      "argv": [
+        "validate",
+        "--format",
+        "bluetooth-ltv",
+        "--hex",
+        "02010603094869"
+      ],
+      "exit": 0
+    },
+    {
+      "id": "bluetooth-ltv-json",
+      "argv": [
+        "dump",
+        "--format",
+        "bluetooth-ltv",
+        "--hex",
+        "02010603094869",
+        "--output",
+        "json"
+      ],
+      "exit": 0
+    },
+    {
+      "id": "bluetooth-ltv-invalid-human",
+      "argv": [
+        "validate",
+        "--format",
+        "bluetooth-ltv",
+        "--hex",
+        "0309AA",
+        "--diagnostics",
+        "human"
+      ],
+      "exit": 1
+    },
+    {
+      "id": "bluetooth-ltv-invalid-compact",
+      "argv": [
+        "validate",
+        "--format",
+        "bluetooth-ltv",
+        "--hex",
+        "0309AA",
+        "--diagnostics",
+        "compact"
+      ],
+      "exit": 1
+    },
+    {
+      "id": "bluetooth-ltv-invalid-json",
+      "argv": [
+        "validate",
+        "--format",
+        "bluetooth-ltv",
+        "--hex",
+        "0309AA",
+        "--diagnostics",
+        "json"
+      ],
+      "exit": 1
+    },
+    {
+      "id": "bluetooth-ltv-generate-bin",
+      "argv": [
+        "generate",
+        "--format",
+        "bluetooth-ltv",
+        "--seed",
+        "42",
+        "--count",
+        "2",
+        "--output-dir",
+        "generated",
+        "--output-encoding",
+        "bin",
+        "--max-depth",
+        "3",
+        "--max-elements",
+        "10",
+        "--max-value-size",
+        "8",
+        "--max-case-size",
+        "128"
+      ],
+      "exit": 0
+    },
+    {
+      "id": "bluetooth-ltv-generate-json",
+      "argv": [
+        "generate",
+        "--format",
+        "bluetooth-ltv",
+        "--seed",
+        "42",
+        "--count",
+        "2",
+        "--output-dir",
+        "generated",
+        "--output-encoding",
+        "json",
+        "--max-depth",
+        "3",
+        "--max-elements",
+        "10",
+        "--max-value-size",
+        "8",
+        "--max-case-size",
+        "128"
+      ],
+      "exit": 0
+    },
+    {
+      "id": "nfc-type2-dump",
+      "argv": [
+        "dump",
+        "--format",
+        "nfc-type2",
+        "--hex",
+        "000301AAFE"
+      ],
+      "exit": 0
+    },
+    {
+      "id": "nfc-type2-decode",
+      "argv": [
+        "decode",
+        "--format",
+        "nfc-type2",
+        "--hex",
+        "000301AAFE"
+      ],
+      "exit": 0
+    },
+    {
+      "id": "nfc-type2-validate",
+      "argv": [
+        "validate",
+        "--format",
+        "nfc-type2",
+        "--hex",
+        "000301AAFE"
+      ],
+      "exit": 0
+    },
+    {
+      "id": "nfc-type2-json",
+      "argv": [
+        "dump",
+        "--format",
+        "nfc-type2",
+        "--hex",
+        "000301AAFE",
+        "--output",
+        "json"
+      ],
+      "exit": 0
+    },
+    {
+      "id": "nfc-type2-invalid-human",
+      "argv": [
+        "validate",
+        "--format",
+        "nfc-type2",
+        "--hex",
+        "03FF00",
+        "--diagnostics",
+        "human"
+      ],
+      "exit": 1
+    },
+    {
+      "id": "nfc-type2-invalid-compact",
+      "argv": [
+        "validate",
+        "--format",
+        "nfc-type2",
+        "--hex",
+        "03FF00",
+        "--diagnostics",
+        "compact"
+      ],
+      "exit": 1
+    },
+    {
+      "id": "nfc-type2-invalid-json",
+      "argv": [
+        "validate",
+        "--format",
+        "nfc-type2",
+        "--hex",
+        "03FF00",
+        "--diagnostics",
+        "json"
+      ],
+      "exit": 1
+    },
+    {
+      "id": "nfc-type2-generate-bin",
+      "argv": [
+        "generate",
+        "--format",
+        "nfc-type2",
+        "--seed",
+        "42",
+        "--count",
+        "2",
+        "--output-dir",
+        "generated",
+        "--output-encoding",
+        "bin",
+        "--max-depth",
+        "3",
+        "--max-elements",
+        "10",
+        "--max-value-size",
+        "8",
+        "--max-case-size",
+        "128"
+      ],
+      "exit": 0
+    },
+    {
+      "id": "nfc-type2-generate-json",
+      "argv": [
+        "generate",
+        "--format",
+        "nfc-type2",
+        "--seed",
+        "42",
+        "--count",
+        "2",
+        "--output-dir",
+        "generated",
+        "--output-encoding",
+        "json",
+        "--max-depth",
+        "3",
+        "--max-elements",
+        "10",
+        "--max-value-size",
+        "8",
+        "--max-case-size",
+        "128"
+      ],
+      "exit": 0
+    },
+    {
+      "id": "partial-dump-human",
+      "argv": [
+        "dump",
+        "--format",
+        "ber",
+        "--hex",
+        "0401AA04",
+        "--diagnostics",
+        "human"
+      ],
+      "exit": 1
+    },
+    {
+      "id": "recovery-human",
+      "argv": [
+        "dump",
+        "--format",
+        "ber",
+        "--hex",
+        "5A011200005A0134",
+        "--recover",
+        "--diagnostics",
+        "human"
+      ],
+      "exit": 4
+    },
+    {
+      "id": "query-syntax-human",
+      "argv": [
+        "query",
+        "6F/5",
+        "--format",
+        "ber",
+        "--hex",
+        "6F00",
+        "--diagnostics",
+        "human"
+      ],
+      "exit": 2
+    },
+    {
+      "id": "emv-schema-human",
+      "argv": [
+        "validate",
+        "--format",
+        "ber",
+        "--module",
+        "emv",
+        "--emv-check",
+        "dictionary",
+        "--hex",
+        "9F02050000000010",
+        "--diagnostics",
+        "human"
+      ],
+      "exit": 1
+    },
+    {
+      "id": "partial-dump-compact",
+      "argv": [
+        "dump",
+        "--format",
+        "ber",
+        "--hex",
+        "0401AA04",
+        "--diagnostics",
+        "compact"
+      ],
+      "exit": 1
+    },
+    {
+      "id": "recovery-compact",
+      "argv": [
+        "dump",
+        "--format",
+        "ber",
+        "--hex",
+        "5A011200005A0134",
+        "--recover",
+        "--diagnostics",
+        "compact"
+      ],
+      "exit": 4
+    },
+    {
+      "id": "query-syntax-compact",
+      "argv": [
+        "query",
+        "6F/5",
+        "--format",
+        "ber",
+        "--hex",
+        "6F00",
+        "--diagnostics",
+        "compact"
+      ],
+      "exit": 2
+    },
+    {
+      "id": "emv-schema-compact",
+      "argv": [
+        "validate",
+        "--format",
+        "ber",
+        "--module",
+        "emv",
+        "--emv-check",
+        "dictionary",
+        "--hex",
+        "9F02050000000010",
+        "--diagnostics",
+        "compact"
+      ],
+      "exit": 1
+    },
+    {
+      "id": "partial-dump-json",
+      "argv": [
+        "dump",
+        "--format",
+        "ber",
+        "--hex",
+        "0401AA04",
+        "--diagnostics",
+        "json"
+      ],
+      "exit": 1
+    },
+    {
+      "id": "recovery-json",
+      "argv": [
+        "dump",
+        "--format",
+        "ber",
+        "--hex",
+        "5A011200005A0134",
+        "--recover",
+        "--diagnostics",
+        "json"
+      ],
+      "exit": 4
+    },
+    {
+      "id": "query-syntax-json",
+      "argv": [
+        "query",
+        "6F/5",
+        "--format",
+        "ber",
+        "--hex",
+        "6F00",
+        "--diagnostics",
+        "json"
+      ],
+      "exit": 2
+    },
+    {
+      "id": "emv-schema-json",
+      "argv": [
+        "validate",
+        "--format",
+        "ber",
+        "--module",
+        "emv",
+        "--emv-check",
+        "dictionary",
+        "--hex",
+        "9F02050000000010",
+        "--diagnostics",
+        "json"
+      ],
+      "exit": 1
+    },
+    {
+      "id": "empty-input",
+      "argv": [
+        "validate",
+        "--format",
+        "fixed",
+        "--hex",
+        ""
+      ],
+      "exit": 0
+    },
+    {
+      "id": "invalid-hex-87",
+      "argv": [
+        "dump",
+        "--format",
+        "fixed",
+        "--hex",
+        "0"
+      ],
+      "exit": 2
+    },
+    {
+      "id": "invalid-hex-88",
+      "argv": [
+        "dump",
+        "--format",
+        "fixed",
+        "--hex",
+        "0G"
+      ],
+      "exit": 2
+    },
+    {
+      "id": "invalid-hex-89",
+      "argv": [
+        "dump",
+        "--format",
+        "fixed",
+        "--hex",
+        "0 4"
+      ],
+      "exit": 2
+    },
+    {
+      "id": "invalid-hex-90",
+      "argv": [
+        "dump",
+        "--format",
+        "fixed",
+        "--hex",
+        "0x04"
+      ],
+      "exit": 2
+    },
+    {
+      "id": "missing-input-file",
+      "argv": [
+        "dump",
+        "--format",
+        "fixed",
+        "--input",
+        "absent.bin"
+      ],
+      "exit": 3
+    },
+    {
+      "id": "input-limit",
+      "argv": [
+        "validate",
+        "--format",
+        "fixed",
+        "--hex",
+        "0401AA",
+        "--max-input-size",
+        "2"
+      ],
+      "exit": 3
+    },
+    {
+      "id": "element-limit",
+      "argv": [
+        "validate",
+        "--format",
+        "fixed",
+        "--hex",
+        "04000400",
+        "--max-elements",
+        "1"
+      ],
+      "exit": 3
+    },
+    {
+      "id": "depth-limit",
+      "argv": [
+        "dump",
+        "--format",
+        "ber",
+        "--hex",
+        "E1035A0112",
+        "--tree",
+        "--max-depth",
+        "0"
+      ],
+      "exit": 3
+    },
+    {
+      "id": "input-file",
+      "argv": [
+        "dump",
+        "--format",
+        "fixed",
+        "--input",
+        "input.bin"
+      ],
+      "exit": 0,
+      "files": {
+        "input.bin": "04040a0d1aff"
+      }
+    },
+    {
+      "id": "input-stdin",
+      "argv": [
+        "dump",
+        "--format",
+        "fixed",
+        "--input",
+        "-"
+      ],
+      "exit": 0,
+      "stdin_hex": "04040a0d1aff"
+    },
+    {
+      "id": "input-implicit-stdin",
+      "argv": [
+        "dump",
+        "--format",
+        "fixed"
+      ],
+      "exit": 0,
+      "stdin_hex": "04040a0d1aff"
+    },
+    {
+      "id": "input-hex-stdin",
+      "argv": [
+        "dump",
+        "--format",
+        "fixed",
+        "--input",
+        "-",
+        "--input-encoding",
+        "hex"
+      ],
+      "exit": 0,
+      "stdin_hex": "30342030310d0a61610a"
+    },
+    {
+      "id": "force-color",
+      "argv": [
+        "dump",
+        "--format",
+        "fixed",
+        "--hex",
+        "0401AA",
+        "--force-color"
+      ],
+      "exit": 0
+    },
+    {
+      "id": "no-color",
+      "argv": [
+        "dump",
+        "--format",
+        "fixed",
+        "--hex",
+        "0401AA",
+        "--no-color"
+      ],
+      "exit": 0
+    },
+    {
+      "id": "pretty-tree",
+      "argv": [
+        "dump",
+        "--format",
+        "ber",
+        "--hex",
+        "E1035A0112",
+        "--pretty"
+      ],
+      "exit": 0
+    },
+    {
+      "id": "indefinite-ber",
+      "argv": [
+        "dump",
+        "--format",
+        "ber",
+        "--hex",
+        "30800401AA0000",
+        "--tree"
+      ],
+      "exit": 0
+    },
+    {
+      "id": "der-rejects-indefinite",
+      "argv": [
+        "validate",
+        "--format",
+        "der",
+        "--hex",
+        "30800401AA0000"
+      ],
+      "exit": 1
+    },
+    {
+      "id": "fixed-wide-le",
+      "argv": [
+        "encode",
+        "--format",
+        "fixed",
+        "--fixed-tag-size",
+        "2",
+        "--fixed-length-size",
+        "2",
+        "--fixed-byte-order",
+        "little",
+        "--tag",
+        "0102",
+        "--value",
+        "AABBCC"
+      ],
+      "exit": 0
+    },
+    {
+      "id": "encode-hex",
+      "argv": [
+        "encode",
+        "--format",
+        "ber",
+        "--tag",
+        "04",
+        "--value",
+        "0A0D1AFF"
+      ],
+      "exit": 0
+    },
+    {
+      "id": "encode-binary",
+      "argv": [
+        "encode",
+        "--format",
+        "ber",
+        "--tag",
+        "04",
+        "--value",
+        "0A0D1AFF",
+        "--output-encoding",
+        "binary"
+      ],
+      "exit": 0,
+      "binary_stdout": true
+    },
+    {
+      "id": "encode-file",
+      "argv": [
+        "encode",
+        "--format",
+        "ber",
+        "--tag",
+        "04",
+        "--value",
+        "0A0D1AFF",
+        "--output-encoding",
+        "binary",
+        "--output-file",
+        "out.bin"
+      ],
+      "exit": 0
+    },
+    {
+      "id": "encode-json-stdin",
+      "argv": [
+        "encode",
+        "--format",
+        "ber"
+      ],
+      "exit": 0,
+      "stdin_hex": "7b22736368656d61223a226f70656e746c762e746c76222c2276657273696f6e223a312c22666f726d6174223a22626572222c22656c656d656e7473223a5b7b22746167223a223034222c2276616c7565223a224141227d5d7d"
+    },
+    {
+      "id": "encode-json-file",
+      "argv": [
+        "encode",
+        "--format",
+        "ber",
+        "--input",
+        "model.json"
+      ],
+      "exit": 0,
+      "files": {
+        "model.json": "7b22736368656d61223a226f70656e746c762e746c76222c2276657273696f6e223a312c22666f726d6174223a22626572222c22656c656d656e7473223a5b7b22746167223a223034222c2276616c7565223a224141227d5d7d"
+      }
+    },
+    {
+      "id": "invalid-json",
+      "argv": [
+        "encode",
+        "--format",
+        "ber"
+      ],
+      "exit": 2,
+      "stdin_hex": "7b626164"
+    },
+    {
+      "id": "invalid-json-version",
+      "argv": [
+        "encode",
+        "--format",
+        "ber"
+      ],
+      "exit": 2,
+      "stdin_hex": "7b22736368656d61223a226f70656e746c762e746c76222c2276657273696f6e223a322c22666f726d6174223a22626572222c22656c656d656e7473223a5b7b22746167223a223034222c2276616c7565223a224141227d5d7d"
+    },
+    {
+      "id": "encode-invalid-element",
+      "argv": [
+        "encode",
+        "--format",
+        "ber",
+        "--tag",
+        "00",
+        "--value",
+        "AA"
+      ],
+      "exit": 1
+    },
+    {
+      "id": "encode-output-error",
+      "argv": [
+        "encode",
+        "--format",
+        "ber",
+        "--tag",
+        "04",
+        "--output-file",
+        "absent/out.bin"
+      ],
+      "exit": 3
+    },
+    {
+      "id": "generate-invalid-seed",
+      "argv": [
+        "generate",
+        "--format",
+        "fixed",
+        "--seed",
+        "-1",
+        "--count",
+        "1",
+        "--output-dir",
+        "out"
+      ],
+      "exit": 2
+    },
+    {
+      "id": "generate-impossible",
+      "argv": [
+        "generate",
+        "--format",
+        "fixed",
+        "--seed",
+        "0",
+        "--count",
+        "1",
+        "--max-case-size",
+        "1",
+        "--output-dir",
+        "out"
+      ],
+      "exit": 3
+    },
+    {
+      "id": "generate-no-overwrite",
+      "argv": [
+        "generate",
+        "--format",
+        "fixed",
+        "--seed",
+        "0",
+        "--count",
+        "1",
+        "--output-dir",
+        "out"
+      ],
+      "exit": 3,
+      "files": {
+        "out/000000.bin": "abcd"
+      }
+    },
+    {
+      "id": "generate-zero-seed",
+      "argv": [
+        "generate",
+        "--format",
+        "fixed",
+        "--seed",
+        "0",
+        "--count",
+        "1",
+        "--max-value-size",
+        "0",
+        "--output-dir",
+        "out"
+      ],
+      "exit": 0
+    },
+    {
+      "id": "emv-semantic-describe",
+      "argv": [
+        "dump",
+        "--format",
+        "ber",
+        "--module",
+        "emv",
+        "--hex",
+        "9F0206000000001000",
+        "--describe"
+      ],
+      "exit": 0
+    },
+    {
+      "id": "emv-semantic-decode",
+      "argv": [
+        "dump",
+        "--format",
+        "ber",
+        "--module",
+        "emv",
+        "--hex",
+        "9F0206000000001000",
+        "--decode"
+      ],
+      "exit": 0
+    },
+    {
+      "id": "emv-context",
+      "argv": [
+        "dump",
+        "--format",
+        "ber",
+        "--module",
+        "emv",
+        "--emv-context",
+        "bit",
+        "--hex",
+        "800100",
+        "--describe"
+      ],
+      "exit": 0
+    },
+    {
+      "id": "pdol",
+      "argv": [
+        "dump",
+        "--format",
+        "ber",
+        "--pdol",
+        "--hex",
+        "9F02065F2A02"
+      ],
+      "exit": 0
+    },
+    {
+      "id": "bluetooth-decode",
+      "argv": [
+        "dump",
+        "--format",
+        "bluetooth-ltv",
+        "--module",
+        "bluetooth",
+        "--decode",
+        "--output",
+        "json",
+        "--hex",
+        "020106020AFC02FE00"
+      ],
+      "exit": 0
+    },
+    {
+      "id": "bluetooth-invalid-schema",
+      "argv": [
+        "validate",
+        "--format",
+        "bluetooth-ltv",
+        "--module",
+        "bluetooth",
+        "--hex",
+        "020100",
+        "--diagnostics",
+        "json"
+      ],
+      "exit": 1
+    },
+    {
+      "id": "tag-known",
+      "argv": [
+        "tag",
+        "9F02",
+        "--module",
+        "emv"
+      ],
+      "exit": 0
+    },
+    {
+      "id": "tag-unknown",
+      "argv": [
+        "tag",
+        "DF01",
+        "--module",
+        "emv"
+      ],
+      "exit": 0
+    },
+    {
+      "id": "tags-search",
+      "argv": [
+        "tags",
+        "--module",
+        "emv",
+        "--search",
+        "Amount",
+        "--output",
+        "json"
+      ],
+      "exit": 0
+    },
+    {
+      "id": "query-path",
+      "argv": [
+        "query",
+        "6F/A5/50",
+        "--format",
+        "ber",
+        "--hex",
+        "6F0A8402AABBA504500241425001FF6F08A5065001015001026F07A605A503500109"
+      ],
+      "exit": 0
+    },
+    {
+      "id": "query-values",
+      "argv": [
+        "query",
+        "6F/A5/50",
+        "--format",
+        "ber",
+        "--hex",
+        "6F0A8402AABBA504500241425001FF6F08A5065001015001026F07A605A503500109",
+        "--value"
+      ],
+      "exit": 0
+    },
+    {
+      "id": "query-json",
+      "argv": [
+        "query",
+        "6F/A5/50",
+        "--format",
+        "ber",
+        "--hex",
+        "6F0A8402AABBA504500241425001FF6F08A5065001015001026F07A605A503500109",
+        "--output",
+        "json"
+      ],
+      "exit": 0
+    },
+    {
+      "id": "query-missing",
+      "argv": [
+        "query",
+        "6F/A5/51",
+        "--format",
+        "ber",
+        "--hex",
+        "6F0A8402AABBA504500241425001FF6F08A5065001015001026F07A605A503500109"
+      ],
+      "exit": 5
+    },
+    {
+      "id": "query-count",
+      "argv": [
+        "query",
+        "--query",
+        "//50",
+        "--format",
+        "ber",
+        "--hex",
+        "6F0A8402AABBA504500241425001FF6F08A5065001015001026F07A605A503500109",
+        "--count"
+      ],
+      "exit": 0
+    },
+    {
+      "id": "query-exists",
+      "argv": [
+        "query",
+        "--query",
+        "//51",
+        "--format",
+        "ber",
+        "--hex",
+        "6F0A8402AABBA504500241425001FF6F08A5065001015001026F07A605A503500109",
+        "--exists"
+      ],
+      "exit": 0
+    },
+    {
+      "id": "query-scalar",
+      "argv": [
+        "query",
+        "--query",
+        "count(//51)",
+        "--format",
+        "ber",
+        "--hex",
+        "6F0A8402AABBA504500241425001FF6F08A5065001015001026F07A605A503500109",
+        "--output",
+        "json"
+      ],
+      "exit": 0
+    },
+    {
+      "id": "query-variable",
+      "argv": [
+        "query",
+        "--query",
+        "count(//50[value(.) = $wanted])",
+        "--format",
+        "ber",
+        "--hex",
+        "6F0A8402AABBA504500241425001FF6F08A5065001015001026F07A605A503500109",
+        "--var",
+        "wanted:bytes=4142"
+      ],
+      "exit": 0
+    },
+    {
+      "id": "query-explain",
+      "argv": [
+        "query",
+        "--query",
+        "//50",
+        "--format",
+        "ber",
+        "--hex",
+        "6F0A8402AABBA504500241425001FF6F08A5065001015001026F07A605A503500109",
+        "--explain"
+      ],
+      "exit": 0
+    },
+    {
+      "id": "query-document",
+      "argv": [
+        "query",
+        "--query",
+        "//50/following::50",
+        "--format",
+        "ber",
+        "--hex",
+        "6F0A8402AABBA504500241425001FF6F08A5065001015001026F07A605A503500109",
+        "--backend",
+        "document",
+        "--output",
+        "json"
+      ],
+      "exit": 0
+    },
+    {
+      "id": "query-streaming-rejection",
+      "argv": [
+        "query",
+        "--query",
+        "//50/following::50",
+        "--format",
+        "ber",
+        "--hex",
+        "6F0A8402AABBA504500241425001FF6F08A5065001015001026F07A605A503500109",
+        "--backend",
+        "streaming"
+      ],
+      "exit": 2
+    },
+    {
+      "id": "diff-same",
+      "argv": [
+        "diff",
+        "--format",
+        "ber",
+        "--input",
+        "left.bin",
+        "--against",
+        "right.bin"
+      ],
+      "exit": 0,
+      "files": {
+        "left.bin": "0401aa",
+        "right.bin": "0401aa"
+      }
+    },
+    {
+      "id": "diff-changed",
+      "argv": [
+        "diff",
+        "--format",
+        "ber",
+        "--input",
+        "left.bin",
+        "--against",
+        "right.bin"
+      ],
+      "exit": 0,
+      "files": {
+        "left.bin": "0401aa",
+        "right.bin": "0401bb"
+      }
+    },
+    {
+      "id": "diff-json",
+      "argv": [
+        "diff",
+        "--format",
+        "ber",
+        "--input",
+        "left.bin",
+        "--against",
+        "right.bin",
+        "--output",
+        "json"
+      ],
+      "exit": 0,
+      "files": {
+        "left.bin": "0401aa",
+        "right.bin": "0401bb"
+      }
+    },
+    {
+      "id": "diff-filtered",
+      "argv": [
+        "diff",
+        "--format",
+        "ber",
+        "--input",
+        "left.bin",
+        "--against",
+        "right.bin",
+        "--where",
+        "//05"
+      ],
+      "exit": 0,
+      "files": {
+        "left.bin": "0401aa",
+        "right.bin": "0401bb"
+      }
+    },
+    {
+      "id": "fixture-nfc-controls",
+      "argv": [
+        "decode",
+        "--format",
+        "nfc-type2",
+        "--input",
+        "input.bin"
+      ],
+      "exit": 0,
+      "files": {
+        "input.bin": "0103a010440203b004040300fd0300fefffe"
+      },
+      "source": "examples/nfc/type2/controls.bin"
+    },
+    {
+      "id": "fixture-nfc-empty-ndef",
+      "argv": [
+        "decode",
+        "--format",
+        "nfc-type2",
+        "--input",
+        "input.bin"
+      ],
+      "exit": 0,
+      "files": {
+        "input.bin": "0300fe"
+      },
+      "source": "examples/nfc/type2/empty-ndef.bin"
+    },
+    {
+      "id": "fixture-nfc-extended-255",
+      "argv": [
+        "decode",
+        "--format",
+        "nfc-type2",
+        "--input",
+        "input.bin"
+      ],
+      "exit": 0,
+      "files": {
+        "input.bin": "fdff00ff000102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f202122232425262728292a2b2c2d2e2f303132333435363738393a3b3c3d3e3f404142434445464748494a4b4c4d4e4f505152535455565758595a5b5c5d5e5f606162636465666768696a6b6c6d6e6f707172737475767778797a7b7c7d7e7f808182838485868788898a8b8c8d8e8f909192939495969798999a9b9c9d9e9fa0a1a2a3a4a5a6a7a8a9aaabacadaeafb0b1b2b3b4b5b6b7b8b9babbbcbdbebfc0c1c2c3c4c5c6c7c8c9cacbcccdcecfd0d1d2d3d4d5d6d7d8d9dadbdcdddedfe0e1e2e3e4e5e6e7e8e9eaebecedeeeff0f1f2f3f4f5f6f7f8f9fafbfcfdfefe"
+      },
+      "source": "examples/nfc/type2/extended-255.bin"
+    },
+    {
+      "id": "fixture-nfc-extended-256",
+      "argv": [
+        "decode",
+        "--format",
+        "nfc-type2",
+        "--input",
+        "input.bin"
+      ],
+      "exit": 0,
+      "files": {
+        "input.bin": "fdff0100000102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f202122232425262728292a2b2c2d2e2f303132333435363738393a3b3c3d3e3f404142434445464748494a4b4c4d4e4f505152535455565758595a5b5c5d5e5f606162636465666768696a6b6c6d6e6f707172737475767778797a7b7c7d7e7f808182838485868788898a8b8c8d8e8f909192939495969798999a9b9c9d9e9fa0a1a2a3a4a5a6a7a8a9aaabacadaeafb0b1b2b3b4b5b6b7b8b9babbbcbdbebfc0c1c2c3c4c5c6c7c8c9cacbcccdcecfd0d1d2d3d4d5d6d7d8d9dadbdcdddedfe0e1e2e3e4e5e6e7e8e9eaebecedeeeff0f1f2f3f4f5f6f7f8f9fafbfcfdfefffe"
+      },
+      "source": "examples/nfc/type2/extended-256.bin"
+    },
+    {
+      "id": "fixture-nfc-framing-policy",
+      "argv": [
+        "decode",
+        "--format",
+        "nfc-type2",
+        "--input",
+        "input.bin"
+      ],
+      "exit": 0,
+      "files": {
+        "input.bin": "00fe002a00ff01a5"
+      },
+      "source": "examples/nfc/type2/framing-policy.bin"
+    },
+    {
+      "id": "fixture-nfc-missing-length",
+      "argv": [
+        "decode",
+        "--format",
+        "nfc-type2",
+        "--input",
+        "input.bin"
+      ],
+      "exit": 1,
+      "files": {
+        "input.bin": "03"
+      },
+      "source": "examples/nfc/type2/invalid/missing-length.bin"
+    },
+    {
+      "id": "fixture-nfc-nonminimal-extended",
+      "argv": [
+        "decode",
+        "--format",
+        "nfc-type2",
+        "--input",
+        "input.bin"
+      ],
+      "exit": 1,
+      "files": {
+        "input.bin": "03ff00fe"
+      },
+      "source": "examples/nfc/type2/invalid/nonminimal-extended.bin"
+    },
+    {
+      "id": "fixture-nfc-reserved-length",
+      "argv": [
+        "decode",
+        "--format",
+        "nfc-type2",
+        "--input",
+        "input.bin"
+      ],
+      "exit": 1,
+      "files": {
+        "input.bin": "03ffffff"
+      },
+      "source": "examples/nfc/type2/invalid/reserved-length.bin"
+    },
+    {
+      "id": "fixture-nfc-truncated-extended",
+      "argv": [
+        "decode",
+        "--format",
+        "nfc-type2",
+        "--input",
+        "input.bin"
+      ],
+      "exit": 1,
+      "files": {
+        "input.bin": "03ff01"
+      },
+      "source": "examples/nfc/type2/invalid/truncated-extended.bin"
+    },
+    {
+      "id": "fixture-nfc-truncated-value",
+      "argv": [
+        "decode",
+        "--format",
+        "nfc-type2",
+        "--input",
+        "input.bin"
+      ],
+      "exit": 1,
+      "files": {
+        "input.bin": "0303d000"
+      },
+      "source": "examples/nfc/type2/invalid/truncated-value.bin"
+    },
+    {
+      "id": "fixture-nfc-sample",
+      "argv": [
+        "decode",
+        "--format",
+        "nfc-type2",
+        "--input",
+        "input.bin"
+      ],
+      "exit": 0,
+      "files": {
+        "input.bin": "000309d101055402656e4869fe"
+      },
+      "source": "examples/nfc/type2/sample.bin"
+    },
+    {
+      "id": "fixture-nfc-short-254",
+      "argv": [
+        "decode",
+        "--format",
+        "nfc-type2",
+        "--input",
+        "input.bin"
+      ],
+      "exit": 0,
+      "files": {
+        "input.bin": "fdfe000102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f202122232425262728292a2b2c2d2e2f303132333435363738393a3b3c3d3e3f404142434445464748494a4b4c4d4e4f505152535455565758595a5b5c5d5e5f606162636465666768696a6b6c6d6e6f707172737475767778797a7b7c7d7e7f808182838485868788898a8b8c8d8e8f909192939495969798999a9b9c9d9e9fa0a1a2a3a4a5a6a7a8a9aaabacadaeafb0b1b2b3b4b5b6b7b8b9babbbcbdbebfc0c1c2c3c4c5c6c7c8c9cacbcccdcecfd0d1d2d3d4d5d6d7d8d9dadbdcdddedfe0e1e2e3e4e5e6e7e8e9eaebecedeeeff0f1f2f3f4f5f6f7f8f9fafbfcfdfe"
+      },
+      "source": "examples/nfc/type2/short-254.bin"
+    }
+  ]
+}
