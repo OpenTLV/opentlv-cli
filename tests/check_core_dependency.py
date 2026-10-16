@@ -73,8 +73,15 @@ def main():
         selection = (build / "tests/core-selection.txt").read_text(encoding="utf-8").splitlines()
         if selection[0] != expected:
             raise RuntimeError(f"{build}: expected {expected}, got {selection}")
-        if source and Path(selection[1]).resolve() != source.resolve():
-            raise RuntimeError(f"{build}: selected wrong source: {selection}")
+        if source:
+            source = source.resolve()
+            if Path(selection[1]).resolve() != source:
+                raise RuntimeError(f"{build}: selected wrong source: {selection}")
+            if selection[4] not in ("FALSE", "0"):
+                raise RuntimeError(f"{build}: C++ target must come from the source build")
+            for target, origin in zip(("OpenTLV::tlv", "OpenTLV::tlv++"), selection[2:4]):
+                if not origin or not Path(origin).resolve().is_relative_to(source):
+                    raise RuntimeError(f"{build}: {target} originates outside {source}: {origin}")
         if preset:
             run("cmake", "--build", "--preset", preset, "--parallel", "2", env=env, cwd=cwd)
             run("ctest", "--preset", preset, env=env, cwd=cwd)
@@ -84,9 +91,24 @@ def main():
                 "--output-on-failure", "--no-tests=error", env=env)
         results.append({"case": build.name, "result": "passed", "mode": expected})
 
+    # A discoverable package that must never execute in forced fallback or source-override cases.
+    trap = work / "package-trap"
+    trap.mkdir()
+    (trap / "OpenTLVConfig.cmake").write_text(
+        'message(FATAL_ERROR "Package discovery must be bypassed in this test")\n',
+        encoding="utf-8")
+
     core = args.core_source.resolve() if args.core_source else None
     if not args.skip_git:
-        fallback = configure("git-fallback", "-DFETCHCONTENT_TRY_FIND_PACKAGE_MODE=NEVER")
+        configure("fallback-package-trap", "-DFETCHCONTENT_TRY_FIND_PACKAGE_MODE=ALWAYS",
+                  f"-Dopentlv_core_DIR={trap.as_posix()}",
+                  f"-DCMAKE_PREFIX_PATH={trap.as_posix()}", env=offline,
+                  failure="Package discovery must be bypassed in this test")
+        results.append({"case": "fallback-package-trap", "result": "passed (rejected)"})
+        fallback = configure("git-fallback", "-DFETCHCONTENT_TRY_FIND_PACKAGE_MODE=NEVER",
+                             "-DCMAKE_DISABLE_FIND_PACKAGE_opentlv_core=ON",
+                             f"-Dopentlv_core_DIR={trap.as_posix()}",
+                             f"-DCMAKE_PREFIX_PATH={trap.as_posix()}")
         fetched = fallback / "_deps/opentlv_core-src"
         revision = run("git", "-C", fetched, "rev-parse", "HEAD")
         pin = re.search(r"GIT_TAG\s+([0-9a-f]{40})", (ROOT / "cmake/Core.cmake").read_text())[1]
@@ -98,12 +120,6 @@ def main():
     else:
         results.append({"case": "git-fallback", "result": "skipped"})
 
-    # A discoverable package that must never execute when a source override is set.
-    trap = work / "package-trap"
-    trap.mkdir()
-    (trap / "OpenTLVConfig.cmake").write_text(
-        'message(FATAL_ERROR "Package discovery must be bypassed by source override")\n',
-        encoding="utf-8")
     local = configure("local-override",
                       f"-DFETCHCONTENT_SOURCE_DIR_OPENTLV_CORE={core.as_posix()}",
                       f"-DCMAKE_PREFIX_PATH={trap.as_posix()}",

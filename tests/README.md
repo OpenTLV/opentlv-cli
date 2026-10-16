@@ -29,7 +29,9 @@ Select a generator with `--generator Ninja` if needed.
 
 Each run checks:
 
-- Real Git fallback with the configured full SHA and package lookup disabled.
+- Real Git fallback with package lookup explicitly disabled and a discoverable
+  package trap. The fetched SHA must equal the pin, and both public targets
+  must be non-imported targets originating inside that checkout.
 - Explicit local Core selection with a discoverable package trap.
 - Discovery and use of a relocated real Core installation.
 - Local override precedence with a valid installed package present.

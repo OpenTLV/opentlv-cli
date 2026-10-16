@@ -25,8 +25,12 @@ if(_core_imported)
 else()
     set(_core_mode source)
 endif()
+get_target_property(_core_c_source OpenTLV::tlv SOURCE_DIR)
+get_target_property(_core_cxx_source OpenTLV::tlv++ SOURCE_DIR)
+get_target_property(_core_cxx_imported OpenTLV::tlv++ IMPORTED)
 file(WRITE "${CMAKE_CURRENT_BINARY_DIR}/core-selection.txt"
-    "${_core_mode}\n${opentlv_core_SOURCE_DIR}\n")
+    "${_core_mode}\n${opentlv_core_SOURCE_DIR}\n"
+    "${_core_c_source}\n${_core_cxx_source}\n${_core_cxx_imported}\n")
 
 if(TARGET otlv)
     message(FATAL_ERROR "Core's CLI must not be built by the dependency tests")
