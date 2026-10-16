@@ -7,17 +7,18 @@ diagnostics, and the executable name `otlv`.
 
 ## Development
 
-Follow the [README](README.md#configure) to configure and build.
-At the bootstrap stage there is no CLI executable or runtime test suite.
-Do not report an empty build as a regression-test pass.
+Follow the [README](README.md#standalone-build) to configure and build.
+Core dependency smoke tests are available; run the matrix in
+[tests/README.md](tests/README.md). The CLI executable and command regression
+suite are migrated in #3. Dependency checks do not establish command parity.
 
 Use a local `feature/<issue>_<description>` branch. Include the relevant issue
 in the pull request and complete the [template](.github/PULL_REQUEST_TEMPLATE.md).
 Describe local checks separately from hosted CI and release validation.
 
-Core integration, migration, and release automation are separate issues.
-Do not add dependency shims, package-manager publishing, or placeholder CLI
-behavior to the bootstrap.
+Consume Core only through its public CMake targets and APIs. Migration and
+release automation remain separate issues. Do not add dependency shims,
+package-manager publishing, or placeholder CLI behavior.
 
 ## Contributor tools
 
@@ -75,7 +76,8 @@ and do not use pull-request numbers. Preserve released history.
 
 ## Validation
 
-For foundation changes, configure in a fresh build directory and run the build,
-pre-commit checks, and `git diff --check`. After migration, run the CLI tests
-documented in `tests/`. State missing coverage explicitly. CI and independent
-version/release automation are introduced by issue #4.
+For dependency changes, run the shared and static integration matrix,
+pre-commit checks, and `git diff --check`. The Core dependency workflow runs
+on Windows and Linux. After migration, also run the CLI command tests.
+State missing coverage explicitly; independent versioning and release gates
+are introduced by issue #4.
