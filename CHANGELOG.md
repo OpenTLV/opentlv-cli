@@ -6,8 +6,14 @@ CLI releases will be versioned independently from Core.
 
 ## [Unreleased]
 
+### Changed
+
+- Make Bash `pipefail` explicit in both quality-check steps so failures propagate through `tee` while preserving artifact logs. (#4)
+- Report an independent Git-derived CLI version through `otlv --version`; retain the frozen migration evidence with an explicit version-contract change. (#4)
+
 ### Added
 
+- Add fast development CI and a complete Windows/Linux release gate that records pinned revisions and test evidence before creating the requested CLI tag. (#4)
 - Migrate `otlv`, command documentation, original CLI regression suites and immutable Core fixture snapshots into the standalone repository, preserving command behavior against the frozen 154-case baseline. (#3)
 - Add Git fallback isolation checks that bypass discoverable local Core packages and verify the pinned checkout revision and the source provenance of both public CMake targets. (#2)
 - Resolve Core through an explicit local source override, installed public CMake targets, or a pinned Git fallback; add standalone/workspace presets and Windows/Linux dependency integration checks for shared and static builds. (#2)

@@ -12,10 +12,11 @@ regression suites. Commands, arguments, diagnostics, exit codes and output
 remain covered by the frozen migration baseline. See the
 [command guide](docs/README.md) and [JSON document schema](docs/json-schema.md).
 
-`otlv --version` retains its original Core version output during migration.
-Independent versioning and release gates follow in
-[#4](https://github.com/OpenTLV/opentlv-cli/issues/4); the complete CLI development
-guide follows in [#5](https://github.com/OpenTLV/opentlv-cli/issues/5).
+`otlv --version` reports `OpenTLV CLI <version>`, derived from this repository's
+`vMAJOR.MINOR.PATCH` Git tags independently of Core. See the
+[version and release guide](docs/releases.md) for development versions and
+the validation required before creating a release tag. The complete CLI
+development guide follows in [#5](https://github.com/OpenTLV/opentlv-cli/issues/5).
 Removal of the original CLI from Core is tracked separately in
 [Core #622](https://github.com/OpenTLV/opentlv/issues/622).
 
@@ -190,7 +191,7 @@ intentionally allow a separately selected Core revision.
 
 Core owns public C/C++ APIs, execution semantics, canonical semantic fixtures,
 and shared native tests. This repository owns CLI behavior, process tests,
-command documentation and future releases. Immutable fixture snapshots retain
+command documentation and independent releases. Immutable fixture snapshots retain
 Core provenance. [OpenTLV Docs](https://github.com/OpenTLV/opentlv-docs)
 assembles and publishes documentation.
 

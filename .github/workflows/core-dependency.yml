@@ -1,4 +1,4 @@
-name: CLI regression and Core integration
+name: CLI development
 
 on:
   pull_request:
@@ -16,33 +16,41 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-latest, windows-latest]
-        shared: ['ON', 'OFF']
+        include:
+          - os: ubuntu-24.04
+            shared: 'ON'
+          - os: windows-2022
+            shared: 'OFF'
     steps:
       - uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+          persist-credentials: false
       - uses: actions/setup-python@v6
         with:
           python-version: '3.11'
-      - name: Validate dependency modes and CLI regression parity
-        run: python tests/check_core_dependency.py --shared ${{ matrix.shared }}
-      - name: Upload dependency evidence
+      - name: Configure pinned dependencies
+        run: >-
+          cmake -S . -B build/ci -DCMAKE_BUILD_TYPE=Release
+          -DOPENTLV_BUILD_SHARED_LIBS=${{ matrix.shared }}
+          -DFETCHCONTENT_TRY_FIND_PACKAGE_MODE=NEVER
+      - name: Build CLI
+        run: cmake --build build/ci --config Release --parallel 2
+      - name: Run command and tooling tests
+        run: ctest --test-dir build/ci -C Release --output-on-failure --no-tests=error --output-junit build/ci/ctest.xml
+      - name: Upload test evidence
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: core-dependency-${{ matrix.os }}-${{ matrix.shared }}
+          name: cli-tests-${{ github.run_attempt }}-${{ matrix.os }}-${{ matrix.shared }}
           path: |
-            build/dependency-check/**/summary.json
-            build/dependency-check/**/*.log
-            build/dependency-check/**/baseline-report.json
-            build/dependency-check/**/query-report.json
+            build/ci/ctest.xml
+            build/ci/cli-version.txt
+            build/ci/tests/**/baseline-report.json
+            build/ci/tests/**/query-report.json
           if-no-files-found: warn
 
   quality:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v5
-      - uses: actions/setup-python@v6
-        with:
-          python-version: '3.11'
-      - run: python -m pip install -r requirements-dev.txt
-      - run: pre-commit run --all-files
+    uses: ./.github/workflows/quality.yml
+    with:
+      revision: ${{ github.sha }}

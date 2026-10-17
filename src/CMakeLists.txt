@@ -79,7 +79,9 @@ set(SOURCES
 )
 
 add_executable(otlv ${HEADERS} ${SOURCES} core_requirements.cpp)
-target_include_directories(otlv PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}")
+add_dependencies(otlv cli_version_metadata)
+target_include_directories(otlv PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}"
+    "${PROJECT_BINARY_DIR}/generated")
 target_link_libraries(otlv PRIVATE OpenTLV::tlv++ nlohmann_json::nlohmann_json)
 target_compile_features(otlv PRIVATE cxx_std_11)
 target_compile_options(otlv PRIVATE

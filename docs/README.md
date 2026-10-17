@@ -7,6 +7,9 @@ recovers elements from damaged input, using the public C library through the
 requires a C++11 (or newer) compiler; the underlying library itself remains a
 dependency-free C99 core, so this requirement affects only the CLI target.
 
+`otlv --version` reports the independently versioned CLI. See
+[versions and releases](releases.md) for version formats and release validation.
+
 ## First inspection
 
 Prerequisite: an installed `otlv` executable. If you need to build it, follow
