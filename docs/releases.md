@@ -43,6 +43,11 @@ new contract, including empty stderr, exit zero and no output files.
 
 ## Development checks
 
+Use the [development guide](development.md) for local builds, dependency
+selection and Core pin updates. The CMake `Release` configuration controls
+compiler settings; it does not establish an official CLI release. Normal
+development builds derive their version from Git even when built in Release.
+
 Pull requests and pushes to `main` run Windows/MSVC static and Linux/GCC shared
 builds, pinned dependency selection, all applicable command and tooling tests,
 pre-commit checks and cppcheck. They upload CTest XML, baseline and Query

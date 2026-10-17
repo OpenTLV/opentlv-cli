@@ -7,7 +7,9 @@ diagnostics, and the executable name `otlv`.
 
 ## Development
 
-Follow the [README](README.md#standalone-build) to configure and build.
+Follow the [development guide](docs/development.md) for standalone and
+workspace builds, presets, Debug/Release configurations, offline requirements,
+dependency troubleshooting and the Core pin update procedure.
 Run CTest for the dependency smoke tests, original CLI suites, Query facade,
 and frozen migration comparison. Run the shared/static dependency matrix in
 [tests/README.md](tests/README.md) before changing dependency integration.

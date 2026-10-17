@@ -15,10 +15,9 @@ remain covered by the frozen migration baseline. See the
 `otlv --version` reports `OpenTLV CLI <version>`, derived from this repository's
 `vMAJOR.MINOR.PATCH` Git tags independently of Core. See the
 [version and release guide](docs/releases.md) for development versions and
-the validation required before creating a release tag. The complete CLI
-development guide follows in [#5](https://github.com/OpenTLV/opentlv-cli/issues/5).
-Removal of the original CLI from Core is tracked separately in
-[Core #622](https://github.com/OpenTLV/opentlv/issues/622).
+the validation required before creating a release tag. The
+[development guide](docs/development.md) covers build configurations, dependency
+selection, offline use and Core updates.
 
 ## Requirements
 
@@ -50,46 +49,16 @@ or `build/default/src/Release/otlv.exe` for Visual Studio Release builds. Try:
 build/default/src/otlv dump --format fixed --hex "01 02 48 69"
 ```
 
-Core selection uses native CMake `FetchContent` in this order:
-
-1. An explicit `FETCHCONTENT_SOURCE_DIR_OPENTLV_CORE` uses that checkout and
-   skips package discovery and Git downloads/updates.
-2. Otherwise, `FIND_PACKAGE_ARGS CONFIG NAMES OpenTLV` searches installed
-   `OpenTLVConfig.cmake` packages.
-3. If none is found, Core is fetched at the full commit SHA in
-   [cmake/Core.cmake](cmake/Core.cmake):
-   `edebe957ee2a1e0bf5685c3bd55a33788446e80d`.
-
-Both `OpenTLV::tlv` and `OpenTLV::tlv++` must exist. An installed package or
-local checkout missing either target is rejected with a diagnostic. Older
-packages exporting `OpenTLV::tlvpp` are not compatible. The numeric Core
-version alone cannot distinguish the public target change made after 0.7.1.
-
-Source builds use Core's embedded defaults: libraries and the C++ facade,
-with its CLI, examples, and native tests disabled. Core implementation code
-is not copied here and no sibling directory is detected automatically.
-
-The CLI also consumes header-only [nlohmann/json](https://github.com/nlohmann/json)
-3.11.3 for JSON presentation and input. An explicit
-`FETCHCONTENT_SOURCE_DIR_NLOHMANN_JSON` selects a local source tree;
-otherwise CMake searches for an installed 3.11.3 package before fetching the
-pinned commit `9cca280a4d0ccf0c08f47a99aa71d1b0e52f8d03`.
-This dependency belongs to the CLI; Core's C/C++ libraries remain independent
-of JSON.
+Core selection prefers an explicit local source override, then an installed
+package, then the immutable Git pin in [cmake/Core.cmake](cmake/Core.cmake).
+Both public targets `OpenTLV::tlv` and `OpenTLV::tlv++` are required.
+The private header-only nlohmann/json 3.11.3 dependency is resolved separately.
+See [dependency resolution](docs/development.md#dependency-resolution) for
+selection rules, compatibility requirements and a forced pinned build.
 
 ## Local workspace and offline use
 
-Recommended layout:
-
-```text
-OpenTLV/
-  opentlv/
-  opentlv-cli/
-  opentlv-docs/
-  opentlv-workspace/
-```
-
-From `opentlv-cli`:
+Place `opentlv` and `opentlv-cli` side by side, then run from `opentlv-cli`:
 
 ```sh
 cmake --preset workspace
@@ -97,50 +66,20 @@ cmake --build --preset workspace
 ctest --preset workspace
 ```
 
-The workspace preset explicitly sets
-`FETCHCONTENT_SOURCE_DIR_OPENTLV_CORE=${sourceDir}/../opentlv`.
-This checkout must exist. To use a different path:
-
-```sh
-cmake --preset workspace -DFETCHCONTENT_SOURCE_DIR_OPENTLV_CORE=/absolute/path/to/opentlv
-```
-
-For a fully offline source build, also supply nlohmann/json 3.11.3 locally:
-
-```sh
-cmake --preset workspace -DFETCHCONTENT_SOURCE_DIR_NLOHMANN_JSON=/absolute/path/to/json
-cmake --build --preset workspace
-ctest --preset workspace
-```
-
-Alternatively, make its installed CMake package available through
-`CMAKE_PREFIX_PATH`. A local Core checkout alone does not prevent a JSON
-download. Source overrides take precedence over installed packages, and CMake
-does not update or switch these checkouts. Compilers, build tools and Python
-must already be installed. The
-[VS Code workspace](https://github.com/OpenTLV/opentlv-workspace) is optional.
+The workspace preset explicitly selects `../opentlv`; CMake does not detect
+siblings automatically. For a fully offline build, also supply nlohmann/json
+3.11.3 through `FETCHCONTENT_SOURCE_DIR_NLOHMANN_JSON` or an installed package.
+See the [workspace layout and setup](docs/development.md#local-workspace),
+[preset reference](docs/development.md#presets-and-build-configurations) and
+[offline requirements](docs/development.md#offline-builds).
 
 ## Installed Core
 
-Build and install a Core revision containing the public integration from
-[Core #620](https://github.com/OpenTLV/opentlv/issues/620), with its C++ facade
-enabled. Select its installation prefix in a fresh CLI build directory:
-
-```sh
-cmake -S . -B build/package -DCMAKE_PREFIX_PATH=/absolute/path/to/core-install
-cmake --build build/package --config Release
-ctest --test-dir build/package -C Release --output-on-failure --no-tests=error
-```
-
-A compatible installed package needs no Core download. If discovery fails,
-CMake proceeds to Git fallback. An incompatible package that was found fails
-explicitly; use a compatible prefix or the explicit local source override.
-JSON is selected separately as described above.
-
-Use a fresh build directory when switching between package and source modes
-to avoid stale discovery cache entries. The integration tests cover both
-static and shared Core, including Windows DLL placement beside the executable
-and dependency consumers.
+A compatible installed Core package can be selected with `CMAKE_PREFIX_PATH`
+or `opentlv_core_DIR`. It must provide both public targets and the required
+capabilities. Use a fresh build directory when changing dependency modes;
+see the [installed-package procedure](docs/development.md#installed-core-package).
+JSON is selected separately.
 
 ## Install
 
@@ -156,23 +95,12 @@ platform's library search path when deploying `otlv`.
 
 ## Options and dependency updates
 
-- `OPENTLV_CLI_BUILD_TESTS=OFF` disables dependency and CLI regression tests.
-- `OPENTLV_BUILD_SHARED_LIBS=ON/OFF` selects shared/static Core for source
-  builds. Installed packages retain their own build configuration.
-- Keep `OPENTLV_BUILD_CXX=ON` for source builds; CLI requires the C++ facade.
-  Reader, Writer, Query with its text frontend, Schema and Codec must be enabled.
-  Document and individual protocol formats may be disabled.
-- Core component options control available formats and features. Tests inspect
-  the public Core configuration, including when consuming an installed package.
-- To exercise Git fallback explicitly, configure a fresh directory with
-  `FETCHCONTENT_TRY_FIND_PACKAGE_MODE=NEVER` and no source overrides.
-
-To update a pinned dependency revision, change its full `GIT_TAG` SHA and
-matching documentation, then run the dependency matrix and command suites
-in [tests/README.md](tests/README.md). Preserve the frozen migration baseline;
-never regenerate its expected observations from the candidate executable.
-Record meaningful changes in the changelog. Local and installed modes
-intentionally allow a separately selected Core revision.
+The [development guide](docs/development.md#supported-core-configurations)
+describes supported shared/static and component configurations, test options,
+and Debug/Release builds. Follow its
+[Core update procedure](docs/development.md#updating-the-pinned-core-revision)
+when changing the immutable dependency pin. Preserve historical migration
+provenance and the frozen regression baseline.
 
 ## Repository layout
 
@@ -182,7 +110,7 @@ intentionally allow a separately selected Core revision.
 | `CMakePresets.json` | Standalone and explicit workspace configure/build/test presets |
 | `src/` | CLI commands, argument parsing, diagnostics, output and shell completions |
 | `tests/` | Dependency consumers, CLI regression suites and migration provenance |
-| `docs/` | CLI command guide and versioned JSON document schema |
+| `docs/` | Command, development and release guides, and versioned JSON document schema |
 | `.github/` | Windows/Linux CI, issue forms, and pull request template |
 | `CONTRIBUTING.md` | Development and contributor checks |
 | `CHANGELOG.md` | Independent CLI change history and migration provenance |

@@ -3,7 +3,7 @@
 ## Run the regression suites
 
 With Core and nlohmann/json available as described in the
-[repository README](../README.md), run:
+[development guide](../docs/development.md), run:
 
 ```sh
 cmake --preset workspace
@@ -74,8 +74,8 @@ location.
 Run the full integration matrix from the CLI root:
 
 ```sh
-python tests/check_core_dependency.py --shared ON
-python tests/check_core_dependency.py --shared OFF
+python -B tests/check_core_dependency.py --shared ON
+python -B tests/check_core_dependency.py --shared OFF
 ```
 
 The runner requires Python 3.10+, CMake, Git, and the compiler/build tools.
@@ -105,7 +105,7 @@ test run. No developer checkout is modified.
 For offline checks against existing checkouts:
 
 ```sh
-python tests/check_core_dependency.py --core-source ../opentlv --json-source /absolute/path/to/json --skip-git --shared ON
+python -B tests/check_core_dependency.py --core-source ../opentlv --json-source /absolute/path/to/json --skip-git --shared ON
 ```
 
 This explicitly skips remote fallback validation. The JSON checkout must
