@@ -24,3 +24,19 @@ path = [
 precedence = "aggregate"
 SPDX-FileCopyrightText = "2026 Marek Cingel"
 SPDX-License-Identifier = "MIT"
+
+[[annotations]]
+path = [
+    "docs/**",
+    "tests/baseline/README.md",
+    "tests/baseline/*.json",
+    "tests/query/corpus.json",
+    "tests/fixtures/**/*.bin",
+    "tests/input.bin",
+    "tests/test.cmake",
+    "tests/examples.cmake",
+    "tests/migration.json"
+]
+precedence = "aggregate"
+SPDX-FileCopyrightText = "2026 Marek Cingel"
+SPDX-License-Identifier = "MIT"

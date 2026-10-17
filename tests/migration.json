@@ -1,0 +1,568 @@
+{
+  "repository": "https://github.com/OpenTLV/opentlv",
+  "import_commit": "edebe957ee2a1e0bf5685c3bd55a33788446e80d",
+  "behavior_origin": "e9cbb29897652fa75753ea89459e3f5e26671d3a",
+  "note": "sha256 records original Git blobs. Frozen fixtures remain exact; other files may evolve after migration. import_sha256 records explicitly adapted files.",
+  "files": [
+    {
+      "path": "src/bluetooth.cpp",
+      "core_path": "tools/cli/src/bluetooth.cpp",
+      "sha256": "cf6fc970bf3bf576f63e7d546b86d3aeb4dcf114a3a8092275832aaa28d3ecd8",
+      "frozen": false
+    },
+    {
+      "path": "src/bluetooth.hpp",
+      "core_path": "tools/cli/src/bluetooth.hpp",
+      "sha256": "b8c7e46bc476cac74b90a8e954c60e0434e548a505ccf8e34b854412527c56ba",
+      "frozen": false
+    },
+    {
+      "path": "src/command.hpp",
+      "core_path": "tools/cli/src/command.hpp",
+      "sha256": "e81d76e6edcb9c931e9ab35bf15d145d275eeafac8eb31954517e40f4da5bb6f",
+      "frozen": false
+    },
+    {
+      "path": "src/command_factory.cpp",
+      "core_path": "tools/cli/src/command_factory.cpp",
+      "sha256": "6350685a49fa4b7753124539695f38938ddf473d454304be0e1cd27d7e211da2",
+      "frozen": false
+    },
+    {
+      "path": "src/command_factory.hpp",
+      "core_path": "tools/cli/src/command_factory.hpp",
+      "sha256": "6a3db2209406907dfbceaa328c344debce87d172a82f3cbb9eb2ae392d5cf331",
+      "frozen": false
+    },
+    {
+      "path": "src/commands/decode_command.cpp",
+      "core_path": "tools/cli/src/commands/decode_command.cpp",
+      "sha256": "c42ec5be4db5d0f8dad766479ec96efde9623b3249845f5d1a737f799461cb10",
+      "frozen": false
+    },
+    {
+      "path": "src/commands/decode_command.hpp",
+      "core_path": "tools/cli/src/commands/decode_command.hpp",
+      "sha256": "e285e81c7503102a123b16ca925769e62d8054dbdebcd90147c377f0578ee9c0",
+      "frozen": false
+    },
+    {
+      "path": "src/commands/diff_command.cpp",
+      "core_path": "tools/cli/src/commands/diff_command.cpp",
+      "sha256": "0b3f12cf1e21711f1c374c48357c3a32e67948d0e4ecb162d9e6a5725c200e43",
+      "frozen": false
+    },
+    {
+      "path": "src/commands/diff_command.hpp",
+      "core_path": "tools/cli/src/commands/diff_command.hpp",
+      "sha256": "80a17e6cf5bb7405f9df0b0a88cae55a4fee6bc14d05881c37078e34449594c9",
+      "frozen": false
+    },
+    {
+      "path": "src/commands/dump_command.cpp",
+      "core_path": "tools/cli/src/commands/dump_command.cpp",
+      "sha256": "319e5d918927657ea5e1aa115ff5501736c1b1ca044592d7ae8ebe2605e2c650",
+      "frozen": false
+    },
+    {
+      "path": "src/commands/dump_command.hpp",
+      "core_path": "tools/cli/src/commands/dump_command.hpp",
+      "sha256": "b5757845c8e375eff9c814072d67c471bb0a8ca5f95e8499f00a918136d530d1",
+      "frozen": false
+    },
+    {
+      "path": "src/commands/emv_dictionary.cpp",
+      "core_path": "tools/cli/src/commands/emv_dictionary.cpp",
+      "sha256": "e328b22716afa2f26118d6f2506fab6f43b8e5e8e3a2e085cf637675bd0f1b14",
+      "frozen": false
+    },
+    {
+      "path": "src/commands/emv_dictionary.hpp",
+      "core_path": "tools/cli/src/commands/emv_dictionary.hpp",
+      "sha256": "81da7dbde5a2f062e4f8f0cc6721033009cb81eccf239801bcf07f12ed2fe439",
+      "frozen": false
+    },
+    {
+      "path": "src/commands/encode_command.cpp",
+      "core_path": "tools/cli/src/commands/encode_command.cpp",
+      "sha256": "e91a2e6d0b2bbcf3ac72c2280c36c03cd09e589a758d15bdb1a0747c458bbf73",
+      "frozen": false
+    },
+    {
+      "path": "src/commands/encode_command.hpp",
+      "core_path": "tools/cli/src/commands/encode_command.hpp",
+      "sha256": "0f9406d004ee47c0a309e82c5dd3e24ee040fd5b515318857dec0d4cedd3dfae",
+      "frozen": false
+    },
+    {
+      "path": "src/commands/formats_command.cpp",
+      "core_path": "tools/cli/src/commands/formats_command.cpp",
+      "sha256": "b4b1db9ed636c3edaa2c3445cbc1e21454a2379b4dd698b933dc7fd417b903d4",
+      "frozen": false
+    },
+    {
+      "path": "src/commands/formats_command.hpp",
+      "core_path": "tools/cli/src/commands/formats_command.hpp",
+      "sha256": "3a52810afa9fd0b387da1ad5bd85d8d403640132c04f4d23893e98b7b9e112e4",
+      "frozen": false
+    },
+    {
+      "path": "src/commands/generate_command.cpp",
+      "core_path": "tools/cli/src/commands/generate_command.cpp",
+      "sha256": "c84e89cba9d446d5038b2d3c0536e7c72b2125032cb350f4636ec479e1cb801a",
+      "frozen": false
+    },
+    {
+      "path": "src/commands/generate_command.hpp",
+      "core_path": "tools/cli/src/commands/generate_command.hpp",
+      "sha256": "cf56c9c95a5eaa7927a777c508e9d00db1d4ca0e481458c8fcbe47f935c69d07",
+      "frozen": false
+    },
+    {
+      "path": "src/commands/help_command.cpp",
+      "core_path": "tools/cli/src/commands/help_command.cpp",
+      "sha256": "c1e9b22e4882c9eaef70e79572e1a092deef078c961f77493d571a7383c611be",
+      "frozen": false
+    },
+    {
+      "path": "src/commands/help_command.hpp",
+      "core_path": "tools/cli/src/commands/help_command.hpp",
+      "sha256": "99a917cea9cd80ff6abdf8d6a57e3e9e8251af057191b18b97942095d7c67f14",
+      "frozen": false
+    },
+    {
+      "path": "src/commands/query_command.cpp",
+      "core_path": "tools/cli/src/commands/query_command.cpp",
+      "sha256": "2d6a78726b793c74546794ae0bf93c7a66310332f47f7c96da849d065697fb56",
+      "frozen": false
+    },
+    {
+      "path": "src/commands/query_command.hpp",
+      "core_path": "tools/cli/src/commands/query_command.hpp",
+      "sha256": "b8e1325cca7578bc5e82a1ea52ed0a7ed5fcb4c8476ac44b9aecc6bbd6aa7973",
+      "frozen": false
+    },
+    {
+      "path": "src/commands/support.cpp",
+      "core_path": "tools/cli/src/commands/support.cpp",
+      "sha256": "fbe6888c54ecbdb66a262db43b1be763f6a3db0074ef5d955730bf097ecf0b1a",
+      "frozen": false
+    },
+    {
+      "path": "src/commands/support.hpp",
+      "core_path": "tools/cli/src/commands/support.hpp",
+      "sha256": "75905467e45ccbda0bdb820419ecec85c214d07483d156a8c699e119f2c99fd5",
+      "frozen": false
+    },
+    {
+      "path": "src/commands/tag_command.cpp",
+      "core_path": "tools/cli/src/commands/tag_command.cpp",
+      "sha256": "e617e30baeb386439a36f0662d652deded1728687b25081300400761dec50151",
+      "frozen": false
+    },
+    {
+      "path": "src/commands/tag_command.hpp",
+      "core_path": "tools/cli/src/commands/tag_command.hpp",
+      "sha256": "95ea8e65847d5d720f681737dc7bdda39e3fcd2e95d03713fcd2a04fba61baaf",
+      "frozen": false
+    },
+    {
+      "path": "src/commands/tags_command.cpp",
+      "core_path": "tools/cli/src/commands/tags_command.cpp",
+      "sha256": "47a884bfb9d58e6ee6f54c8f66e81e4f4705429156e600a82e18d8d9132965bf",
+      "frozen": false
+    },
+    {
+      "path": "src/commands/tags_command.hpp",
+      "core_path": "tools/cli/src/commands/tags_command.hpp",
+      "sha256": "c0246b8d0c613bccc352b88edfb793240570c7833d1c509eff4dae7fd95d16fe",
+      "frozen": false
+    },
+    {
+      "path": "src/commands/traversal_command.cpp",
+      "core_path": "tools/cli/src/commands/traversal_command.cpp",
+      "sha256": "2e904e0b37ab339df34380ade9947b98d29265af8cf02797634d7087548b80bf",
+      "frozen": false
+    },
+    {
+      "path": "src/commands/traversal_command.hpp",
+      "core_path": "tools/cli/src/commands/traversal_command.hpp",
+      "sha256": "e608788fea6f1caed402e0ca16c23b647da6ba7b386e534f87fdf4ce4ec24730",
+      "frozen": false
+    },
+    {
+      "path": "src/commands/validate_command.cpp",
+      "core_path": "tools/cli/src/commands/validate_command.cpp",
+      "sha256": "5cc780a873c8998b14420f8fc5a15b12e2872fe66b70e968a247b2b2e203c3db",
+      "frozen": false
+    },
+    {
+      "path": "src/commands/validate_command.hpp",
+      "core_path": "tools/cli/src/commands/validate_command.hpp",
+      "sha256": "9fc34cf12f215cc7356b77a643fb4a2531a51ab3eb1518aa3dd2f60992ba4819",
+      "frozen": false
+    },
+    {
+      "path": "src/commands/version_command.cpp",
+      "core_path": "tools/cli/src/commands/version_command.cpp",
+      "sha256": "8c329d07bd8030c34d2ceecec821550b6bfdab579424d08e0cff91b135b55c58",
+      "frozen": false
+    },
+    {
+      "path": "src/commands/version_command.hpp",
+      "core_path": "tools/cli/src/commands/version_command.hpp",
+      "sha256": "4891fd8e7c5dadf6400571b58c18422904f96b74f79a26723ccacc5b6bfe010e",
+      "frozen": false
+    },
+    {
+      "path": "src/completion/bash_completer.cpp",
+      "core_path": "tools/cli/src/completion/bash_completer.cpp",
+      "sha256": "f241c68c8470278d4a66ec8f65ded31d1e988fc810056c1d61f20184c01c6028",
+      "frozen": false
+    },
+    {
+      "path": "src/completion/bash_completer.hpp",
+      "core_path": "tools/cli/src/completion/bash_completer.hpp",
+      "sha256": "185dc2245161451c36926d839c10e542df70b1efde0922b5db7808c9402c2bd6",
+      "frozen": false
+    },
+    {
+      "path": "src/completion/completion_command.cpp",
+      "core_path": "tools/cli/src/completion/completion_command.cpp",
+      "sha256": "9d3bdce07d81df6a5c897125bc155c00717d054f19a7224824b730d6cfc4941c",
+      "frozen": false
+    },
+    {
+      "path": "src/completion/completion_command.hpp",
+      "core_path": "tools/cli/src/completion/completion_command.hpp",
+      "sha256": "fd9e413f51f108b11fb8043e0dbdb063fbc6a952ac14df5c86aae9d915421534",
+      "frozen": false
+    },
+    {
+      "path": "src/completion/completion_command_spec.cpp",
+      "core_path": "tools/cli/src/completion/completion_command_spec.cpp",
+      "sha256": "ba873a3d82899a7c3ffe96a17a087ac0954d216490a512c2365defe235219527",
+      "frozen": false
+    },
+    {
+      "path": "src/completion/completion_command_spec.hpp",
+      "core_path": "tools/cli/src/completion/completion_command_spec.hpp",
+      "sha256": "8f0a061338d165682aa496270e37a88b5eea278cb5c091ff7e5a5a6d53206a40",
+      "frozen": false
+    },
+    {
+      "path": "src/completion/completion_model.cpp",
+      "core_path": "tools/cli/src/completion/completion_model.cpp",
+      "sha256": "fb5b650b1d85454cf023d510b943c87c852c37004f7710fa7a48d0c9d1b52eff",
+      "frozen": false
+    },
+    {
+      "path": "src/completion/completion_model.hpp",
+      "core_path": "tools/cli/src/completion/completion_model.hpp",
+      "sha256": "9e2287a08307b676c7198c0aade31cf8129d89c1261018ab016036a524f5cb8f",
+      "frozen": false
+    },
+    {
+      "path": "src/completion/completion_option.cpp",
+      "core_path": "tools/cli/src/completion/completion_option.cpp",
+      "sha256": "d4cc78e705a7cb2ed0a4c6bf7089532eeec48185197f48224712922802cb741c",
+      "frozen": false
+    },
+    {
+      "path": "src/completion/completion_option.hpp",
+      "core_path": "tools/cli/src/completion/completion_option.hpp",
+      "sha256": "0f59c99e4d8c0021be767c6d4b1565e0deaac7ad60978d34a45cc8a7f9e58af0",
+      "frozen": false
+    },
+    {
+      "path": "src/completion/fish_completer.cpp",
+      "core_path": "tools/cli/src/completion/fish_completer.cpp",
+      "sha256": "6af04b5cfe73e4e4e6cf232ab1a40d4ce1cd7dd97dd655329da4e79b80a2373b",
+      "frozen": false
+    },
+    {
+      "path": "src/completion/fish_completer.hpp",
+      "core_path": "tools/cli/src/completion/fish_completer.hpp",
+      "sha256": "13e122d92a3793aa9f5a06e98d485141fea64456a0c4ce3059ed9d1a17957de7",
+      "frozen": false
+    },
+    {
+      "path": "src/completion/powershell_completer.cpp",
+      "core_path": "tools/cli/src/completion/powershell_completer.cpp",
+      "sha256": "f84d1e084f640816c0fe9a021607715a985b03553fb860733fbf7c5d498cc723",
+      "frozen": false
+    },
+    {
+      "path": "src/completion/powershell_completer.hpp",
+      "core_path": "tools/cli/src/completion/powershell_completer.hpp",
+      "sha256": "9a8471a329c9c4b0a91f09ce6892420dd2f3a3481e0adf88e45dc06108ea9843",
+      "frozen": false
+    },
+    {
+      "path": "src/completion/shell_completer.hpp",
+      "core_path": "tools/cli/src/completion/shell_completer.hpp",
+      "sha256": "6816d4935a46ec86a472c6d08b05713d66d0fdd06403b8439404900a41f6f8d2",
+      "frozen": false
+    },
+    {
+      "path": "src/completion/support.cpp",
+      "core_path": "tools/cli/src/completion/support.cpp",
+      "sha256": "d19806007b506e1ce5c48b1336837e57f822761742f56c0ebaf6735189fd9b85",
+      "frozen": false
+    },
+    {
+      "path": "src/completion/support.hpp",
+      "core_path": "tools/cli/src/completion/support.hpp",
+      "sha256": "eb7da65fa761bea668cd2c6f4b2a4fe7defb8bdc09169e22bfddecf2c852cf39",
+      "frozen": false
+    },
+    {
+      "path": "src/completion/zsh_completer.cpp",
+      "core_path": "tools/cli/src/completion/zsh_completer.cpp",
+      "sha256": "7ffaa1709c9efc223b311872da7affe4845bfc4c0c48ac37502c2e0da4a52e32",
+      "frozen": false
+    },
+    {
+      "path": "src/completion/zsh_completer.hpp",
+      "core_path": "tools/cli/src/completion/zsh_completer.hpp",
+      "sha256": "e0fd1a77b8d92a2298bd3e3b0db76e7e1c7a37d67d4d7e4af03cb36c582ac0bf",
+      "frozen": false
+    },
+    {
+      "path": "src/console_color.hpp",
+      "core_path": "tools/cli/src/console_color.hpp",
+      "sha256": "4c684ac3b6859dc8214995cd2e0470141cbcc347b2ff5aec73e4467b96e243bf",
+      "frozen": false
+    },
+    {
+      "path": "src/decode.cpp",
+      "core_path": "tools/cli/src/decode.cpp",
+      "sha256": "f5759aecb72504175e08b44b8f45598804f3253f767bc2ddda6dc37aa81a49e1",
+      "frozen": false
+    },
+    {
+      "path": "src/decode.hpp",
+      "core_path": "tools/cli/src/decode.hpp",
+      "sha256": "e7fdba7a115b781dc63bbfd4269a7762d6dd6170732c00cafd92c29a32d70a0a",
+      "frozen": false
+    },
+    {
+      "path": "src/diagnostic_collect.cpp",
+      "core_path": "tools/cli/src/diagnostic_collect.cpp",
+      "sha256": "d97b93f090dd9ecab3aef31f361dd6d2e7263660071ce238f4549f904ece2fa5",
+      "frozen": false
+    },
+    {
+      "path": "src/diagnostic_collect.hpp",
+      "core_path": "tools/cli/src/diagnostic_collect.hpp",
+      "sha256": "16892f2cb71feba9457801f37f4ad14058e6b8ffa2978f9a83cf9a1467857624",
+      "frozen": false
+    },
+    {
+      "path": "src/diagnostic_render.cpp",
+      "core_path": "tools/cli/src/diagnostic_render.cpp",
+      "sha256": "96fa936093c0b2649e5c46e60cdc7b2af4bebb350afb34c1b6ac6364372e04d7",
+      "frozen": false
+    },
+    {
+      "path": "src/diagnostic_render.hpp",
+      "core_path": "tools/cli/src/diagnostic_render.hpp",
+      "sha256": "95aea4db5aa3c392c54da034d8b6302a254d2196da0e3d7f4aa0a1be7043ae3f",
+      "frozen": false
+    },
+    {
+      "path": "src/diagnostics.hpp",
+      "core_path": "tools/cli/src/diagnostics.hpp",
+      "sha256": "f093cecf42b76f48a31c16efa725abe3e249b59165b28c9e1d19dc8ec8a32149",
+      "frozen": false
+    },
+    {
+      "path": "src/input.cpp",
+      "core_path": "tools/cli/src/input.cpp",
+      "sha256": "c423cff488075f8ad46b8e3533c9247303990d4e2e3de96a8dfb663646776031",
+      "frozen": false
+    },
+    {
+      "path": "src/input.hpp",
+      "core_path": "tools/cli/src/input.hpp",
+      "sha256": "b5569fd6a75ee2b45f9e8609bfaf2f0f6dae35b525ea417031ec4dad6ef71bd3",
+      "frozen": false
+    },
+    {
+      "path": "src/json_model.cpp",
+      "core_path": "tools/cli/src/json_model.cpp",
+      "sha256": "b45fac47ee46b9b25b0d4a1e40cac22e2df822f12739c29f360af47f6c6295d0",
+      "frozen": false
+    },
+    {
+      "path": "src/json_model.hpp",
+      "core_path": "tools/cli/src/json_model.hpp",
+      "sha256": "8b6543457f90aaae407e0691bb746efd6f08e1b7d490a21da6bf0bfd89ff6d1c",
+      "frozen": false
+    },
+    {
+      "path": "src/main.cpp",
+      "core_path": "tools/cli/src/main.cpp",
+      "sha256": "3d32388b86c2cbb0a4dbbfbfd292dac340e7411796f37ebcddafce62f56f7eb2",
+      "frozen": false
+    },
+    {
+      "path": "src/options.cpp",
+      "core_path": "tools/cli/src/options.cpp",
+      "sha256": "8074b3ce49e80d1c408e008bb2eaf34760cff6b55d084e0a87fe533f063c999e",
+      "frozen": false
+    },
+    {
+      "path": "src/options.hpp",
+      "core_path": "tools/cli/src/options.hpp",
+      "sha256": "bd1e9ca0a9e25df05e408dcb6323a69aba0dd7851111d2cfa03d8007c5127534",
+      "frozen": false
+    },
+    {
+      "path": "src/presentation.cpp",
+      "core_path": "tools/cli/src/presentation.cpp",
+      "sha256": "186a874327a8704d54ebf52a7fc1f03583537f6a82bb5a18e32153495c617c98",
+      "frozen": false
+    },
+    {
+      "path": "src/presentation.hpp",
+      "core_path": "tools/cli/src/presentation.hpp",
+      "sha256": "93965f6cc56d1652fbe1f102faa787ebefdd2c0741ca38f3e24c7125c26248a7",
+      "frozen": false
+    },
+    {
+      "path": "tests/baseline/cases.json",
+      "core_path": "tools/cli/baseline/cases.json",
+      "sha256": "b17d76986d739d0722bf30eedbbea894cf82160f5adb335bdc93f203cd0d681d",
+      "frozen": true
+    },
+    {
+      "path": "tests/baseline/expected.json",
+      "core_path": "tools/cli/baseline/expected.json",
+      "sha256": "45c648889e12fc94f0b459a03254dc6f23b80cd8477958826d6d704b0e786dc0",
+      "frozen": true
+    },
+    {
+      "path": "tests/baseline/README.md",
+      "core_path": "tools/cli/baseline/README.md",
+      "sha256": "1ceabd1236797754f1356ca1898b4eae5b74e89646fdd5b94719b82a8ce541b1",
+      "frozen": true
+    },
+    {
+      "path": "tests/baseline/run.py",
+      "core_path": "tools/cli/baseline/run.py",
+      "sha256": "2ae9a7476fdf6c87ea3e99ae710b2d92284cd4a8026d2030e004771466a98fa2",
+      "frozen": true
+    },
+    {
+      "path": "tests/baseline/test_runner.py",
+      "core_path": "tools/cli/baseline/test_runner.py",
+      "sha256": "e685d76cb9a22a56aac5e7492c3ce7f966a8cf8fff8225579255c52366084992",
+      "frozen": true
+    },
+    {
+      "path": "tests/fixtures/nfc/type2/controls.bin",
+      "core_path": "examples/nfc/type2/controls.bin",
+      "sha256": "2be001c48db20a538f56902cdf0f806087414599395d1bf3cbebe25dbdb2e83c",
+      "frozen": true
+    },
+    {
+      "path": "tests/fixtures/nfc/type2/empty-ndef.bin",
+      "core_path": "examples/nfc/type2/empty-ndef.bin",
+      "sha256": "37fc1b7654165ce37572474d78b0dd5ff5248a66f7bb4fe9d74672f44c2bee3a",
+      "frozen": true
+    },
+    {
+      "path": "tests/fixtures/nfc/type2/extended-255.bin",
+      "core_path": "examples/nfc/type2/extended-255.bin",
+      "sha256": "5b786a25b0218b0ce49c7b0aa8b05e14b43b2d9e8e2ca4c8e880afb10e464915",
+      "frozen": true
+    },
+    {
+      "path": "tests/fixtures/nfc/type2/extended-256.bin",
+      "core_path": "examples/nfc/type2/extended-256.bin",
+      "sha256": "e7cbb7b61e1327c01ee94332546d5dea4db3719637d84b736ddfd4115b64debd",
+      "frozen": true
+    },
+    {
+      "path": "tests/fixtures/nfc/type2/framing-policy.bin",
+      "core_path": "examples/nfc/type2/framing-policy.bin",
+      "sha256": "b24f121941a8255bfab0ea5f4abaa924abc7eb6c9d90dc68b6a79a0021edd777",
+      "frozen": true
+    },
+    {
+      "path": "tests/fixtures/nfc/type2/invalid/missing-length.bin",
+      "core_path": "examples/nfc/type2/invalid/missing-length.bin",
+      "sha256": "084fed08b978af4d7d196a7446a86b58009e636b611db16211b65a9aadff29c5",
+      "frozen": true
+    },
+    {
+      "path": "tests/fixtures/nfc/type2/invalid/nonminimal-extended.bin",
+      "core_path": "examples/nfc/type2/invalid/nonminimal-extended.bin",
+      "sha256": "8f4a7081ae6e7e167e1b9e7411c55ff43c6a86167a457e91ab675da036ed8cc8",
+      "frozen": true
+    },
+    {
+      "path": "tests/fixtures/nfc/type2/invalid/reserved-length.bin",
+      "core_path": "examples/nfc/type2/invalid/reserved-length.bin",
+      "sha256": "4cf9725cdd535cc7761a2231fefd506e46c3939cc9a8019802551c257c896450",
+      "frozen": true
+    },
+    {
+      "path": "tests/fixtures/nfc/type2/invalid/truncated-extended.bin",
+      "core_path": "examples/nfc/type2/invalid/truncated-extended.bin",
+      "sha256": "25b4803d292cc181e4aad1fe01273de60932b8cafe2e5a4c8d000d5367cefe2b",
+      "frozen": true
+    },
+    {
+      "path": "tests/fixtures/nfc/type2/invalid/truncated-value.bin",
+      "core_path": "examples/nfc/type2/invalid/truncated-value.bin",
+      "sha256": "52027f89a779c7a50c7dcd3976c57d7f28e5e9336050431a509a84931144b51e",
+      "frozen": true
+    },
+    {
+      "path": "tests/fixtures/nfc/type2/sample.bin",
+      "core_path": "examples/nfc/type2/sample.bin",
+      "sha256": "659634ac9bcc508f97ba2f8706a19fa989f16733aa504e0d738ec23ecacf081d",
+      "frozen": true
+    },
+    {
+      "path": "tests/fixtures/nfc/type2/short-254.bin",
+      "core_path": "examples/nfc/type2/short-254.bin",
+      "sha256": "e0529e0c848ae21fc6713e9d68bf45cacdf6408af78289238d73e8fd5949b8c7",
+      "frozen": true
+    },
+    {
+      "path": "tests/test.cmake",
+      "core_path": "tools/cli/test.cmake",
+      "sha256": "7b38f3ad3a2f12d9f4bf11a8fde81a81fbea2f7ea301d6fe18ee21abf43b8b54",
+      "frozen": false,
+      "import_sha256": "20c2b8402375c1411194811603c7a3f0b749eec0d87c56e24ae7cf220150555f",
+      "adaptation": "NFC fixture path relocated into tests/fixtures/nfc/type2"
+    },
+    {
+      "path": "tests/examples.cmake",
+      "core_path": "tools/cli/examples.cmake",
+      "sha256": "0934b851e2ed139d08a4c0aef5b501c00db72a27f9079ba525e27c3498dd190f",
+      "frozen": false
+    },
+    {
+      "path": "tests/input.bin",
+      "core_path": "tools/cli/input.bin",
+      "sha256": "a06c68d40f54e50096f0d7f30112721fd87532472353271be553e3ee8e82a3ac",
+      "frozen": true
+    },
+    {
+      "path": "tests/query/cli_facade.py",
+      "core_path": "tests/query/cli_facade.py",
+      "sha256": "9f16db88065b8a74b23cf5c27f38a837c0c9f8902df43484bd53bc2b4728675d",
+      "frozen": false
+    },
+    {
+      "path": "tests/query/corpus.json",
+      "core_path": "tests/query/corpus.json",
+      "sha256": "5e9d24f37a31562246959bfaeab23029337d539f5b5e1b6b3ad955040ad23612",
+      "frozen": true
+    }
+  ]
+}
