@@ -156,6 +156,8 @@ decode_result decode_digits(tlv::dynamic_codec codec, tlv::bytes input) {
         return result;
     }
     result.status = decode_status::ok;
+    // The buffer includes unused NUL padding; retain only the decoded C string.
+    // cppcheck-suppress stlcstrAssignment
     result.text = buffer.c_str();
     return result;
 }

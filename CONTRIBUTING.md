@@ -17,8 +17,9 @@ Use a local `feature/<issue>_<description>` branch. Include the relevant issue
 in the pull request and complete the [template](.github/PULL_REQUEST_TEMPLATE.md).
 Describe local checks separately from hosted CI and release validation.
 
-Consume Core only through its public CMake targets and APIs. Independent versioning and
-release automation remain separate issues. Do not add dependency shims,
+Consume Core only through its public CMake targets and APIs. Follow the
+[release guide](docs/releases.md) for independent CLI versioning and validation.
+Do not add dependency shims,
 package-manager publishing, or placeholder CLI behavior.
 
 ## Contributor tools
@@ -81,9 +82,10 @@ and do not use pull-request numbers. Preserve released history.
 ## Validation
 
 For dependency changes, run the shared and static integration matrix,
-pre-commit checks, and `git diff --check`. The Core dependency workflow runs
-on Windows and Linux and runs the CLI command tests for successful dependency
-selections. Keep the existing command suites alongside the 154-case baseline;
-a build or dependency smoke-test pass alone does not establish command parity.
-State missing coverage explicitly; independent versioning and release gates
-are introduced by issue #4.
+pre-commit checks, `python -B scripts/check_static.py` (requires cppcheck 2.13+),
+and `git diff --check`. Development CI builds Windows static and Linux shared
+CLI configurations and runs all applicable command and tooling tests. Release
+CI additionally runs every dependency scenario on both platforms and linkages.
+Keep the original suites alongside the 153 unchanged baseline observations and
+the explicit issue #4 version expectation. A build or dependency smoke-test
+pass alone does not establish command parity. State missing coverage explicitly.

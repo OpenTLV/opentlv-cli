@@ -26,13 +26,15 @@ elseif(SUITE STREQUAL "examples")
     set(_command "${CMAKE_COMMAND}" "-DCLI=${CLI}"
         -P "${CMAKE_CURRENT_LIST_DIR}/examples.cmake")
 elseif(SUITE STREQUAL "baseline")
+    file(READ "${CLI_VERSION_FILE}" CLI_VERSION)
+    string(STRIP "${CLI_VERSION}" CLI_VERSION)
     if(NOT (HAS_BER AND HAS_DER AND HAS_EMV AND HAS_BLUETOOTH_LTV AND
             HAS_NFC AND HAS_QUERY_FRONTEND AND HAS_DOCUMENT))
         message("SKIP: CLI suite baseline requires BER, DER, EMV, Bluetooth, NFC, Query frontend and Document")
         return()
     endif()
-    set(_command "${PYTHON}" "${CMAKE_CURRENT_LIST_DIR}/baseline/run.py" compare
-        --cli "${CLI}" --report "${WORK_DIR}/baseline-report.json")
+    set(_command "${PYTHON}" -B "${CMAKE_CURRENT_LIST_DIR}/check_cli_baseline.py"
+        --cli "${CLI}" --version "${CLI_VERSION}" --report "${WORK_DIR}/baseline-report.json")
 elseif(SUITE STREQUAL "query")
     if(NOT (HAS_BER AND HAS_QUERY_FRONTEND AND HAS_DOCUMENT))
         message("SKIP: CLI suite query requires BER, Query frontend and Document")

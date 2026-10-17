@@ -7,14 +7,18 @@
 import argparse
 import json
 import os
+import platform
 from pathlib import Path
 import re
 import shutil
 import subprocess
+import sys
 import tempfile
 
 
 ROOT = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(ROOT / "scripts"))
+from release import ctest_results, validate_request, validate_summary
 
 
 def main():
@@ -25,7 +29,13 @@ def main():
     parser.add_argument("--skip-git", action="store_true", help="Skip real remote fallback; requires --core-source")
     parser.add_argument("--shared", choices=("ON", "OFF"), default="ON")
     parser.add_argument("--generator")
+    parser.add_argument("--release-request", type=Path, help="Require complete evidence for this immutable request")
     args = parser.parse_args()
+    request = None
+    if args.release_request:
+        request = validate_request(json.loads(args.release_request.read_text(encoding="utf-8")))
+        if args.skip_git or args.core_source or args.json_source:
+            parser.error("Release validation forbids dependency overrides and skipped Git fallback")
     if args.skip_git and (not args.core_source or not args.json_source):
         parser.error("--skip-git requires --core-source and --json-source")
     args.build_root.mkdir(parents=True, exist_ok=True)
@@ -48,6 +58,9 @@ def main():
         common.append(f"-DFETCHCONTENT_SOURCE_DIR_NLOHMANN_JSON={args.json_source.resolve().as_posix()}")
     if args.generator:
         common += ["-G", args.generator]
+    if request:
+        common += [f"-DOPENTLV_CLI_CANDIDATE_VERSION={request['version']}",
+                   f"-DOPENTLV_CLI_CANDIDATE_SHA={request['cli_sha']}"]
 
     def run(*command, env=None, failure=None, cwd=ROOT):
         nonlocal sequence
@@ -87,11 +100,11 @@ def main():
                     raise RuntimeError(f"{build}: {target} originates outside {source}: {origin}")
         if preset:
             run("cmake", "--build", "--preset", preset, "--parallel", "2", env=env, cwd=cwd)
-            run("ctest", "--preset", preset, env=env, cwd=cwd)
+            run("ctest", "--preset", preset, "--output-junit", build / "ctest.xml", env=env, cwd=cwd)
         else:
             run("cmake", "--build", build, "--config", "Release", "--parallel", "2", env=env)
             run("ctest", "--test-dir", build, "-C", "Release",
-                "--output-on-failure", "--no-tests=error", env=env)
+                "--output-on-failure", "--no-tests=error", "--output-junit", build / "ctest.xml", env=env)
         baseline_path = build / "tests/Integration_cli_baseline-Release/baseline-report.json"
         query_path = build / "tests/query-cli-conformance-Release/query-report.json"
         # Single-config generators also use Release via CMAKE_BUILD_TYPE.
@@ -101,8 +114,14 @@ def main():
             raise RuntimeError(f"Incomplete CLI baseline validation: {baseline_path}")
         if query["checks"] != 338 or len(query["exclusions"]) != 2:
             raise RuntimeError(f"Incomplete CLI Query validation: {query_path}")
+        compiler_file = next((build / "CMakeFiles").glob("*/CMakeCXXCompiler.cmake"))
+        compiler_text = compiler_file.read_text(encoding="utf-8")
+        compiler = {key: re.search(rf'set\(CMAKE_CXX_{field} "([^"]+)"\)', compiler_text)[1]
+                    for key, field in (("id", "COMPILER_ID"), ("version", "COMPILER_VERSION"))}
         results.append({"case": build.name, "result": "passed", "mode": expected,
-                        "baseline_cases": len(baseline["observations"]), "query": query})
+                        "baseline_cases": len(baseline["observations"]), "baseline_failures": baseline["failures"],
+                        "cli_version": (build / "cli-version.txt").read_text().strip(),
+                        "ctest": ctest_results(build / "ctest.xml"), "compiler": compiler, "query": query})
 
     # A discoverable package that must never execute in forced fallback or source-override cases.
     trap = work / "package-trap"
@@ -111,7 +130,11 @@ def main():
         'message(FATAL_ERROR "Package discovery must be bypassed in this test")\n',
         encoding="utf-8")
 
+    if request:
+        if run("git", "rev-parse", "HEAD") != request["cli_sha"] or run("git", "status", "--porcelain"):
+            raise RuntimeError("Release requires the exact requested, clean CLI revision")
     core = args.core_source.resolve() if args.core_source else None
+    json_source = args.json_source.resolve() if args.json_source else None
     if not args.skip_git:
         configure("fallback-package-trap", "-DFETCHCONTENT_TRY_FIND_PACKAGE_MODE=ALWAYS",
                   f"-Dopentlv_core_DIR={trap.as_posix()}",
@@ -127,6 +150,8 @@ def main():
         pin = re.search(r"GIT_TAG\s+([0-9a-f]{40})", (ROOT / "cmake/Core.cmake").read_text())[1]
         if revision != pin:
             raise RuntimeError(f"Fetched {revision}, expected {pin}")
+        if request and revision != request["core_sha"]:
+            raise RuntimeError("Fetched Core does not match the release request")
         check(fallback, "source", fetched)
         if core is None:
             core = fetched
@@ -135,6 +160,8 @@ def main():
             json_pin = re.search(r"GIT_TAG\s+([0-9a-f]{40})", (ROOT / "cmake/Json.cmake").read_text())[1]
             if run("git", "-C", json_source, "rev-parse", "HEAD") != json_pin:
                 raise RuntimeError("Fetched JSON does not match the migration pin")
+            if request and json_pin != request["json_sha"]:
+                raise RuntimeError("Fetched JSON does not match the release request")
             common.append(f"-DFETCHCONTENT_SOURCE_DIR_NLOHMANN_JSON={json_source.as_posix()}")
     else:
         results.append({"case": "git-fallback", "result": "skipped"})
@@ -191,13 +218,18 @@ def main():
     # Presets must resolve from a checkout without sibling auto-discovery.
     preset_root = work / "preset workspace"
     cli_copy = preset_root / "opentlv-cli"
-    cli_copy.mkdir(parents=True)
-    for name in ("CMakeLists.txt", "CMakePresets.json", "cmake", "src", "tests"):
-        source = ROOT / name
-        if source.is_dir():
-            shutil.copytree(source, cli_copy / name, ignore=shutil.ignore_patterns("__pycache__"))
-        else:
-            shutil.copy2(source, cli_copy / name)
+    if request:
+        preset_root.mkdir(parents=True)
+        run("git", "clone", "--no-hardlinks", "--", ROOT, cli_copy, env=offline)
+        run("git", "-C", cli_copy, "checkout", "--detach", request["cli_sha"], env=offline)
+    else:
+        cli_copy.mkdir(parents=True)
+        for name in ("CMakeLists.txt", "CMakePresets.json", "cmake", "src", "tests", "scripts"):
+            source = ROOT / name
+            if source.is_dir():
+                shutil.copytree(source, cli_copy / name, ignore=shutil.ignore_patterns("__pycache__"))
+            else:
+                shutil.copy2(source, cli_copy / name)
     run("git", "clone", "--no-hardlinks", "--", core, preset_root / "opentlv", env=offline)
     command = ["cmake", "--preset", "workspace", "-S", cli_copy, *common]
     run(*command, env=offline)
@@ -210,9 +242,16 @@ def main():
         "cli_dirty": bool(run("git", "status", "--porcelain")),
         "core_revision": run("git", "-C", core, "rev-parse", "HEAD"),
         "core_dirty": bool(run("git", "-C", core, "status", "--porcelain")),
+        "json_revision": run("git", "-C", json_source, "rev-parse", "HEAD"),
+        "json_dirty": bool(run("git", "-C", json_source, "status", "--porcelain")),
+        "system": platform.system(), "architecture": platform.machine(),
+        "configuration": "Release", "cxx_standard": 11,
+        "release_request": request,
         "shared": args.shared,
         "results": results,
     }
+    if request:
+        validate_summary(report, request)
     (work / "summary.json").write_text(json.dumps(report, indent=2) + "\n", encoding="utf-8")
     print(f"PASS: {len([r for r in results if r['result'].startswith('passed')])} cases; "
           f"summary: {work / 'summary.json'}", flush=True)

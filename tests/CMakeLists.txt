@@ -32,6 +32,12 @@ file(WRITE "${CMAKE_CURRENT_BINARY_DIR}/core-selection.txt"
 # Read capabilities from the public headers used to build the executable. This
 # works for source and installed Core packages without private CMake variables.
 find_package(Python3 3.10 REQUIRED COMPONENTS Interpreter)
+add_test(NAME cli_version COMMAND ${Python3_EXECUTABLE} -B
+    "${CMAKE_CURRENT_SOURCE_DIR}/check_version.py" "$<TARGET_FILE:otlv>" "${PROJECT_BINARY_DIR}/cli-version.txt")
+add_test(NAME cli_version_contract COMMAND ${Python3_EXECUTABLE} -B
+    "${CMAKE_CURRENT_SOURCE_DIR}/test_version.py")
+add_test(NAME cli_release_gate COMMAND ${Python3_EXECUTABLE} -B
+    "${CMAKE_CURRENT_SOURCE_DIR}/test_release.py")
 add_test(NAME Integration_cli_migration
     COMMAND ${Python3_EXECUTABLE} "${CMAKE_CURRENT_SOURCE_DIR}/check_migration.py")
 set_tests_properties(Integration_cli_migration PROPERTIES LABELS "integration;cli")
@@ -43,6 +49,7 @@ function(add_cli_suite name suite)
         "-DPYTHON=${Python3_EXECUTABLE}"
         "-DSUITE=${suite}"
         "-DWORK_DIR=${_work_dir}"
+        "-DCLI_VERSION_FILE=${PROJECT_BINARY_DIR}/cli-version.txt"
         -P "${CMAKE_CURRENT_SOURCE_DIR}/run_cli_suite.cmake")
     set_tests_properties(${name} PROPERTIES LABELS "integration;cli"
         SKIP_REGULAR_EXPRESSION "SKIP: CLI suite")

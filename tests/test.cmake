@@ -23,7 +23,7 @@ endfunction()
 
 check(0 "Usage:" --help)
 check(2 "unknown option" dump --format fixed --profile emv --hex "0400")
-check(0 "otlv " --version)
+check(0 "OpenTLV CLI " --version)
 check(2 "missing command")
 check(2 "unknown command" unknown)
 check(0 "" formats)

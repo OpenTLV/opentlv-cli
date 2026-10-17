@@ -18,9 +18,12 @@ CTest includes both dependency smoke tests and the migrated command suites:
 | `Integration_cli` | Original capability-aware command, argument, input/output, diagnostic, semantic-module and generation assertions |
 | `Integration_cli_cpp_examples` | CLI equivalents of Core C++ parsing, writing, Query and JSON examples |
 | `query-cli-conformance` | Pinned Query corpus through the auto and Document backends |
-| `Integration_cli_baseline` | 154 frozen process/file observations from the original CLI |
+| `Integration_cli_baseline` | 153 frozen observations plus the issue #4 CLI version contract |
 | `Integration_cli_baseline_runner` | 7 comparator unit tests guarding evidence comparison |
 | `Integration_cli_migration` | Frozen fixture integrity against the migration manifest |
+| `cli_version` | Exact stdout, empty stderr and successful exit for the built CLI version |
+| `cli_version_contract` | Git tags, prereleases, development/dirty/source-export versions and candidate restrictions |
+| `cli_release_gate` | Rejection of invalid inputs, incomplete or stale evidence, failures and skips |
 
 Run all tests when checking the migration. The historical Query test has the
 `query;conformance;memcheck-full` labels, so selecting only `integration` does
@@ -43,15 +46,18 @@ provenance. Its Core-relative paths are historical references. In this
 repository the comparator can also be run directly:
 
 ```sh
-python tests/baseline/run.py compare --cli build/default/src/otlv --report build/baseline-report.json
+python -B tests/check_cli_baseline.py --cli build/default/src/otlv --version <cli-version> --report build/baseline-report.json
 ```
 
 For Visual Studio, use `build/default/src/Release/otlv.exe`. The comparator
 checks exit status, separate stdout/stderr, and resulting file contents.
 Only textual stdout/stderr CRLF-to-LF normalization is permitted; binary
-streams and files remain exact. `--version` is part of this contract and
-retains the original Core version output during migration. Independent CLI
-versioning follows in issue #4.
+streams and files remain exact. Read `<cli-version>` from the build's
+`cli-version.txt`. The issue #4 comparator changes only the expected `version`
+observation to `OpenTLV CLI <cli-version>`, retaining exact exit/stderr/file
+checks. Its report records this intentional change. The original comparator,
+case inventory and captured evidence in `baseline/` remain byte-for-byte intact
+and can still verify the historical Core CLI.
 
 Never recapture `expected.json` from the candidate to make a mismatch pass.
 The baseline supplements the original suites; it does not replace their edge
@@ -106,8 +112,17 @@ This explicitly skips remote fallback validation. The JSON checkout must
 supply nlohmann/json 3.11.3. The full runner downloads dependencies when local
 sources are not supplied and requires network access. Per-command logs and
 `summary.json` retain selected revisions, dirty-state markers, linkage mode,
-and outcomes. CI runs the full matrix on Windows and Linux for shared and
-static Core. A local run does not establish hosted CI success.
+and outcomes, compiler identity, CLI version, and all CTest results. Release CI
+runs the full matrix on Windows and Linux for shared and static Core. PR CI
+runs one pinned build per platform, all its applicable suites, formatting and
+static checks. A local run does not establish hosted CI success.
+
+`--release-request <request.json>` is reserved for the release workflow. It
+requires the exact clean CLI commit and pinned Core/JSON revisions, forbids
+overrides and skipped Git fallback, and checks all 11 CTest entries in each
+of five successful dependency scenarios. It rejects unexpected suite skips;
+the two named Query fixture-provider exclusions remain explicit. See the
+[release guide](../docs/releases.md) for evidence and tag creation.
 
 ## Fixture ownership and provenance
 
