@@ -8,6 +8,7 @@ CLI releases will be versioned independently from Core.
 
 ### Changed
 
+- Make Bash `pipefail` explicit in both quality-check steps so failures propagate through `tee` while preserving artifact logs. (#4)
 - Report an independent Git-derived CLI version through `otlv --version`; retain the frozen migration evidence with an explicit version-contract change. (#4)
 
 ### Added
