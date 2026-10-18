@@ -6,6 +6,10 @@ CLI releases will be versioned independently from Core.
 
 ## [Unreleased]
 
+### Fixed
+
+- Accept trailing CMake comments when validating immutable dependency SHAs in the CLI release gate, while rejecting duplicate or malformed pins. (#4, OpenTLV/opentlv-docs#21)
+
 ### Changed
 
 - Make Bash `pipefail` explicit in both quality-check steps so failures propagate through `tee` while preserving artifact logs. (#4)

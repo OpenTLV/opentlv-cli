@@ -86,9 +86,29 @@ class ReleaseGate(unittest.TestCase):
     def test_only_immutable_dependency_pin(self):
         self.assertEqual(pinned_revision(" GIT_TAG " + "a" * 40 + "\n"), "a" * 40)
         for text in ("GIT_TAG main", "GIT_TAG " + "a" * 39, "GIT_TAG " + "a" * 41,
-                     ("GIT_TAG " + "a" * 40 + "\n") * 2):
+                     ("GIT_TAG " + "a" * 40 + "\n") * 2,
+                     "GIT_TAG " + "a" * 40 + "\nGIT_TAG main",
+                     "GIT_TAG " + "a" * 40 + " unexpected # comment",
+                     "GIT_TAG main # " + "a" * 40,
+                     "# GIT_TAG " + "a" * 40,
+                     "GIT_TAG\n" + "a" * 40):
             with self.subTest(text=text), self.assertRaises(ValueError):
                 pinned_revision(text)
+
+    def test_dependency_pin_with_trailing_comment(self):
+        for newline in ("\n", "\r\n"):
+            with self.subTest(newline=newline):
+                text = "    GIT_TAG " + "a" * 40 + " # v3.11.3" + newline
+                self.assertEqual(pinned_revision(text), "a" * 40)
+        with self.assertRaises(ValueError):
+            pinned_revision(text * 2)
+
+    def test_repository_dependency_pins(self):
+        root = Path(__file__).resolve().parents[1]
+        for name in ("Core.cmake", "Json.cmake"):
+            with self.subTest(dependency=name):
+                pin = pinned_revision((root / "cmake" / name).read_text(encoding="utf-8"))
+                self.assertRegex(pin, r"^[0-9a-f]{40}$")
 
     def test_valid_summary(self):
         self.assertEqual(validate_summary(summary(), request()), ("Linux", "ON"))

@@ -54,9 +54,11 @@ def validate_request(request):
 
 
 def pinned_revision(text):
-    pins = re.findall(r"^\s*GIT_TAG\s+([0-9a-f]{40})\s*$", text, re.MULTILINE)
+    pins = re.findall(r"^[ \t]*GIT_TAG\b([^\r\n]*)", text, re.MULTILINE)
     require(len(pins) == 1, "Dependency must have one immutable full Git SHA")
-    return pins[0]
+    pin = re.fullmatch(r"[ \t]+([0-9a-f]{40})[ \t]*(?:#[^\r\n]*)?", pins[0])
+    require(pin is not None, "Dependency must have one immutable full Git SHA")
+    return pin.group(1)
 
 
 def prepare(sha, tag):
