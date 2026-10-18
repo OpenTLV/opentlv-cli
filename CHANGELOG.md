@@ -13,6 +13,7 @@ CLI releases will be versioned independently from Core.
 
 ### Added
 
+- Notify the central documentation portal after a successful CLI release gate using the exact released tag, commit and validation attempt, independently of Core releases. (OpenTLV/opentlv-docs#21)
 - Document standalone and workspace development, CMake presets, dependency selection, offline builds and Core revision updates. (#5)
 - Add fast development CI and a complete Windows/Linux release gate that records pinned revisions and test evidence before creating the requested CLI tag. (#4)
 - Migrate `otlv`, command documentation, original CLI regression suites and immutable Core fixture snapshots into the standalone repository, preserving command behavior against the frozen 154-case baseline. (#3)
