@@ -129,3 +129,36 @@ This workflow creates a Git tag only. Binary archives, package-manager
 publishing and binary distribution remain outside this migration. Local
 checks and synthetic gate tests do not establish hosted release readiness;
 the first real release still needs a successful hosted workflow and tag step.
+
+## Documentation publication
+
+After a successful **CLI release gate**, **Notify CLI documentation portal**
+sends the exact CLI tag, released commit, gate run ID and attempt to
+`OpenTLV/opentlv-docs`. The notifier reads `release-result-<attempt>` from that
+run; it does not check out or execute candidate code. The gate's workflow
+commit may differ from the released CLI commit, and both identities are
+checked. Notification is a separate workflow: a documentation failure does
+not undo the CLI tag or change the gate result.
+
+The portal independently verifies the successful gate and its release
+evidence, resolves the tag and publishes CLI-owned `docs/` at
+`https://opentlv.github.io/opentlv-docs/cli/<version>/`.
+CLI documentation has its own version selector and stable alias. Core and
+Docs version numbers do not determine CLI documentation versions. Prerelease
+tags are published under their own versions without replacing CLI stable.
+Existing release snapshots remain unchanged when the portal layout evolves.
+
+Repository setup requires `OPENTLV_DOCS_DISPATCH_TOKEN`, scoped to dispatching
+events to `OpenTLV/opentlv-docs`, and the receiver workflow merged in Docs.
+Docs also needs `OPENTLV_CLI_READ_TOKEN` with read access to CLI workflow
+artifacts and repository metadata to verify the release independently.
+See the [portal publication guide](https://github.com/OpenTLV/opentlv-docs#independent-cli-release-publication)
+for permissions, activation and provenance checks. The cross-repository
+credential is available only to the notifier's API step.
+
+If notification fails, rerun **Notify CLI documentation portal** for the same
+successful gate; do not rerun the gate to recreate an existing tag. Repeated
+notifications safely reuse the existing documentation snapshot. Preserve the
+release evidence artifacts for retries: missing or expired evidence fails
+verification. Verify the notifier, Docs workflow and published snapshot
+separately before claiming production documentation publication succeeded.

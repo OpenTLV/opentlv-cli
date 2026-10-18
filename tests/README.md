@@ -1,5 +1,19 @@
 # CLI tests
 
+## Documentation notification checks
+
+The quality workflow also exercises the documentation notifier with Node.js 24:
+
+```sh
+node --test tests/test_docs_notification.cjs
+```
+
+These tests execute the actual workflow's API script with mocked artifact reads
+and dispatch calls. They cover candidate versus workflow SHA, prerelease
+notifications, safe resend, stale attempts and rejected evidence. They do not
+send real notifications or replace hosted end-to-end publication validation.
+Node.js is needed for these tooling checks, not to build or run `otlv`.
+
 ## Run the regression suites
 
 With Core and nlohmann/json available as described in the
