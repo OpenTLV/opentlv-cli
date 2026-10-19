@@ -48,10 +48,10 @@ selection and Core pin updates. The CMake `Release` configuration controls
 compiler settings; it does not establish an official CLI release. Normal
 development builds derive their version from Git even when built in Release.
 
-Pull requests and pushes to `main` run Windows/MSVC static and Linux/GCC shared
-builds, pinned dependency selection, all applicable command and tooling tests,
-pre-commit checks and cppcheck. They upload CTest XML, baseline and Query
-reports. The quality job records the static analyzer version and logs.
+The [Core-aligned quality gates](quality-gates.md) separate Linux Pull Request
+validation, lightweight Main integration, manual Full CI and release publication.
+PR and Full require formatting, static analysis and CodeQL. Main runs only
+a build and narrow integration smoke checks.
 
 Cppcheck analyzes CLI sources, including conditional command implementations;
 it uses normal checking depth to keep development checks fast and does not
@@ -59,31 +59,37 @@ analyze Core or JSON internals. The compiler validates
 `core_requirements.cpp`, whose sole purpose is rejecting unsupported Core
 configurations. Its deliberate `#error` paths are excluded from cppcheck.
 
-The full dependency-resolution matrix is reserved for release validation.
+The full dependency-resolution matrix runs in Full CI and release validation.
 Run it locally when changing dependency selection or runtime linkage, as
 described in [the test guide](../tests/README.md).
 
 ## Request a release
 
-Merge the intended source, documentation and changelog changes first. Obtain
-the full 40-character CLI commit SHA. Run **CLI release gate** from `main`,
-supplying that SHA as `commit` and a new tag such as `v0.1.0` as `tag`.
-These versions are examples, not an automatic first-release choice.
+Select a published Core release with the #637 schema-2 artifacts and update
+the matching Core SHA and `cmake/core-artifact.json` lock. An unset artifact
+release is development-only and blocks CLI release.
+
+Close the changelog before merging the release candidate: its first release
+heading must be `## [v0.2.0] - YYYY-MM-DD`, match the requested tag, contain
+changes and have a valid date. No `Unreleased` text may remain. During ordinary
+development keep the normal `Unreleased` section. Preserve historical releases.
+
+Run **CLI release gate** from `main`, supplying only a new `tag`, for example
+`v0.2.0`. The dispatch SHA is the locked candidate; there is no alternate commit
+or skip-verification input. Do not create the tag in advance.
 
 The workflow:
 
-1. Verifies that the requested object is exactly that commit and is an ancestor
-   of the trusted workflow revision on `main`. Rejects malformed/existing tags.
-2. Reads the immutable Core and JSON pins from that commit. The request records
-   those SHAs, CLI SHA, workflow SHA, requested version, run ID and attempt.
-3. Checks out the exact CLI SHA on Windows and Linux, for static and shared
-   Core. Each job fetches and verifies the pinned dependencies, exercises all
-   successful and rejected dependency scenarios, and runs every required test.
-4. Runs the same formatting, license, syntax and static checks on the candidate.
-5. Aggregates all four matrix reports and rejects missing/duplicate scenarios,
-   dirty or mismatched revisions, stale runs, failed tests and unexpected skips.
-6. Uploads the validation report, then creates the requested tag at the tested
-   SHA only when validation and quality jobs succeeded. It never moves a tag.
+1. Verifies the dispatch commit, closed changelog and new version tag on `main`.
+2. Locks CLI/Core/JSON/workflow SHAs, the Core artifact policy, version, run and attempt.
+3. Runs Full CI for the exact CLI SHA: platform/linkage and dependency scenarios,
+   CLI suites, sanitizers, static analysis and CodeQL. Core suites are not repeated.
+4. Authenticates Core artifacts, builds and tests CLI executables, then validates
+   their archives after extraction into a separate location.
+5. Rejects incomplete, failed, skipped or stale evidence and mismatched artifacts.
+6. Generates SHA-256 checksums and attestations, verifies every producer identity,
+   creates the tag and publishes the GitHub Release. Tags/assets are not replaced.
+   The portal-compatible result is uploaded after successful publication.
 
 Candidate builds use `OPENTLV_CLI_CANDIDATE_VERSION` together with
 `OPENTLV_CLI_CANDIDATE_SHA`. CMake accepts this pair only for the exact clean
@@ -93,7 +99,8 @@ Neither the source nor changelog is rewritten by the workflow.
 
 Validation jobs have read-only repository permissions and checkout credentials
 are not persisted. Only the final job can create the tag; its gate code comes
-from the trusted workflow revision. Concurrent requests for a tag are serialized.
+from the trusted workflow revision. CLI releases are serialized, including requests
+for different tags, because one commit must not receive multiple version tags.
 If another actor creates the tag during validation, create-only publication
 fails instead of replacing it. Repository tag rules must allow the workflow
 token to create the requested tag; a policy rejection leaves validation
@@ -107,7 +114,12 @@ evidence available and does not create a release.
   compiler identity, architecture, C++ standard and Release configuration.
 - `cli-quality-<attempt>`: formatting/license and static-analysis logs.
 - `release-result-<attempt>`: aggregate validation status, required job outcomes,
-  per-matrix summaries and their SHA-256 hashes, build and test counts.
+  per-matrix summaries and their SHA-256 hashes, build and test counts, exact
+  Full CI evidence and package records.
+- `cli-quality-full-<sha>-<attempt>`: exact revision, job results and configuration.
+- `release-binary-<platform>-<linkage>-<attempt>`: tested archives and build records.
+- GitHub Release assets: four CLI archives and their JSON records,
+  `release-manifest.json` and `SHA256SUMS`, all with producer attestations.
 
 Each successful dependency scenario runs 11 CTest entries, 154 CLI behavior
 cases (153 original plus the independent version contract), and 338 Query
@@ -125,10 +137,11 @@ release process; GitHub's configured artifact retention still applies.
 Retry with **Re-run all jobs** or a new dispatch. Evidence from a previous
 attempt is never reused; rerunning only failed jobs cannot authorize a release.
 
-This workflow creates a Git tag only. Binary archives, package-manager
-publishing and binary distribution remain outside this migration. Local
-checks and synthetic gate tests do not establish hosted release readiness;
-the first real release still needs a successful hosted workflow and tag step.
+Package-manager publishing remains outside this scope. Local checks and synthetic
+tests do not establish hosted release readiness; the new artifact path requires
+a controlled hosted release. A publication-service failure can leave a tag without
+a release or a partial release. Inspect and recover manually; a new dispatch
+rejects an existing tag.
 
 ## Documentation publication
 
@@ -136,8 +149,8 @@ After a successful **CLI release gate**, **Notify CLI documentation portal**
 sends the exact CLI tag, released commit, gate run ID and attempt to
 `OpenTLV/opentlv-docs`. The notifier reads `release-result-<attempt>` from that
 run; it does not check out or execute candidate code. The gate's workflow
-commit may differ from the released CLI commit, and both identities are
-checked. Notification is a separate workflow: a documentation failure does
+commit equals the locked release SHA in the new workflow; historical evidence
+with distinct workflow/candidate commits remains readable. Notification is a separate workflow: a documentation failure does
 not undo the CLI tag or change the gate result.
 
 The portal independently verifies the successful gate and its release

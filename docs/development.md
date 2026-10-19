@@ -303,6 +303,8 @@ does not establish hosted release readiness.
    targets and capabilities. First develop against an explicit local checkout
    if changes to Core and CLI must be tested together.
 2. Update `GIT_TAG` in `cmake/Core.cmake`. Keep a full SHA, not a moving branch.
+   Update the matching commit in `cmake/core-artifact.json`; select a published
+   schema-2 Core release there to enable authenticated release consumption.
    Update documentation that describes the current dependency and record the
    change under `Unreleased`. Historical migration/provenance references must
    continue to identify their original source revisions.
@@ -339,8 +341,9 @@ The [release guide](releases.md) is authoritative for version formats,
 prereleases, clean candidate builds and the release workflow. The gate checks
 the exact CLI commit and pinned Core/JSON revisions on both platforms and
 linkages before creating a new CLI tag. Candidate version overrides are
-reserved for that workflow. It creates a Git tag only; binary distribution
-and package-manager publishing are outside this development guide.
+reserved for that workflow. It publishes tested executable archives with
+checksums and attestations. See the [quality gate policy](quality-gates.md)
+for Core artifact selection and the release activation prerequisite.
 
 ## Troubleshooting
 

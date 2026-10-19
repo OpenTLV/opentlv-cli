@@ -1,0 +1,163 @@
+# SPDX-License-Identifier: MIT
+# Copyright (c) 2026 Marek Cingel
+name: CLI checks
+on:
+  workflow_call:
+    inputs:
+      full:
+        required: true
+        type: boolean
+      release_tag:
+        type: string
+        default: ''
+permissions:
+  contents: read
+  actions: read
+  security-events: write
+env:
+  RELEASE_TAG: ${{ inputs.release_tag }}
+jobs:
+  build:
+    name: ${{ matrix.os }} / ${{ matrix.shared }} / ${{ matrix.configuration }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include: ${{ fromJSON(inputs.full && '[{"os":"ubuntu-24.04","shared":"ON","configuration":"Release"},{"os":"ubuntu-24.04","shared":"OFF","configuration":"Release"},{"os":"windows-2022","shared":"ON","configuration":"Release"},{"os":"windows-2022","shared":"OFF","configuration":"Release"}]' || '[{"os":"ubuntu-24.04","shared":"ON","configuration":"Debug"}]') }}
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+      - uses: ilammy/msvc-dev-cmd@v1
+        if: runner.os == 'Windows'
+        with:
+          arch: x64
+      - name: Select the PR Clang configuration
+        if: ${{ !inputs.full }}
+        run: |
+          sudo apt-get update && sudo apt-get install -y clang-18
+          echo 'CC=clang-18' >> "$GITHUB_ENV"
+          echo 'CXX=clang++-18' >> "$GITHUB_ENV"
+      - name: Build and verify CLI-owned behavior
+        env:
+          GH_TOKEN: ${{ github.token }}
+          SHARED: ${{ matrix.shared }}
+          CONFIGURATION: ${{ matrix.configuration }}
+        shell: bash
+        run: |
+          python -B scripts/cli_build.py --build build/ci --shared "$SHARED" \
+            --configuration "$CONFIGURATION" --release-tag "$RELEASE_TAG"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: cli-build-${{ matrix.os }}-${{ matrix.shared }}-${{ github.run_attempt }}
+          path: |
+            build/ci/build-evidence.json
+            build/ci/ctest.xml
+            build/ci/core/verification.json
+            build/ci/tests/**/baseline-report.json
+            build/ci/tests/**/query-report.json
+          if-no-files-found: error
+
+  dependencies:
+    if: inputs.full
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-24.04, windows-2022]
+        shared: ['ON', 'OFF']
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+      - uses: actions/download-artifact@v4
+        if: inputs.release_tag != ''
+        with:
+          name: release-request-${{ github.run_attempt }}
+          path: build/release
+      - name: Verify public Core dependency selection and CLI contracts
+        shell: bash
+        env:
+          SHARED: ${{ matrix.shared }}
+        run: |
+          args=()
+          if [[ -n "$RELEASE_TAG" ]]; then args+=(--release-request build/release/request.json); fi
+          python -B tests/check_core_dependency.py --shared "$SHARED" "${args[@]}"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: release-evidence-${{ github.run_attempt }}-${{ matrix.os }}-${{ matrix.shared }}
+          path: |
+            build/dependency-check/**/summary.json
+            build/dependency-check/**/*.log
+            build/dependency-check/**/ctest.xml
+            build/dependency-check/**/cli-version.txt
+            build/dependency-check/**/baseline-report.json
+            build/dependency-check/**/query-report.json
+          if-no-files-found: error
+
+  quality:
+    uses: ./.github/workflows/quality.yml
+
+  codeql:
+    uses: ./.github/workflows/cli-codeql.yml
+    with:
+      full: ${{ inputs.full }}
+
+  sanitizer:
+    if: inputs.full
+    runs-on: ubuntu-24.04
+    env:
+      CC: clang-18
+      CXX: clang++-18
+      ASAN_OPTIONS: detect_leaks=1:halt_on_error=1
+      UBSAN_OPTIONS: halt_on_error=1:print_stacktrace=1
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+      - run: sudo apt-get update && sudo apt-get install -y clang-18 ninja-build
+      - env:
+          GH_TOKEN: ${{ github.token }}
+        run: >-
+          python -B scripts/cli_build.py --build build/sanitizer --sanitize
+          --configuration Debug --shared OFF --release-tag "$RELEASE_TAG"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: cli-sanitizer-${{ github.run_attempt }}
+          path: |
+            build/sanitizer/build-evidence.json
+            build/sanitizer/ctest.xml
+          if-no-files-found: error
+
+  gate:
+    name: CLI quality gate
+    if: always()
+    needs: [build, dependencies, quality, sanitizer, codeql]
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v5
+      - name: Reject failed, cancelled, missing or unexpectedly skipped checks
+        env:
+          CHECK_RESULTS: ${{ toJSON(needs) }}
+          TIER: ${{ inputs.full && 'full' || 'pr' }}
+        run: python -B scripts/cli_ci.py gate --tier "$TIER" --output build/cli-quality.json
+      - uses: actions/upload-artifact@v4
+        with:
+          name: cli-quality-${{ inputs.full && 'full' || 'pr' }}-${{ github.sha }}-${{ github.run_attempt }}
+          path: build/cli-quality.json
+          if-no-files-found: error

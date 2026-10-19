@@ -102,6 +102,9 @@ and Debug/Release builds. Follow its
 when changing the immutable dependency pin. Preserve historical migration
 provenance and the frozen regression baseline.
 
+The [quality gate policy](docs/quality-gates.md) describes Core-aligned PR, Main,
+Full and Release workflows, authenticated Core artifacts and CLI binary packages.
+
 ## Repository layout
 
 | Path | Purpose |

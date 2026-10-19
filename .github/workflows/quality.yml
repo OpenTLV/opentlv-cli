@@ -4,10 +4,6 @@ name: CLI quality
 
 on:
   workflow_call:
-    inputs:
-      revision:
-        required: true
-        type: string
 
 permissions:
   contents: read
@@ -18,13 +14,13 @@ jobs:
     steps:
       - uses: actions/checkout@v5
         with:
-          ref: ${{ inputs.revision }}
+          fetch-depth: 0
           persist-credentials: false
       - uses: actions/setup-python@v6
         with:
           python-version: '3.11'
       - run: python -m pip install -r requirements-dev.txt
-      - run: sudo apt-get update && sudo apt-get install -y cppcheck
+      - run: sudo apt-get update && sudo apt-get install -y cppcheck ninja-build
       - uses: actions/setup-node@v4
         with:
           node-version: '24'
@@ -34,6 +30,8 @@ jobs:
           set -o pipefail
           mkdir -p build/quality
           node --test tests/test_docs_notification.cjs 2>&1 | tee build/quality/docs-notification.log
+          python -B -m unittest discover -s tests -p 'test_ci_*.py'
+          python -B tests/test_release.py
       - name: Formatting, syntax and license checks
         shell: bash
         run: |
@@ -51,3 +49,23 @@ jobs:
           name: cli-quality-${{ github.run_attempt }}
           path: build/quality/
           if-no-files-found: error
+
+  clang-tidy:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - run: sudo apt-get update && sudo apt-get install -y clang-18 clang-tidy-18 ninja-build
+      - name: Configure CLI compilation database
+        env:
+          CC: clang-18
+          CXX: clang++-18
+        run: >-
+          cmake -S . -B build/tidy -G Ninja -DCMAKE_BUILD_TYPE=Debug
+          -DCMAKE_EXPORT_COMPILE_COMMANDS=ON -DOPENTLV_BUILD_TESTS=OFF
+          -DOPENTLV_BUILD_EXAMPLES=OFF -DOPENTLV_CLI_BUILD_TESTS=OFF
+          -DFETCHCONTENT_TRY_FIND_PACKAGE_MODE=NEVER
+      - name: Analyze every CLI translation unit
+        run: python -B scripts/check_tidy.py --build build/tidy

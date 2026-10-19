@@ -80,11 +80,11 @@ def prepare(sha, tag):
     return request
 
 
-def ctest_results(path):
+def ctest_results(path, expected=TESTS):
     root = ET.parse(path).getroot()
     cases = root.findall(".//testcase")
     names = [case.attrib["name"] for case in cases]
-    require(len(names) == len(set(names)) and set(names) == TESTS, "Incomplete CTest inventory")
+    require(len(names) == len(set(names)) and set(names) == expected, "Incomplete CTest inventory")
     for case in cases:
         require(case.attrib.get("status") == "run" and
                 all(case.find(name) is None for name in ("failure", "error", "skipped")),

@@ -12,6 +12,7 @@ CLI releases will be versioned independently from Core.
 
 ### Changed
 
+- Align CLI Pull Request, lightweight Main, manual Full and Release gates with Core; verify Core artifact identity and provenance, publish tested executable archives with checksums and attestations, and retain exact-commit evidence and CI timings. (OpenTLV/opentlv#638)
 - Make Bash `pipefail` explicit in both quality-check steps so failures propagate through `tee` while preserving artifact logs. (#4)
 - Report an independent Git-derived CLI version through `otlv --version`; retain the frozen migration evidence with an explicit version-contract change. (#4)
 

@@ -14,6 +14,7 @@ foreach(_consumer IN ITEMS core_c_smoke core_cxx_smoke core_capabilities)
 endforeach()
 add_test(NAME core_c_smoke COMMAND core_c_smoke)
 add_test(NAME core_cxx_smoke COMMAND core_cxx_smoke)
+set_tests_properties(core_c_smoke core_cxx_smoke PROPERTIES LABELS "core-smoke")
 
 # Evidence used by the external dependency integration runner.
 get_target_property(_core_imported OpenTLV::tlv IMPORTED)
@@ -66,3 +67,5 @@ set_tests_properties(Integration_cli_baseline PROPERTIES TIMEOUT 300)
 add_cli_suite(query-cli-conformance query)
 set_tests_properties(query-cli-conformance PROPERTIES LABELS "query;conformance;memcheck-full"
     TIMEOUT 3600)
+set_property(TEST query-cli-conformance APPEND PROPERTY LABELS "cli")
+set_tests_properties(cli_version cli_version_contract cli_release_gate PROPERTIES LABELS "cli;tooling")

@@ -2,9 +2,11 @@
 
 ## Documentation notification checks
 
-The quality workflow also exercises the documentation notifier with Node.js 24:
+The quality workflow exercises CI/consumer rejection tests and the documentation
+notifier with Python and Node.js 24:
 
 ```sh
+python -B -m unittest discover -s tests -p 'test_ci_*.py'
 node --test tests/test_docs_notification.cjs
 ```
 
@@ -39,7 +41,7 @@ CTest includes both dependency smoke tests and the migrated command suites:
 | `cli_version_contract` | Git tags, prereleases, development/dirty/source-export versions and candidate restrictions |
 | `cli_release_gate` | Rejection of invalid inputs, incomplete or stale evidence, failures and skips |
 
-Run all tests when checking the migration. The historical Query test has the
+Run all tests when checking the migration. The Query test retains the
 `query;conformance;memcheck-full` labels, so selecting only `integration` does
 not include it. Python 3.10+ is required when CLI tests are enabled.
 
@@ -127,9 +129,10 @@ supply nlohmann/json 3.11.3. The full runner downloads dependencies when local
 sources are not supplied and requires network access. Per-command logs and
 `summary.json` retain selected revisions, dirty-state markers, linkage mode,
 and outcomes, compiler identity, CLI version, and all CTest results. Release CI
-runs the full matrix on Windows and Linux for shared and static Core. PR CI
-runs one pinned build per platform, all its applicable suites, formatting and
-static checks. A local run does not establish hosted CI success.
+and manual Full CI run the full matrix on Windows and Linux for shared/static
+Core. PR CI runs one Linux build, its suites and required static checks. Main CI
+runs only integration smoke tests. A local run does not establish hosted success.
+See [quality gates](../docs/quality-gates.md) for artifact and sanitizer coverage.
 
 `--release-request <request.json>` is reserved for the release workflow. It
 requires the exact clean CLI commit and pinned Core/JSON revisions, forbids

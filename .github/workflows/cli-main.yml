@@ -1,0 +1,59 @@
+# SPDX-License-Identifier: MIT
+# Copyright (c) 2026 Marek Cingel
+name: CLI Main CI
+on:
+  push:
+    branches: [main]
+permissions:
+  contents: read
+concurrency:
+  group: cli-main-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  smoke:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+      - env:
+          GH_TOKEN: ${{ github.token }}
+        run: python -B scripts/cli_build.py --build build/main --smoke
+  gate:
+    name: CLI quality gate
+    if: always()
+    needs: [smoke]
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v5
+      - env:
+          CHECK_RESULTS: ${{ toJSON(needs) }}
+        run: python -B scripts/cli_ci.py gate --tier main --output build/cli-quality.json
+      - uses: actions/upload-artifact@v4
+        with:
+          name: cli-quality-main-${{ github.sha }}-${{ github.run_attempt }}
+          path: build/cli-quality.json
+          if-no-files-found: error
+
+  timings:
+    name: CLI main timings
+    if: always()
+    needs: [gate]
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: read
+      actions: read
+    steps:
+      - uses: actions/checkout@v5
+      - env:
+          GH_TOKEN: ${{ github.token }}
+        run: python -B scripts/ci_timings.py --output build/ci-timings.json
+      - uses: actions/upload-artifact@v4
+        with:
+          name: cli-main-timings-${{ github.sha }}-${{ github.run_attempt }}
+          path: build/ci-timings.json
+          if-no-files-found: error
