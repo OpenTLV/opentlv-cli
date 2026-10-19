@@ -85,9 +85,10 @@ and do not use pull-request numbers. Preserve released history.
 
 For dependency changes, run the shared and static integration matrix,
 pre-commit checks, `python -B scripts/check_static.py` (requires cppcheck 2.13+),
-and `git diff --check`. Development CI builds Windows static and Linux shared
-CLI configurations and runs all applicable command and tooling tests. Release
-CI additionally runs every dependency scenario on both platforms and linkages.
+and `git diff --check`. Follow the Core-aligned
+[quality gates](docs/quality-gates.md): Linux PR checks, lightweight Main smoke,
+manual Full verification and independent exact-commit Release validation.
+Full CI runs every dependency scenario on both platforms and linkages.
 Keep the original suites alongside the 153 unchanged baseline observations and
 the explicit issue #4 version expectation. A build or dependency smoke-test
 pass alone does not establish command parity. State missing coverage explicitly.

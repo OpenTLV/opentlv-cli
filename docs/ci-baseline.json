@@ -1,0 +1,127 @@
+{
+  "schema": 1,
+  "note": "Hosted pre-638 PR, main push and release observations; compare only matching event, test scope, toolchain, runner and cache cohorts. No post-change speedup is claimed.",
+  "runs": [
+    {
+      "run_id": 39114690229,
+      "run_attempt": 1,
+      "url": "https://github.com/OpenTLV/opentlv-cli/actions/runs/39114690229",
+      "commit": "3763558fccb883889ba827eb30414b33641e88cc",
+      "event": "workflow_dispatch",
+      "name": "CLI release gate",
+      "jobs": [
+        {
+          "name": "prepare",
+          "conclusion": "success",
+          "started_at": "2026-10-18T09:16:36Z",
+          "completed_at": "2026-10-18T09:16:43Z",
+          "url": "https://github.com/OpenTLV/opentlv-cli/actions/runs/39114690229/job/117637968289"
+        },
+        {
+          "name": "validation (windows-2022, OFF)",
+          "conclusion": "success",
+          "started_at": "2026-10-18T09:16:45Z",
+          "completed_at": "2026-10-18T09:24:38Z",
+          "url": "https://github.com/OpenTLV/opentlv-cli/actions/runs/39114690229/job/117637998175"
+        },
+        {
+          "name": "validation (ubuntu-24.04, OFF)",
+          "conclusion": "success",
+          "started_at": "2026-10-18T09:16:45Z",
+          "completed_at": "2026-10-18T09:19:06Z",
+          "url": "https://github.com/OpenTLV/opentlv-cli/actions/runs/39114690229/job/117637998202"
+        },
+        {
+          "name": "validation (ubuntu-24.04, ON)",
+          "conclusion": "success",
+          "started_at": "2026-10-18T09:16:46Z",
+          "completed_at": "2026-10-18T09:20:04Z",
+          "url": "https://github.com/OpenTLV/opentlv-cli/actions/runs/39114690229/job/117637998207"
+        },
+        {
+          "name": "validation (windows-2022, ON)",
+          "conclusion": "success",
+          "started_at": "2026-10-18T09:16:46Z",
+          "completed_at": "2026-10-18T09:24:40Z",
+          "url": "https://github.com/OpenTLV/opentlv-cli/actions/runs/39114690229/job/117637998244"
+        },
+        {
+          "name": "quality / checks",
+          "conclusion": "success",
+          "started_at": "2026-10-18T09:16:45Z",
+          "completed_at": "2026-10-18T09:19:16Z",
+          "url": "https://github.com/OpenTLV/opentlv-cli/actions/runs/39114690229/job/117637998284"
+        },
+        {
+          "name": "release",
+          "conclusion": "success",
+          "started_at": "2026-10-18T09:24:42Z",
+          "completed_at": "2026-10-18T09:24:52Z",
+          "url": "https://github.com/OpenTLV/opentlv-cli/actions/runs/39114690229/job/117639541369"
+        }
+      ]
+    },
+    {
+      "run_id": 39114424935,
+      "run_attempt": 1,
+      "url": "https://github.com/OpenTLV/opentlv-cli/actions/runs/39114424935",
+      "commit": "3763558fccb883889ba827eb30414b33641e88cc",
+      "event": "push",
+      "name": "CLI development",
+      "jobs": [
+        {
+          "name": "windows-2022 / shared=OFF",
+          "conclusion": "success",
+          "started_at": "2026-10-18T09:12:35Z",
+          "completed_at": "2026-10-18T09:14:34Z",
+          "url": "https://github.com/OpenTLV/opentlv-cli/actions/runs/39114424935/job/117637185075"
+        },
+        {
+          "name": "ubuntu-24.04 / shared=ON",
+          "conclusion": "success",
+          "started_at": "2026-10-18T09:12:33Z",
+          "completed_at": "2026-10-18T09:13:33Z",
+          "url": "https://github.com/OpenTLV/opentlv-cli/actions/runs/39114424935/job/117637185197"
+        },
+        {
+          "name": "quality / checks",
+          "conclusion": "success",
+          "started_at": "2026-10-18T09:12:32Z",
+          "completed_at": "2026-10-18T09:15:10Z",
+          "url": "https://github.com/OpenTLV/opentlv-cli/actions/runs/39114424935/job/117637185249"
+        }
+      ]
+    },
+    {
+      "run_id": 39112566935,
+      "run_attempt": 1,
+      "url": "https://github.com/OpenTLV/opentlv-cli/actions/runs/39112566935",
+      "commit": "da6eecee6416c7b94183fb1bb83da64255a38530",
+      "event": "pull_request",
+      "name": "CLI development",
+      "jobs": [
+        {
+          "name": "windows-2022 / shared=OFF",
+          "conclusion": "success",
+          "started_at": "2026-10-18T08:43:47Z",
+          "completed_at": "2026-10-18T08:46:05Z",
+          "url": "https://github.com/OpenTLV/opentlv-cli/actions/runs/39112566935/job/117631600236"
+        },
+        {
+          "name": "ubuntu-24.04 / shared=ON",
+          "conclusion": "success",
+          "started_at": "2026-10-18T08:43:47Z",
+          "completed_at": "2026-10-18T08:44:51Z",
+          "url": "https://github.com/OpenTLV/opentlv-cli/actions/runs/39112566935/job/117631600393"
+        },
+        {
+          "name": "quality / checks",
+          "conclusion": "success",
+          "started_at": "2026-10-18T08:43:47Z",
+          "completed_at": "2026-10-18T08:45:31Z",
+          "url": "https://github.com/OpenTLV/opentlv-cli/actions/runs/39112566935/job/117631600449"
+        }
+      ]
+    }
+  ]
+}

@@ -98,4 +98,6 @@ if(UNIX)
     file(RELATIVE_PATH _cli_lib_relative "${CMAKE_INSTALL_FULL_BINDIR}" "${CMAKE_INSTALL_FULL_LIBDIR}")
     set_target_properties(otlv PROPERTIES INSTALL_RPATH "${_cli_origin}/${_cli_lib_relative}")
 endif()
-install(TARGETS otlv RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR})
+install(TARGETS otlv RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR} COMPONENT cli-runtime)
+file(GENERATE OUTPUT "${PROJECT_BINARY_DIR}/cli-package-paths-$<CONFIG>.txt"
+    CONTENT "$<TARGET_FILE:otlv>\n$<TARGET_FILE:OpenTLV::tlv>\n$<TARGET_PROPERTY:OpenTLV::tlv,TYPE>\n")
