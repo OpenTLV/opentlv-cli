@@ -8,6 +8,7 @@ CLI releases will be versioned independently from Core.
 
 ### Fixed
 
+- Retry delayed GitHub Actions job timing metadata for the same run attempt before generating a CLI timing report, rejecting persistently incomplete data. (OpenTLV/opentlv#638)
 - Accept trailing CMake comments when validating immutable dependency SHAs in the CLI release gate, while rejecting duplicate or malformed pins. (#4, OpenTLV/opentlv-docs#21)
 
 ### Changed

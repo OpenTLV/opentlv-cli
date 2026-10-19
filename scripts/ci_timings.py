@@ -8,6 +8,7 @@ from datetime import datetime
 import json
 import os
 from pathlib import Path
+import time
 
 from ci_support import api, require, write as write_json
 
@@ -29,6 +30,45 @@ def summarize(jobs):
             'jobs': durations}
 
 
+def fetch_jobs(repo, run, attempt):
+    jobs = []
+    page = 1
+    while True:
+        data = api(f'repos/{repo}/actions/runs/{run}/attempts/{attempt}/jobs?per_page=100&page={page}')
+        jobs.extend(data['jobs'])
+        if len(data['jobs']) < 100:
+            return jobs
+        page += 1
+
+
+def measure(repo, run, attempt, scope):
+    # A dependent job can start before the Jobs API exposes completion metadata.
+    # Refresh the same attempt instead of accepting an empty or partial CLI report.
+    for retry in range(6):
+        selected = fetch_jobs(repo, run, attempt)
+        ready = True
+        if scope == 'cli':
+            gates = [job for job in selected if job['name'].endswith(' / CLI quality gate')]
+            require(len(gates) <= 1, 'Expected one CLI gate in this run')
+            if gates:
+                prefix = gates[0]['name'].removesuffix(' / CLI quality gate') + ' / '
+                selected = [job for job in selected if job['name'].startswith(prefix)]
+            else:
+                selected = []
+            ready = bool(selected) and all(
+                job.get('conclusion') == 'skipped' or
+                (job.get('status') == 'completed' and job.get('conclusion') and
+                 job.get('started_at') and job.get('completed_at')) for job in selected)
+        measurable = any(job.get('started_at') and job.get('completed_at') and
+                         job.get('conclusion') != 'skipped' for job in selected)
+        if ready and measurable:
+            return summarize(selected)
+        if retry < 5:
+            print('Job timing metadata is not ready; retrying the same run attempt in 5 seconds.', flush=True)
+            time.sleep(5)
+    raise ValueError('Job timing metadata remained incomplete after 6 attempts')
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--baseline', type=Path)
@@ -43,25 +83,11 @@ def main():
     else:
         repo, run, attempt = (os.environ[key] for key in
                               ('GITHUB_REPOSITORY', 'GITHUB_RUN_ID', 'GITHUB_RUN_ATTEMPT'))
-        jobs = []
-        page = 1
-        while True:
-            data = api(f'repos/{repo}/actions/runs/{run}/attempts/{attempt}/jobs?per_page=100&page={page}')
-            jobs.extend(data['jobs'])
-            if len(data['jobs']) < 100:
-                break
-            page += 1
-        selected = jobs
-        if args.scope == 'cli':
-            gates = [job for job in jobs if job['name'].endswith(' / CLI quality gate')]
-            require(len(gates) == 1, 'Expected one CLI gate in this run')
-            prefix = gates[0]['name'].removesuffix(' / CLI quality gate') + ' / '
-            selected = [job for job in jobs if job['name'].startswith(prefix)]
         report = {'schema': 1, 'repository': repo, 'commit': os.environ['GITHUB_SHA'],
                   'event': os.environ['GITHUB_EVENT_NAME'], 'run_id': run, 'run_attempt': attempt,
                   'scope': args.scope,
                   'note': 'Execution span includes scheduling gaps between first start and last finish; excludes initial queue time.',
-                  **summarize(selected)}
+                  **measure(repo, run, attempt, args.scope)}
     write_json(args.output, report)
     print(json.dumps(report, indent=2))
 

@@ -91,7 +91,10 @@ No portal source or historical release evidence is rewritten.
 
 [Baseline data](ci-baseline.json) records actual successful pre-change PR, main
 push and release job timestamps and URLs. Each new entry point uploads timings
-after its required checks. Summarize baseline observations locally with:
+after its required checks. If the Jobs API has not exposed completion metadata
+yet, collection retries the same run attempt up to six times, five seconds apart.
+CLI-scoped reports reject incomplete timing metadata after those retries.
+Summarize baseline observations locally with:
 
 ```sh
 python -B scripts/ci_timings.py --baseline docs/ci-baseline.json --output build/ci-baseline-summary.json
