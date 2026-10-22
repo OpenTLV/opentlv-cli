@@ -8,6 +8,7 @@ CLI releases will be versioned independently from Core.
 
 ### Fixed
 
+- Remove the OpenTLV organization, inherited from the GitHub template, as a copyright holder from `LICENSE` and the README, leaving Marek Cingel to match the source headers and the Core license; packages built from this revision carry the corrected `OpenTLV-CLI.txt`. (#21)
 - Retry delayed GitHub Actions job timing metadata for the same run attempt before generating a CLI timing report, rejecting persistently incomplete data. (OpenTLV/opentlv#638)
 - Accept trailing CMake comments when validating immutable dependency SHAs in the CLI release gate, while rejecting duplicate or malformed pins. (#4, OpenTLV/opentlv-docs#21)
 

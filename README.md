@@ -130,5 +130,4 @@ assembles and publishes documentation.
 
 MIT; see [LICENSE](LICENSE). The original Core CLI carries
 `Copyright (c) 2026 Marek Cingel`. Preserve that notice in migrated sources
-and retain third-party notices. This repository also retains its existing
-OpenTLV copyright attribution.
+and retain third-party notices.
