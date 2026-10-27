@@ -5,6 +5,16 @@ and shared semantic tests belong to [Core](https://github.com/OpenTLV/opentlv).
 The extraction must preserve commands, arguments, exit codes, stdout, stderr,
 diagnostics, and the executable name `otlv`.
 
+This guide adds CLI-specific build, test and provenance rules to the shared
+[OpenTLV contribution guidelines](https://github.com/OpenTLV/.github/blob/main/CONTRIBUTING.md).
+All project spaces follow the
+[Code of Conduct](https://github.com/OpenTLV/.github/blob/main/CODE_OF_CONDUCT.md).
+Report suspected vulnerabilities privately through this repository's Security
+tab as described in the
+[security policy](https://github.com/OpenTLV/.github/blob/main/SECURITY.md),
+not in public issues. The [support directory](https://github.com/OpenTLV/.github/blob/main/SUPPORT.md)
+lists the owning repository for each component.
+
 ## Development
 
 Follow the [development guide](docs/development.md) for standalone and
@@ -54,18 +64,29 @@ from text rewriting.
 
 ## License and provenance
 
-Preserve the existing MIT license and copyright notices. New source files use:
+The CLI is MIT licensed. Marek Cingel holds copyright in his original
+contributions, including the CLI migrated from Core; other contributors retain
+copyright in theirs, since an MIT contribution does not assign copyright.
+OpenTLV is a GitHub organization, not a copyright holder. Preserve existing
+notices. Original source files by Marek Cingel use:
 
 ```cpp
 // SPDX-License-Identifier: MIT
 // Copyright (c) 2026 Marek Cingel
 ```
 
-Use the corresponding comment syntax in CMake, Python, and other languages.
-Configuration and documentation metadata is enumerated in `REUSE.toml`.
-Add explicit entries or license sidecars for new files that cannot carry
-comments; preserve third-party attribution. `LICENSES/MIT.txt` supplies the
-license text for REUSE.
+Use the corresponding comment syntax in CMake, Python, JavaScript and other
+languages, and your own name and year for your own work. Do not apply this
+example to someone else's work or rewrite third-party notices.
+Configuration, documentation and immutable migration snapshots are enumerated
+explicitly in `REUSE.toml`; do not add headers to frozen snapshots. Add
+explicit entries or `.license` sidecars for new files that cannot carry
+comments. `LICENSES/` supplies the license texts referenced by SPDX metadata.
+
+Executable packages carry `licenses/OpenTLV-CLI.txt` (this `LICENSE`),
+`licenses/OpenTLV.txt` (the Core license) and `licenses/nlohmann-json.txt`.
+Add the license text of every new bundled or linked dependency to the package
+in `scripts/cli_build.py`.
 
 The [changelog](CHANGELOG.md) records the baseline Core SHA and preceding tag.
 The [migration manifest](tests/migration.json) records the imported files and
