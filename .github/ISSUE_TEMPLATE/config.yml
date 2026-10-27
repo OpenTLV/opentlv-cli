@@ -1,5 +1,11 @@
 blank_issues_enabled: true
 contact_links:
+  - name: Report a security vulnerability privately
+    url: https://github.com/OpenTLV/.github/blob/main/SECURITY.md
+    about: Use this repository's private report form or the coordination fallback.
+  - name: Find component documentation and support
+    url: https://github.com/OpenTLV/.github/blob/main/SUPPORT.md
+    about: Find the repository that owns your component or technical guide.
   - name: OpenTLV Core
     url: https://github.com/OpenTLV/opentlv/issues
     about: Public C/C++ APIs and shared processing semantics.

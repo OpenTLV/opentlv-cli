@@ -14,6 +14,7 @@ CLI releases will be versioned independently from Core.
 
 ### Changed
 
+- Normalize CLI licensing and community policies to the Workspace reference: annotate `REUSE.toml` itself, list its configuration, documentation and frozen migration snapshot paths explicitly, document copyright attribution and packaged license notices, and link the shared `OpenTLV/.github` contribution, conduct, security and support policies from the contributor guide, README and local issue chooser. (#23)
 - Align CLI Pull Request, lightweight Main, manual Full and Release gates with Core; verify Core artifact identity and provenance, publish tested executable archives with checksums and attestations, and retain exact-commit evidence and CI timings. (OpenTLV/opentlv#638)
 - Make Bash `pipefail` explicit in both quality-check steps so failures propagate through `tee` while preserving artifact logs. (#4)
 - Report an independent Git-derived CLI version through `otlv --version`; retain the frozen migration evidence with an explicit version-contract change. (#4)

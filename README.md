@@ -128,6 +128,16 @@ assembles and publishes documentation.
 
 ## License
 
-MIT; see [LICENSE](LICENSE). The original Core CLI carries
-`Copyright (c) 2026 Marek Cingel`. Preserve that notice in migrated sources
-and retain third-party notices.
+MIT; see [LICENSE](LICENSE). Marek Cingel holds copyright in his original
+contributions, including the CLI migrated from Core; other contributors and
+third parties retain theirs. SPDX/REUSE metadata covers every tracked file.
+Executable packages include the CLI, Core and nlohmann/json license texts in
+`licenses/`.
+
+## Community
+
+Contribution, conduct, security and support policies are shared across OpenTLV
+in [OpenTLV/.github](https://github.com/OpenTLV/.github); the
+[contributor guide](CONTRIBUTING.md) adds CLI-specific instructions. Report
+suspected vulnerabilities privately as described in the
+[security policy](https://github.com/OpenTLV/.github/blob/main/SECURITY.md).

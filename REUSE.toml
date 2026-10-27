@@ -1,41 +1,54 @@
+# SPDX-License-Identifier: MIT
+# Copyright (c) 2026 Marek Cingel
+
 version = 1
 
+# Documentation and configuration that cannot carry comments, or whose
+# format would be changed by a header. Keep paths explicit so new sources
+# cannot silently bypass the source-header policy.
 [[annotations]]
 path = [
-    "README.md",
-    "CONTRIBUTING.md",
+    ".clang-format",
+    ".gitattributes",
+    ".gitignore",
+    ".markdownlint.json",
+    ".pre-commit-config.yaml",
+    ".github/ISSUE_TEMPLATE/bug_report.yml",
+    ".github/ISSUE_TEMPLATE/config.yml",
+    ".github/ISSUE_TEMPLATE/feature_request.yml",
+    ".github/PULL_REQUEST_TEMPLATE.md",
     "CHANGELOG.md",
+    "CMakePresets.json",
+    "CONTRIBUTING.md",
+    "README.md",
+    "cmake/core-artifact.json",
+    "docs/README.md",
+    "docs/ci-baseline.json",
+    "docs/development.md",
+    "docs/json-schema.md",
+    "docs/quality-gates.md",
+    "docs/releases.md",
+    "requirements-dev.txt",
     "src/README.md",
     "tests/README.md",
-    ".gitignore",
-    ".gitattributes",
-    ".markdownlint.json",
-    "requirements-dev.txt",
-    ".pre-commit-config.yaml",
-    ".github/PULL_REQUEST_TEMPLATE.md",
-    ".github/ISSUE_TEMPLATE/bug_report.yml",
-    ".github/ISSUE_TEMPLATE/feature_request.yml",
-    ".github/ISSUE_TEMPLATE/config.yml",
-    ".clang-format",
-    "CMakePresets.json",
-    "cmake/core-artifact.json",
-    "REUSE.toml"
 ]
 precedence = "aggregate"
 SPDX-FileCopyrightText = "2026 Marek Cingel"
 SPDX-License-Identifier = "MIT"
 
+# Migration evidence and immutable snapshots imported from Core. The snapshot
+# hashes in tests/migration.json forbid rewriting them with headers.
 [[annotations]]
 path = [
-    "docs/**",
     "tests/baseline/README.md",
-    "tests/baseline/*.json",
-    "tests/query/corpus.json",
+    "tests/baseline/cases.json",
+    "tests/baseline/expected.json",
+    "tests/examples.cmake",
     "tests/fixtures/**/*.bin",
     "tests/input.bin",
+    "tests/migration.json",
+    "tests/query/corpus.json",
     "tests/test.cmake",
-    "tests/examples.cmake",
-    "tests/migration.json"
 ]
 precedence = "aggregate"
 SPDX-FileCopyrightText = "2026 Marek Cingel"
