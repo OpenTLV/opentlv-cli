@@ -59,10 +59,12 @@ def closed_changelog(text, tag):
     sections = re.split(r'^## ', text, flags=re.MULTILINE)
     require(len(sections) > 1, 'Missing release changelog')
     heading, _, body = sections[1].partition('\n')
-    match = re.fullmatch(r'\[' + re.escape(tag) + r'\] - (\d{4}-\d{2}-\d{2})', heading.strip())
-    require(match is not None, 'First release heading must match the v-prefixed release tag')
+    require(tag.startswith('v'), 'Release tag must have a v prefix')
+    match = re.fullmatch(r'\[' + re.escape(tag[1:]) + r'\] - (\d{4}-\d{2}-\d{2})', heading.strip())
+    require(match is not None, 'First release heading must match the release tag without its v prefix')
     date.fromisoformat(match[1])
     require(re.search(r'^- \S', body, re.MULTILINE), 'Empty release changelog')
+    return body.strip() + '\n'
 
 
 def preflight(tag):
@@ -77,9 +79,10 @@ def preflight(tag):
     remote_tags = run('git', 'ls-remote', '--tags', 'origin', 'refs/tags/v*', capture=True)
     require(not any(line.split()[0] == selected['commit'] for line in remote_tags.splitlines()),
             'Release commit already has a remote version tag')
-    closed_changelog((ROOT / 'CHANGELOG.md').read_text(encoding='utf-8'), tag)
+    notes = closed_changelog((ROOT / 'CHANGELOG.md').read_text(encoding='utf-8'), tag)
     request['core_lock'] = lock(True)
     (ROOT / 'build').mkdir(exist_ok=True)
+    (ROOT / 'build/release-notes.md').write_text(notes, encoding='utf-8')
     work = Path(tempfile.mkdtemp(prefix='core-preflight-', dir=ROOT / 'build'))
     _, _, _, request['core_release'] = authenticated_release(work / 'assets', request['core_lock'])
     request['repository'] = selected['repository']

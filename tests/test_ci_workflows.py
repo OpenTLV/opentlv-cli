@@ -51,6 +51,8 @@ class Workflows(unittest.TestCase):
         verify = next(i for i, text in enumerate(commands) if 'gh attestation verify' in text)
         publish = next(i for i, text in enumerate(commands) if 'git push' in text)
         self.assertLess(verify, publish)
+        self.assertIn('--notes-file build/release-notes.md', commands[publish])
+        self.assertNotIn('--generate-notes', commands[publish])
         self.assertIn('--source-digest', commands[verify])
         self.assertIn('--signer-workflow', commands[verify])
         self.assertEqual(release['name'], 'CLI release gate')

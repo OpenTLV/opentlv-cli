@@ -1,21 +1,32 @@
 # Changelog
 
-All notable changes to OpenTLV CLI will be documented in this file.
-The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
-CLI releases will be versioned independently from Core.
+All notable changes to this project will be documented in this file.
 
-## [Unreleased]
+The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
+and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+
+## [0.2.0] - 2026-10-28
 
 ### Fixed
 
+- Accept changelog versions without the Git tag prefix and publish release notes from the selected release section. (#25)
 - Remove the OpenTLV organization, inherited from the GitHub template, as a copyright holder from `LICENSE` and the README, leaving Marek Cingel to match the source headers and the Core license; packages built from this revision carry the corrected `OpenTLV-CLI.txt`. (#21)
 - Retry delayed GitHub Actions job timing metadata for the same run attempt before generating a CLI timing report, rejecting persistently incomplete data. (OpenTLV/opentlv#638)
+
+### Changed
+
+- Prepare CLI 0.2.0 against Core v0.8.0 at `345c77acb29266036df5f27d04ce315bb61853cc`, enabling authenticated Core binary or Verified Source consumption. (#25)
+- Normalize CLI licensing and community policies to the Workspace reference: annotate `REUSE.toml` itself, list its configuration, documentation and frozen migration snapshot paths explicitly, document copyright attribution and packaged license notices, and link the shared `OpenTLV/.github` contribution, conduct, security and support policies from the contributor guide, README and local issue chooser. (#23)
+- Align CLI Pull Request, lightweight Main, manual Full and Release gates with Core; verify Core artifact identity and provenance, publish tested executable archives with checksums and attestations, and retain exact-commit evidence and CI timings. (OpenTLV/opentlv#638)
+
+## [0.1.0] - 2026-10-18
+
+### Fixed
+
 - Accept trailing CMake comments when validating immutable dependency SHAs in the CLI release gate, while rejecting duplicate or malformed pins. (#4, OpenTLV/opentlv-docs#21)
 
 ### Changed
 
-- Normalize CLI licensing and community policies to the Workspace reference: annotate `REUSE.toml` itself, list its configuration, documentation and frozen migration snapshot paths explicitly, document copyright attribution and packaged license notices, and link the shared `OpenTLV/.github` contribution, conduct, security and support policies from the contributor guide, README and local issue chooser. (#23)
-- Align CLI Pull Request, lightweight Main, manual Full and Release gates with Core; verify Core artifact identity and provenance, publish tested executable archives with checksums and attestations, and retain exact-commit evidence and CI timings. (OpenTLV/opentlv#638)
 - Make Bash `pipefail` explicit in both quality-check steps so failures propagate through `tee` while preserving artifact logs. (#4)
 - Report an independent Git-derived CLI version through `otlv --version`; retain the frozen migration evidence with an explicit version-contract change. (#4)
 

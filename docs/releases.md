@@ -65,14 +65,27 @@ described in [the test guide](../tests/README.md).
 
 ## Request a release
 
+The next candidate is CLI `v0.2.0`, independently versioned from Core. It pins
+Core `v0.8.0` at `345c77acb29266036df5f27d04ce315bb61853cc` in both dependency
+files. The existing `v0.1.0` release and frozen migration fixtures remain historical
+evidence; they must not be regenerated from this candidate.
+
 Select a published Core release with the #637 schema-2 artifacts and update
 the matching Core SHA and `cmake/core-artifact.json` lock. An unset artifact
 release is development-only and blocks CLI release.
 
 Close the changelog before merging the release candidate: its first release
-heading must be `## [v0.2.0] - YYYY-MM-DD`, match the requested tag, contain
+heading must be `## [0.2.0] - YYYY-MM-DD`, match the requested tag without its `v` prefix, contain
 changes and have a valid date. No `Unreleased` text may remain. During ordinary
 development keep the normal `Unreleased` section. Preserve historical releases.
+
+Publication uses only that first release section as the GitHub Release notes;
+older entries are excluded. Git tags retain their `v` prefix.
+
+After merging, confirm successful **CLI Main CI** on the exact intended release
+commit and check that `v0.2.0` is still unused. Local tests and earlier PR runs
+cannot establish that result. The release workflow runs its own Full CI for the
+dispatch commit before publication; a standalone Full run does not replace it.
 
 Run **CLI release gate** from `main`, supplying only a new `tag`, for example
 `v0.2.0`. The dispatch SHA is the locked candidate; there is no alternate commit
@@ -142,6 +155,15 @@ tests do not establish hosted release readiness; the new artifact path requires
 a controlled hosted release. A publication-service failure can leave a tag without
 a release or a partial release. Inspect and recover manually; a new dispatch
 rejects an existing tag.
+
+For [CLI #25](https://github.com/OpenTLV/opentlv-cli/issues/25), verify the published
+tag resolves to the tested CLI SHA, the notes match the `0.2.0` changelog section,
+and all ten expected assets are present: four platform/linkage archives, four
+matching JSON records, `release-manifest.json` and `SHA256SUMS`. Verify downloaded
+checksums and producer attestations against the release workflow and CLI SHA.
+Record the release URL and successful Main/release run evidence in
+[Core #718](https://github.com/OpenTLV/opentlv/issues/718) only after publication.
+Candidate preparation alone does not satisfy the issue's acceptance criteria.
 
 ## Documentation publication
 

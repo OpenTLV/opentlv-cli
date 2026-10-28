@@ -5,11 +5,11 @@ include(FetchContent)
 set(OPENTLV_CLI_CORE_PACKAGE "" CACHE PATH
     "Explicit Core package configuration directory; disables discovery and Git fallback")
 
-# Core #620 public targets and #621 regression baseline. Update deliberately
+# Core v0.8.0 public targets and CLI regression baseline. Update deliberately
 # together with dependency validation; never track a moving branch.
 FetchContent_Declare(opentlv_core
     GIT_REPOSITORY https://github.com/OpenTLV/opentlv.git
-    GIT_TAG edebe957ee2a1e0bf5685c3bd55a33788446e80d
+    GIT_TAG 345c77acb29266036df5f27d04ce315bb61853cc # v0.8.0
     FIND_PACKAGE_ARGS CONFIG NAMES OpenTLV
 )
 if(OPENTLV_CLI_CORE_PACKAGE)
