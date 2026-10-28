@@ -36,14 +36,12 @@ they do not repeat Core verification. See the [test inventory](../tests/README.m
 
 `cmake/Core.cmake` pins one full Core SHA. `cmake/core-artifact.json` must agree
 with it and names an optional published Core release. An unset release tag means
-**pinned Git development source**, never Verified Source. As inspected on
-2026-10-19, the latest published Core release `0.7.1` has no release assets;
-the current CLI pin predates the new artifact producer. CLI release preflight
-therefore rejects the current unset artifact release. This is an explicit
-activation prerequisite, not a bypass or a claim of production verification.
+**pinned Git development source**, never Verified Source; release preflight
+rejects an unset tag. CLI `0.2.0` locks the published Core `v0.8.0` release at
+`345c77acb29266036df5f27d04ce315bb61853cc`, whose schema-2 manifest, binary
+packages and Verified Source archive activate authenticated consumption.
 
-When the first suitable Core release exists, update both pins deliberately and
-validate the complete CLI matrix. The consumer:
+Update both pins deliberately and validate the complete CLI matrix. The consumer:
 
 1. Resolves the named Core release and requires its tag to match the locked SHA.
 2. Downloads the schema-2 manifest and SHA256SUMS and verifies both GitHub
