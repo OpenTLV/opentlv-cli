@@ -18,11 +18,12 @@ env:
   RELEASE_TAG: ${{ inputs.release_tag }}
 jobs:
   build:
-    name: ${{ matrix.os }} / ${{ matrix.shared }} / ${{ matrix.configuration }}
+    # Core is always linked statically; the matrix has no linkage axis.
+    name: ${{ matrix.os }} / ${{ matrix.configuration }}
     strategy:
       fail-fast: false
       matrix:
-        include: ${{ fromJSON(inputs.full && '[{"os":"ubuntu-24.04","shared":"ON","configuration":"Release"},{"os":"ubuntu-24.04","shared":"OFF","configuration":"Release"},{"os":"windows-2022","shared":"ON","configuration":"Release"},{"os":"windows-2022","shared":"OFF","configuration":"Release"}]' || '[{"os":"ubuntu-24.04","shared":"ON","configuration":"Debug"}]') }}
+        include: ${{ fromJSON(inputs.full && '[{"os":"ubuntu-24.04","configuration":"Release"},{"os":"windows-2022","configuration":"Release"},{"os":"macos-15","configuration":"Release"}]' || '[{"os":"ubuntu-24.04","configuration":"Debug"}]') }}
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v5
@@ -36,6 +37,9 @@ jobs:
         if: runner.os == 'Windows'
         with:
           arch: x64
+      - name: Install Ninja on macOS
+        if: runner.os == 'macOS'
+        run: brew install ninja
       - name: Select the PR Clang configuration
         if: ${{ !inputs.full }}
         run: |
@@ -45,16 +49,15 @@ jobs:
       - name: Build and verify CLI-owned behavior
         env:
           GH_TOKEN: ${{ github.token }}
-          SHARED: ${{ matrix.shared }}
           CONFIGURATION: ${{ matrix.configuration }}
         shell: bash
         run: |
-          python -B scripts/cli_build.py --build build/ci --shared "$SHARED" \
+          python -B scripts/cli_build.py --build build/ci \
             --configuration "$CONFIGURATION" --release-tag "$RELEASE_TAG"
       - uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: cli-build-${{ matrix.os }}-${{ matrix.shared }}-${{ github.run_attempt }}
+          name: cli-build-${{ matrix.os }}-${{ github.run_attempt }}
           path: |
             build/ci/build-evidence.json
             build/ci/ctest.xml
@@ -69,7 +72,6 @@ jobs:
       fail-fast: false
       matrix:
         os: [ubuntu-24.04, windows-2022]
-        shared: ['ON', 'OFF']
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v5
@@ -86,16 +88,14 @@ jobs:
           path: build/release
       - name: Verify public Core dependency selection and CLI contracts
         shell: bash
-        env:
-          SHARED: ${{ matrix.shared }}
         run: |
           args=()
           if [[ -n "$RELEASE_TAG" ]]; then args+=(--release-request build/release/request.json); fi
-          python -B tests/check_core_dependency.py --shared "$SHARED" "${args[@]}"
+          python -B tests/check_core_dependency.py "${args[@]}"
       - uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: release-evidence-${{ github.run_attempt }}-${{ matrix.os }}-${{ matrix.shared }}
+          name: release-evidence-${{ github.run_attempt }}-${{ matrix.os }}
           path: |
             build/dependency-check/**/summary.json
             build/dependency-check/**/*.log
@@ -134,7 +134,7 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: >-
           python -B scripts/cli_build.py --build build/sanitizer --sanitize
-          --configuration Debug --shared OFF --release-tag "$RELEASE_TAG"
+          --configuration Debug --release-tag "$RELEASE_TAG"
       - uses: actions/upload-artifact@v4
         if: always()
         with:

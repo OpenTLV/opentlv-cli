@@ -119,13 +119,13 @@ def verify_manifest(manifest, selected):
     require(names, 'Empty Core manifest')
 
 
-def compatible(record, probe, shared, configuration):
-    system = 'windows' if platform.system() == 'Windows' else 'linux'
-    expected = f"{system}-x64-{'shared' if shared == 'ON' else 'static'}"
-    return (record.get('id') == expected and record.get('architecture') == 'x64' and
+def compatible(record, probe, configuration):
+    # The CLI links Core statically, so only Core's static binaries can qualify.
+    system = {'Windows': 'windows', 'Darwin': 'macos'}.get(platform.system(), 'linux')
+    return (record.get('id') == f'{system}-x64-static' and record.get('architecture') == 'x64' and
             platform.machine().lower() in ('x86_64', 'amd64') and probe['SIZEOF_DATA_PTR'] == '8' and
             record.get('os') == system and record.get('build_type') == configuration == 'Release' and
-            record.get('linkage') == ('shared' if shared == 'ON' else 'static') and
+            record.get('linkage') == 'static' and
             record.get('compiler', {}).get('CMAKE_C_COMPILER_ID') == probe['COMPILER_ID'] and
             record.get('compiler', {}).get('CMAKE_C_COMPILER_VERSION') == probe['COMPILER_VERSION'] and
             (record.get('msvc_runtime') == 'MultiThreadedDLL' if system == 'windows' else
@@ -159,7 +159,7 @@ def authenticated_release(work, selected):
     return manifest, sums, download, {'release_id': release['id'], 'manifest_sha256': digest(manifest_path)}
 
 
-def resolve(work, shared, configuration, *, required=False, source_only=False):
+def resolve(work, configuration, *, required=False, source_only=False):
     selected = lock(required)
     if selected['release_tag'] is None:
         return [], {'mode': 'pinned-git', 'commit': selected['commit'], 'verified': False}
@@ -171,7 +171,7 @@ def resolve(work, shared, configuration, *, required=False, source_only=False):
         '-DCMAKE_MSVC_RUNTIME_LIBRARY=MultiThreadedDLL')
     probe = compiler(work / 'probe')
     binaries = [r for r in manifest['artifacts'] if r.get('kind') == 'binary' and
-                compatible(r, probe, shared, configuration)] if not source_only else []
+                compatible(r, probe, configuration)] if not source_only else []
     require(len(binaries) <= 1, 'Ambiguous compatible Core binary')
     if binaries:
         record, mode = binaries[0], 'verified-binary'

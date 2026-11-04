@@ -50,7 +50,6 @@ jobs:
       fail-fast: false
       matrix:
         os: [ubuntu-24.04, windows-2022]
-        shared: ['ON', 'OFF']
     runs-on: ${{ matrix.os }}
     permissions:
       contents: read
@@ -72,9 +71,8 @@ jobs:
         shell: bash
         env:
           GH_TOKEN: ${{ github.token }}
-          SHARED: ${{ matrix.shared }}
         run: |
-          python -B scripts/cli_build.py --build build/package --shared "$SHARED" \
+          python -B scripts/cli_build.py --build build/package \
             --release-tag "$RELEASE_TAG" --package build/artifacts
       - uses: actions/attest@v4
         with:
@@ -82,7 +80,7 @@ jobs:
           create-storage-record: false
       - uses: actions/upload-artifact@v4
         with:
-          name: release-binary-${{ matrix.os }}-${{ matrix.shared }}-${{ github.run_attempt }}
+          name: release-binary-${{ matrix.os }}-${{ github.run_attempt }}
           path: build/artifacts/*
           if-no-files-found: error
 

@@ -128,35 +128,41 @@ ctest --test-dir build/debug-vs -C Debug --output-on-failure --no-tests=error
 
 The same pattern supports `RelWithDebInfo` with generators that provide it.
 Do not build Debug and then use a test preset that still selects Release.
-An installed Core package must provide a compatible configuration and runtime;
-source mode is convenient when developing Core and CLI together.
+An installed Core package must provide a compatible configuration and static
+libraries; source mode is convenient when developing Core and CLI together.
 
 For persistent personal settings, use the Git-ignored `CMakeUserPresets.json`.
-This example adds a local static build and keeps its directory separate:
+This example adds a local Debug build and keeps its directory separate:
 
 ```json
 {
   "version": 5,
   "configurePresets": [
     {
-      "name": "local-static",
+      "name": "local-debug",
       "inherits": "workspace",
-      "binaryDir": "${sourceDir}/build/local-static",
+      "binaryDir": "${sourceDir}/build/local-debug",
       "cacheVariables": {
-        "OPENTLV_BUILD_SHARED_LIBS": "OFF"
+        "CMAKE_BUILD_TYPE": "Debug"
       }
     }
   ],
   "buildPresets": [
-    { "name": "local-static", "inherits": "workspace", "configurePreset": "local-static" }
+    { "name": "local-debug", "configurePreset": "local-debug", "configuration": "Debug" }
   ],
   "testPresets": [
-    { "name": "local-static", "inherits": "workspace", "configurePreset": "local-static" }
+    {
+      "name": "local-debug",
+      "configurePreset": "local-debug",
+      "configuration": "Debug",
+      "output": { "outputOnFailure": true },
+      "execution": { "noTestsAction": "error" }
+    }
   ]
 }
 ```
 
-Configure, build and test with `--preset local-static` using the corresponding
+Configure, build and test with `--preset local-debug` using the corresponding
 tools. Do not overwrite an existing user presets file; merge the entries.
 
 ## Dependency resolution
@@ -270,17 +276,38 @@ documented `--skip-git` mode provides partial offline validation only.
 | Setting | Effect |
 | --- | --- |
 | `OPENTLV_CLI_BUILD_TESTS=ON/OFF` | Enable/disable CLI tests and dependency smoke tests; defaults to ON for standalone builds |
-| `OPENTLV_BUILD_SHARED_LIBS=ON/OFF` | Select shared/static Core when building from source |
 | `OPENTLV_BUILD_CXX=ON` | Required C++ facade for source builds |
 | Core component options | Control available formats and optional features in source builds |
 
 Reader, Writer, Query with its text frontend, Schema and Codec are required.
 Document and individual protocol formats may be disabled. The compiler checks
 the selected Core's public configuration, including installed packages.
-For example, select static Core with
-`cmake --preset workspace -DOPENTLV_BUILD_SHARED_LIBS=OFF` and then build/test
-that preset. Retain full capabilities for the complete regression and release
-checks. Reduced builds explicitly skip suites that need unavailable features;
+For example, configure `cmake --preset workspace -DOPENTLV_DHCP=OFF` and then
+build/test that preset. Retain full capabilities for the complete regression and release
+checks.
+
+### Core linkage
+
+`otlv` always links OpenTLV Core statically, on every platform. There is no
+CLI option to select shared Core and no shared Core build variant:
+
+- Local sibling sources and the pinned FetchContent fallback build Core as a
+  static library for this build only. `cmake/Core.cmake` sets Core's
+  `OPENTLV_BUILD_SHARED_LIBS` to `OFF` as a directory-scoped variable; it does
+  not change `BUILD_SHARED_LIBS` or the linkage of other dependencies.
+- Passing `-DOPENTLV_BUILD_SHARED_LIBS=ON` fails at configure time. `OFF` is
+  accepted but has no further effect.
+- An installed Core package is used only if its `OpenTLV::tlv` is a static
+  library. A shared-only installation fails with instructions: install Core
+  with `OPENTLV_BUILD_SHARED_LIBS=OFF`, or select a source checkout with
+  `FETCHCONTENT_SOURCE_DIR_OPENTLV_CORE` (or skip installed packages with
+  `FETCHCONTENT_TRY_FIND_PACKAGE_MODE=NEVER`).
+- The `cli_static_core` CTest entry reads the built executable's
+  shared-library imports (ELF, PE or Mach-O) and fails if any of them is an
+  OpenTLV Core library. System and compiler runtimes stay dynamic.
+
+Core's own linkage policy is unchanged; other Core consumers may still build
+and install shared Core. Reduced builds explicitly skip suites that need unavailable features;
 those skips do not constitute full release validation.
 
 ## Tests and contributor checks
@@ -290,7 +317,7 @@ CTest includes dependency consumers, command regressions, the frozen baseline,
 Query conformance, version contracts and release-gate tests. Run all entries
 for complete coverage; filtering only the `integration` label omits Query and
 some tooling tests. See the [test guide](../tests/README.md) for detailed
-coverage, capability skips, direct runners and the shared/static dependency matrix.
+coverage, capability skips, direct runners and the dependency selection matrix.
 
 For formatting, license metadata and static analysis, follow
 [CONTRIBUTING.md](../CONTRIBUTING.md#validation). Keep local results separate
@@ -310,11 +337,10 @@ does not establish hosted release readiness.
    continue to identify their original source revisions.
 3. Use a fresh pinned build to exercise the actual candidate dependency.
    Local overrides and installed packages can otherwise hide a bad pin.
-4. Run both dependency matrices from the CLI root:
+4. Run the dependency selection matrix from the CLI root:
 
    ```sh
-   python -B tests/check_core_dependency.py --shared ON
-   python -B tests/check_core_dependency.py --shared OFF
+   python -B tests/check_core_dependency.py
    ```
 
    They build and test successful selection modes and check rejection cases.
@@ -324,8 +350,8 @@ does not establish hosted release readiness.
    frozen migration baseline; never regenerate expected observations from
    the candidate to make a failure pass. Intentional CLI behavior changes
    require explicit tests and documentation.
-6. Before releasing, require the hosted Windows/Linux, shared/static release
-   gate for the exact merged CLI commit. See [release validation](releases.md#request-a-release).
+6. Before releasing, require the hosted Windows/Linux release gate for the
+   exact merged CLI commit. See [release validation](releases.md#request-a-release).
 
 JSON pin updates follow the same validation discipline and also require
 updating its exact package version and local-source requirements consistently.
@@ -357,7 +383,9 @@ for Core artifact selection and the release activation prerequisite.
 | Version generation rejects a shallow clone | Obtain complete CLI history and tags, for example with `git fetch --unshallow --tags` while online |
 | CTest cannot find the executable | Build first and use the same directory/configuration; Visual Studio Debug needs `-C Debug` |
 | CTest reports no tests | Configure with `OPENTLV_CLI_BUILD_TESTS=ON`, build, and use the correct test directory |
-| Runtime cannot load a shared Core library | In build trees the CLI prepares Windows DLL placement; for deployment follow the [installation notes](../README.md#install) and provide the installed Core runtime on the platform's library search path |
+| Configure rejects `OPENTLV_BUILD_SHARED_LIBS=ON` | The CLI links Core statically only; remove the option, for example with `cmake -U OPENTLV_BUILD_SHARED_LIBS`, or use a fresh build directory |
+| Configure reports `OpenTLV::tlv is a SHARED_LIBRARY` | A shared-only Core package was found; install static Core or select a Core source, see [Core linkage](#core-linkage) |
+| `cli_static_core` fails | The executable imports a Core library; check for a custom toolchain or link setting that bypasses `cmake/Core.cmake` |
 | Generator/compiler mismatch after reconfiguration | Use a fresh directory for the new generator/compiler and dependency mode |
 
 CLI owns these documentation sources. The independent OpenTLV Docs

@@ -21,7 +21,8 @@ Follow the [development guide](docs/development.md) for standalone and
 workspace builds, presets, Debug/Release configurations, offline requirements,
 dependency troubleshooting and the Core pin update procedure.
 Run CTest for the dependency smoke tests, original CLI suites, Query facade,
-and frozen migration comparison. Run the shared/static dependency matrix in
+and frozen migration comparison. Core is always linked statically; do not add
+a shared Core option or build variant. Run the dependency selection matrix in
 [tests/README.md](tests/README.md) before changing dependency integration.
 Supply both Core and nlohmann/json sources or packages for offline builds.
 
@@ -104,7 +105,7 @@ and do not use pull-request numbers. Preserve released history.
 
 ## Validation
 
-For dependency changes, run the shared and static integration matrix,
+For dependency changes, run the dependency selection matrix,
 pre-commit checks, `python -B scripts/check_static.py` (requires cppcheck 2.13+),
 and `git diff --check`. Follow the Core-aligned
 [quality gates](docs/quality-gates.md): Linux PR checks, lightweight Main smoke,

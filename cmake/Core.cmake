@@ -2,6 +2,21 @@
 # Copyright (c) 2026 Marek Cingel
 
 include(FetchContent)
+
+# The standalone CLI is an end product with one Core linkage: static. Core's
+# own option stays untouched for other consumers; the CLI never offers it.
+set(_opentlv_cli_requested_shared "$CACHE{OPENTLV_BUILD_SHARED_LIBS}")
+if(_opentlv_cli_requested_shared)
+    message(FATAL_ERROR
+        "OPENTLV_BUILD_SHARED_LIBS=${_opentlv_cli_requested_shared} is not supported: the standalone "
+        "CLI always links OpenTLV Core statically. Remove the option, for an existing build "
+        "directory with 'cmake -U OPENTLV_BUILD_SHARED_LIBS', or use a fresh build directory.")
+endif()
+# A directory-scoped normal variable selects static Core for the embedded
+# source build only (Core's option() honors it under CMP0077). The global
+# BUILD_SHARED_LIBS and other dependencies are left unchanged.
+set(OPENTLV_BUILD_SHARED_LIBS OFF)
+
 set(OPENTLV_CLI_CORE_PACKAGE "" CACHE PATH
     "Explicit Core package configuration directory; disables discovery and Git fallback")
 
@@ -38,3 +53,15 @@ foreach(_opentlv_cli_target IN ITEMS OpenTLV::tlv OpenTLV::tlv++)
             "FETCHCONTENT_SOURCE_DIR_OPENTLV_CORE or CMAKE_PREFIX_PATH.")
     endif()
 endforeach()
+
+# Installed packages carry the linkage they were built with; a shared-only
+# installation cannot be turned static here and must not be used silently.
+get_target_property(_opentlv_cli_core_type OpenTLV::tlv TYPE)
+if(NOT _opentlv_cli_core_type STREQUAL "STATIC_LIBRARY")
+    message(FATAL_ERROR
+        "Selected Core is incompatible: OpenTLV::tlv is a ${_opentlv_cli_core_type}, but the "
+        "standalone CLI links Core statically. Install Core with OPENTLV_BUILD_SHARED_LIBS=OFF "
+        "and select that package with CMAKE_PREFIX_PATH, or build Core from source with "
+        "FETCHCONTENT_SOURCE_DIR_OPENTLV_CORE (or FETCHCONTENT_TRY_FIND_PACKAGE_MODE=NEVER to "
+        "skip installed packages).")
+endif()

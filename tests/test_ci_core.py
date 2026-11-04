@@ -82,20 +82,28 @@ class CoreConsumer(unittest.TestCase):
             with self.assertRaises(ValueError):
                 checksums(root / 'sums')
 
-    def test_binary_requires_toolchain_runtime_linkage_and_architecture(self):
+    def test_binary_requires_static_toolchain_runtime_and_architecture(self):
         probe = {'COMPILER_ID': 'GNU', 'COMPILER_VERSION': '13.3.0', 'SIZEOF_DATA_PTR': '8'}
-        record = {'id': 'linux-x64-shared', 'architecture': 'x64', 'os': 'linux',
-                  'build_type': 'Release', 'linkage': 'shared',
+        record = {'id': 'linux-x64-static', 'architecture': 'x64', 'os': 'linux',
+                  'build_type': 'Release', 'linkage': 'static',
                   'compiler': {'CMAKE_C_COMPILER_ID': 'GNU', 'CMAKE_C_COMPILER_VERSION': '13.3.0'},
                   'libc': ['glibc', '2.39'], 'options': {'OPENTLV_BUILD_CXX': 'ON'}}
         with patch('verified_core.platform.system', return_value='Linux'), \
                 patch('verified_core.platform.machine', return_value='x86_64'), \
                 patch('verified_core.platform.libc_ver', return_value=('glibc', '2.39')):
-            self.assertTrue(compatible(record, probe, 'ON', 'Release'))
-            self.assertFalse(compatible(record, probe, 'OFF', 'Release'))
-            self.assertFalse(compatible(record, probe, 'ON', 'Debug'))
-            self.assertFalse(compatible(record, probe | {'COMPILER_ID': 'Clang'}, 'ON', 'Release'))
-            self.assertFalse(compatible(record | {'libc': ['glibc', '2.31']}, probe, 'ON', 'Release'))
+            self.assertTrue(compatible(record, probe, 'Release'))
+            # Core's shared binaries never qualify: the CLI links Core statically.
+            self.assertFalse(compatible(record | {'id': 'linux-x64-shared', 'linkage': 'shared'},
+                                        probe, 'Release'))
+            self.assertFalse(compatible(record | {'linkage': 'shared'}, probe, 'Release'))
+            self.assertFalse(compatible(record, probe, 'Debug'))
+            self.assertFalse(compatible(record, probe | {'COMPILER_ID': 'Clang'}, 'Release'))
+            self.assertFalse(compatible(record | {'libc': ['glibc', '2.31']}, probe, 'Release'))
+        with patch('verified_core.platform.system', return_value='Darwin'), \
+                patch('verified_core.platform.machine', return_value='x86_64'), \
+                patch('verified_core.platform.libc_ver', return_value=('glibc', '2.39')):
+            # No macOS Core binary exists yet; Linux binaries must not be reused there.
+            self.assertFalse(compatible(record, probe, 'Release'))
 
     def test_attestation_failure_never_becomes_source_fallback(self):
         with tempfile.TemporaryDirectory() as tmp, patch('verified_core.lock', return_value=LOCK), \
@@ -108,7 +116,7 @@ class CoreConsumer(unittest.TestCase):
                     raise RuntimeError('invalid producer')
             command.side_effect = fail
             with self.assertRaisesRegex(RuntimeError, 'invalid producer'):
-                resolve(Path(tmp) / 'core', 'ON', 'Release', required=True)
+                resolve(Path(tmp) / 'core', 'Release', required=True)
             self.assertEqual(command.call_count, 2)
 
     def test_authenticated_source_resolution_and_corrupt_archive(self):
@@ -147,9 +155,9 @@ class CoreConsumer(unittest.TestCase):
                         patch('verified_core.compiler', return_value={}):
                     if corrupt:
                         with self.assertRaisesRegex(ValueError, 'checksum'):
-                            resolve(root / 'work', 'ON', 'Debug', required=True, source_only=True)
+                            resolve(root / 'work', 'Debug', required=True, source_only=True)
                     else:
-                        options, evidence = resolve(root / 'work', 'ON', 'Debug', required=True, source_only=True)
+                        options, evidence = resolve(root / 'work', 'Debug', required=True, source_only=True)
                         self.assertEqual(evidence['mode'], 'verified-source')
                         self.assertTrue(evidence['verified'])
                         self.assertIn('FETCHCONTENT_SOURCE_DIR_OPENTLV_CORE=', options[0])
@@ -176,7 +184,7 @@ class CoreConsumer(unittest.TestCase):
                     patch('verified_core.authenticated_release', side_effect=authenticated), \
                     patch('verified_core.compatible', return_value=True), \
                     patch('verified_core.compiler', return_value={}), patch('verified_core.run'):
-                options, evidence = resolve(root / 'work', 'OFF', 'Release', required=True)
+                options, evidence = resolve(root / 'work', 'Release', required=True)
                 self.assertEqual(evidence['mode'], 'verified-binary')
                 self.assertEqual(len(options), 1)
                 self.assertTrue(options[0].startswith('-DOPENTLV_CLI_CORE_PACKAGE='))
@@ -193,7 +201,7 @@ class CoreConsumer(unittest.TestCase):
                     patch('verified_core.authenticated_release', side_effect=authenticated), \
                     patch('verified_core.compiler', return_value={}), patch('verified_core.run'):
                 with self.assertRaisesRegex(ValueError, 'fallback disabled'):
-                    resolve(root / 'work', 'OFF', 'Debug', required=True, source_only=True)
+                    resolve(root / 'work', 'Debug', required=True, source_only=True)
 
 
 if __name__ == '__main__':

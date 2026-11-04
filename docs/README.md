@@ -44,7 +44,7 @@ cmake --install build/default --config Release --prefix install-cli
 The executable is installed in the standard runtime directory (normally `bin`).
 The [development guide](development.md) describes dependencies, workspace and
 offline builds, presets, installed Core packages and dependency updates.
-See the [installation notes](../README.md#install) for shared runtime deployment.
+See the [installation notes](../README.md#install) for deployment; Core is linked statically.
 `OPENTLV_CLI_BUILD_TESTS` controls CLI regression tests and
 dependency smoke tests. The CLI requires Core's public C and C++ targets.
 JSON input and output use the private header-only nlohmann/json dependency.

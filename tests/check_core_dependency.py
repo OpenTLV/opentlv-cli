@@ -27,7 +27,6 @@ def main():
     parser.add_argument("--core-source", type=Path, help="Core checkout for local/offline checks")
     parser.add_argument("--json-source", type=Path, help="nlohmann/json 3.11.3 checkout for offline checks")
     parser.add_argument("--skip-git", action="store_true", help="Skip real remote fallback; requires --core-source")
-    parser.add_argument("--shared", choices=("ON", "OFF"), default="ON")
     parser.add_argument("--generator")
     parser.add_argument("--release-request", type=Path, help="Require complete evidence for this immutable request")
     args = parser.parse_args()
@@ -50,7 +49,6 @@ def main():
     common = [
         "-DCMAKE_BUILD_TYPE=Release",
         "-DOPENTLV_CLI_BUILD_TESTS=ON",
-        f"-DOPENTLV_BUILD_SHARED_LIBS={args.shared}",
         "-DCMAKE_FIND_USE_PACKAGE_REGISTRY=OFF",
         "-DCMAKE_FIND_USE_SYSTEM_PACKAGE_REGISTRY=OFF",
     ]
@@ -114,11 +112,15 @@ def main():
             raise RuntimeError(f"Incomplete CLI baseline validation: {baseline_path}")
         if query["checks"] != 338 or len(query["exclusions"]) != 2:
             raise RuntimeError(f"Incomplete CLI Query validation: {query_path}")
+        # CMake enforces static Core; cli_static_core (in TESTS) checks the executable imports.
+        core_type = (build / "cli-package-paths-Release.txt").read_text(encoding="utf-8").splitlines()[2]
+        if core_type != "STATIC_LIBRARY":
+            raise RuntimeError(f"{build}: OpenTLV::tlv is {core_type}, expected STATIC_LIBRARY")
         compiler_file = next((build / "CMakeFiles").glob("*/CMakeCXXCompiler.cmake"))
         compiler_text = compiler_file.read_text(encoding="utf-8")
         compiler = {key: re.search(rf'set\(CMAKE_CXX_{field} "([^"]+)"\)', compiler_text)[1]
                     for key, field in (("id", "COMPILER_ID"), ("version", "COMPILER_VERSION"))}
-        results.append({"case": build.name, "result": "passed", "mode": expected,
+        results.append({"case": build.name, "result": "passed", "mode": expected, "core_type": core_type,
                         "baseline_cases": len(baseline["observations"]), "baseline_failures": baseline["failures"],
                         "cli_version": (build / "cli-version.txt").read_text().strip(),
                         "ctest": ctest_results(build / "ctest.xml"), "compiler": compiler, "query": query})
@@ -205,6 +207,22 @@ def main():
                   env=offline, failure="Selected Core is incompatible")
         results.append({"case": name, "result": "passed (rejected)"})
 
+    # A shared-only installation is rejected instead of being linked silently.
+    shared_only = work / "shared-package"
+    shared_only.mkdir()
+    (shared_only / "OpenTLVConfig.cmake").write_text(
+        "add_library(OpenTLV::tlv SHARED IMPORTED)\n"
+        "add_library(OpenTLV::tlv++ INTERFACE IMPORTED)\n", encoding="utf-8")
+    configure("shared-package-build", f"-DCMAKE_PREFIX_PATH={shared_only.as_posix()}",
+              env=offline, failure="Selected Core is incompatible: OpenTLV::tlv is a")
+    results.append({"case": "shared-package", "result": "passed (rejected)"})
+
+    # The CLI exposes no linkage selection, even through Core's own option.
+    configure("shared-option-build", f"-DFETCHCONTENT_SOURCE_DIR_OPENTLV_CORE={core.as_posix()}",
+              "-DOPENTLV_BUILD_SHARED_LIBS=ON", env=offline,
+              failure="OPENTLV_BUILD_SHARED_LIBS=ON is not supported")
+    results.append({"case": "shared-option", "result": "passed (rejected)"})
+
     configure("cxx-disabled", f"-DFETCHCONTENT_SOURCE_DIR_OPENTLV_CORE={core.as_posix()}",
               "-DOPENTLV_BUILD_CXX=OFF", env=offline, failure="Selected Core is incompatible")
     results.append({"case": "cxx-disabled", "result": "passed (rejected)"})
@@ -247,7 +265,7 @@ def main():
         "system": platform.system(), "architecture": platform.machine(),
         "configuration": "Release", "cxx_standard": 11,
         "release_request": request,
-        "shared": args.shared,
+        "core_linkage": "static",
         "results": results,
     }
     if request:

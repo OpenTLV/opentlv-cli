@@ -28,7 +28,6 @@ if(TARGET otlv)
     message(FATAL_ERROR "Core's CLI must not be built by the standalone CLI; use OPENTLV_BUILD_CLI=OFF")
 endif()
 include(cmake/Json.cmake)
-include(cmake/Runtime.cmake)
 add_subdirectory(src)
 
 option(OPENTLV_CLI_BUILD_TESTS "Build dependency smoke tests and CLI regression suites" ${PROJECT_IS_TOP_LEVEL})
