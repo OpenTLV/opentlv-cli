@@ -14,12 +14,13 @@ import sys
 import xml.etree.ElementTree as ET
 
 ROOT = Path(__file__).resolve().parents[1]
-MATRIX = {(system, shared) for system in ("Linux", "Windows") for shared in ("ON", "OFF")}
+# One static-Core dependency matrix per release platform; there is no linkage axis.
+MATRIX = {"Linux", "Windows"}
 BUILD_CASES = {"git-fallback", "local-override", "installed-package", "override-before-package", "workspace"}
 REJECTION_CASES = {"fallback-package-trap", "missing-cxx", "legacy-cxx", "missing-core",
-                   "cxx-disabled", "invalid-source"}
-TESTS = {"core_c_smoke", "core_cxx_smoke", "cli_version", "cli_version_contract", "cli_release_gate",
-         "Integration_cli_migration", "Integration_cli", "Integration_cli_cpp_examples",
+                   "cxx-disabled", "invalid-source", "shared-package", "shared-option"}
+TESTS = {"core_c_smoke", "core_cxx_smoke", "cli_version", "cli_static_core", "cli_version_contract",
+         "cli_release_gate", "Integration_cli_migration", "Integration_cli", "Integration_cli_cpp_examples",
          "Integration_cli_baseline_runner", "Integration_cli_baseline", "query-cli-conformance"}
 QUERY_EXCLUSIONS = [{"id": name, "reason": "requires external fixture name resolver"}
                     for name in ("f3-function-name-positive", "f3-function-name-negative")]
@@ -102,8 +103,9 @@ def validate_summary(report, request):
             "JSON evidence is dirty or from a different revision")
     require(report.get("configuration") == "Release" and report.get("cxx_standard") == 11,
             "Unexpected release build configuration")
-    key = (report.get("system"), report.get("shared"))
-    require(key in MATRIX, "Unexpected platform/linkage")
+    require(report.get("core_linkage") == "static", "Release evidence requires static Core linkage")
+    key = report.get("system")
+    require(key in MATRIX, "Unexpected platform")
     results = report.get("results", [])
     names = [result["case"] for result in results]
     require(len(names) == len(set(names)) and set(names) == BUILD_CASES | REJECTION_CASES,
@@ -134,11 +136,11 @@ def aggregate(request, directory):
     for path in sorted(directory.rglob("summary.json")):
         report = json.loads(path.read_text(encoding="utf-8"))
         key = validate_summary(report, request)
-        require(key not in matrix, "Duplicate platform/linkage evidence")
+        require(key not in matrix, "Duplicate platform evidence")
         matrix.add(key)
         summaries.append({"path": path.relative_to(directory).as_posix(),
                           "sha256": hashlib.sha256(path.read_bytes()).hexdigest(), "report": report})
-    require(matrix == MATRIX, "Missing Windows/Linux static/shared evidence")
+    require(matrix == MATRIX, "Missing Windows/Linux static-Core evidence")
     return {"status": "passed", "request": request, "matrix": summaries,
             "builds": len(MATRIX) * len(BUILD_CASES),
             "ctest_passes": len(MATRIX) * len(BUILD_CASES) * len(TESTS)}
@@ -159,7 +161,8 @@ def authorize_tag(result, sha, tag, workflow_sha, run_id, run_attempt):
     require((request["cli_sha"], request["tag"], request["workflow_sha"],
              request["run_id"], request["run_attempt"]) == (sha, tag, workflow_sha, run_id, run_attempt),
             "Release evidence does not authorize this tag/run")
-    require(result.get("builds") == 20 and result.get("ctest_passes") == 220,
+    builds = len(MATRIX) * len(BUILD_CASES)
+    require(result.get("builds") == builds and result.get("ctest_passes") == builds * len(TESTS),
             "Release evidence lacks the complete build matrix")
     return {"ref": f"refs/tags/{tag}", "sha": sha}
 

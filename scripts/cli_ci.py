@@ -17,7 +17,8 @@ from verified_core import authenticated_release, lock, safe_name
 
 JOBS = {'build', 'dependencies', 'quality', 'sanitizer', 'codeql'}
 PR = {'build', 'quality', 'codeql'}
-IDS = {f'{system}-x64-{link}' for system in ('linux', 'windows') for link in ('static', 'shared')}
+# Approved release packages; every package links Core statically.
+IDS = {f'{system}-x64-static' for system in ('linux', 'windows')}
 
 
 def check_results(results, tier):
@@ -38,7 +39,7 @@ def configuration(tier):
     helpers = ['CMakeLists.txt', 'src/CMakeLists.txt', 'tests/CMakeLists.txt', 'cmake/Core.cmake',
                'cmake/Json.cmake', 'cmake/core-artifact.json', 'scripts/cli_build.py',
                'scripts/verified_core.py', 'scripts/cli_ci.py', 'scripts/ci_support.py',
-               'scripts/check_static.py', 'scripts/check_tidy.py', 'cmake/Runtime.cmake',
+               'scripts/check_static.py', 'scripts/check_tidy.py', 'scripts/binary_linkage.py',
                'cmake/Version.cmake', 'tests/check_core_dependency.py']
     return {'release_tag': os.environ.get('RELEASE_TAG', ''),
             'workflows': {name: {'sha256': digest(ROOT / '.github/workflows' / name),
@@ -123,7 +124,7 @@ def assemble(request, quality, evidence, destination):
                 tests.get('failed') == 0 and tests.get('skipped') == 0 and
                 reports.get('baseline_cases') == 154 and reports.get('query', {}).get('checks') == 338 and
                 reports['query'].get('exclusions') == QUERY_EXCLUSIONS, 'Incomplete packaged build test evidence')
-        require(record.get('shared') == ('ON' if identifier.endswith('-shared') else 'OFF') and
+        require(record.get('core_linkage') == 'static' and
                 record.get('compiler', {}).get('SIZEOF_DATA_PTR') == '8' and
                 record['compiler'].get('COMPILER_ID') == ('MSVC' if identifier.startswith('windows-') else 'GNU'),
                 'Wrong package platform/linkage/compiler')

@@ -24,10 +24,10 @@ def request():
             "run_id": "123", "run_attempt": "1"}
 
 
-def summary(system="Linux", shared="ON"):
+def summary(system="Linux"):
     return {"release_request": request(), "cli_revision": "a" * 40, "cli_dirty": False,
             "core_revision": "b" * 40, "core_dirty": False, "json_revision": "c" * 40,
-            "json_dirty": False, "system": system, "shared": shared,
+            "json_dirty": False, "system": system, "core_linkage": "static",
             "configuration": "Release", "cxx_standard": 11,
             "results": [{"case": name, "result": "passed", "cli_version": "0.1.0",
                          "baseline_cases": 154, "baseline_failures": [],
@@ -111,7 +111,12 @@ class ReleaseGate(unittest.TestCase):
                 self.assertRegex(pin, r"^[0-9a-f]{40}$")
 
     def test_valid_summary(self):
-        self.assertEqual(validate_summary(summary(), request()), ("Linux", "ON"))
+        self.assertEqual(validate_summary(summary(), request()), "Linux")
+
+    def test_summary_requires_static_core(self):
+        for value in ("shared", None):
+            with self.subTest(value=value), self.assertRaisesRegex(ValueError, "static Core"):
+                validate_summary(dict(summary(), core_linkage=value), request())
 
     def test_stale_or_dirty_provenance(self):
         for key, value in (("cli_revision", "f" * 40), ("core_revision", "f" * 40),
@@ -148,19 +153,21 @@ class ReleaseGate(unittest.TestCase):
             with self.subTest(key=key), self.assertRaises(ValueError):
                 validate_summary(report, request())
 
-    def test_all_four_jobs_required(self):
+    def test_every_platform_job_required(self):
+        self.assertEqual(MATRIX, {"Linux", "Windows"})
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
-            for index, (system, shared) in enumerate(sorted(MATRIX)):
+            for index, system in enumerate(sorted(MATRIX)):
                 path = root / str(index) / "summary.json"
                 path.parent.mkdir()
-                path.write_text(json.dumps(summary(system, shared)), encoding="utf-8")
-                if index < 3:
+                path.write_text(json.dumps(summary(system)), encoding="utf-8")
+                if index < len(MATRIX) - 1:
                     with self.assertRaises(ValueError):
                         aggregate(request(), root)
             result = aggregate(request(), root)
             self.assertEqual(result["status"], "passed")
-            self.assertEqual(result["ctest_passes"], 220)
+            self.assertEqual(result["builds"], 10)
+            self.assertEqual(result["ctest_passes"], 120)
             duplicate = root / "extra/summary.json"
             duplicate.parent.mkdir()
             duplicate.write_bytes(path.read_bytes())
@@ -181,7 +188,7 @@ class ReleaseGate(unittest.TestCase):
                     ctest_results(path)
 
     def test_tag_authorization_requires_successful_jobs_and_matching_request(self):
-        result = {"status": "passed", "request": request(), "builds": 20, "ctest_passes": 220}
+        result = {"status": "passed", "request": request(), "builds": 10, "ctest_passes": 120}
         with self.assertRaises(ValueError):
             authorize_tag(result, "a" * 40, "v0.1.0", "d" * 40, "123", "1")
         finalize(result, "success", "success")

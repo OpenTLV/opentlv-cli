@@ -58,6 +58,20 @@ class Workflows(unittest.TestCase):
         self.assertEqual(release['name'], 'CLI release gate')
         self.assertEqual(release['concurrency']['group'], 'cli-release')
 
+    def test_core_linkage_is_not_a_matrix_axis(self):
+        checks = workflow('cli-checks.yml')['jobs']
+        release = workflow('release.yml')['jobs']
+        for name, job in (('build', checks['build']), ('dependencies', checks['dependencies']),
+                          ('binaries', release['binaries'])):
+            with self.subTest(job=name):
+                self.assertNotIn('shared', str(job['strategy']['matrix']))
+                self.assertNotIn('--shared', str(job['steps']))
+        # Full builds static Core on each supported platform; macOS is not packaged yet.
+        matrix = str(checks['build']['strategy']['matrix']['include'])
+        for runner in ('ubuntu-24.04', 'windows-2022', 'macos-15'):
+            self.assertIn(runner, matrix)
+        self.assertEqual(release['binaries']['strategy']['matrix']['os'], ['ubuntu-24.04', 'windows-2022'])
+
     def test_static_checks_run_in_both_pr_and_full(self):
         jobs = workflow('cli-checks.yml')['jobs']
         for name in ('quality', 'codeql'):

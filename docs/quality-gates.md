@@ -11,9 +11,9 @@ exercised through CLI processes to verify the facade contract.
 
 | Workflow | Trigger | Required verification |
 | --- | --- | --- |
-| `cli-pr.yml` | PR targeting `main` | Linux Clang Debug shared CLI, all 11 CTest entries, pre-commit, cppcheck, clang-tidy, tooling regression tests and CodeQL |
-| `cli-main.yml` | Push to `main` | One Linux shared build, C/C++ linkage/version smoke and CLI version output |
-| `cli-full.yml` | Manual or reusable release call | Linux/GCC and Windows/MSVC Release, shared/static; all CLI suites; complete dependency selection matrix; Linux Clang Debug ASan/UBSan with leak detection; all static checks and CodeQL |
+| `cli-pr.yml` | PR targeting `main` | Linux Clang Debug CLI, all 12 CTest entries including the static Core linkage check, pre-commit, cppcheck, clang-tidy, tooling regression tests and CodeQL |
+| `cli-main.yml` | Push to `main` | One Linux build, C/C++ linkage, static Core linkage and CLI version smoke |
+| `cli-full.yml` | Manual or reusable release call | Linux/GCC, Windows/MSVC and macOS/AppleClang Release; all CLI suites; complete dependency selection matrix on Linux and Windows; Linux Clang Debug ASan/UBSan with leak detection; all static checks and CodeQL |
 | `release.yml` | Manual from `main`, only `tag` | Closed changelog, locked dispatch SHA and dependencies, same-attempt Full CI, validated CLI packages, SHA-256, producer attestations, tag and GitHub Release |
 
 Full CI has no push or scheduled trigger. PR checks have no branch-push trigger.
@@ -66,16 +66,27 @@ The JSON dependency retains its independent immutable Git pin and license.
 Local developer source overrides remain available; build evidence marks them as
 unverified and release builds reject them.
 
+## Static Core linkage
+
+Every CI build links OpenTLV Core statically; no workflow has a linkage matrix
+axis and no runner offers a shared Core option. Each build checks linkage twice:
+`cmake/Core.cmake` rejects a non-static `OpenTLV::tlv`, and the `cli_static_core`
+CTest entry reads the executable's shared-library imports (ELF, PE or Mach-O)
+and fails if any of them is an OpenTLV Core library. Build evidence records
+`core_linkage: static`. Core's own linkage configurations and its test suites
+are not run by CLI CI. The macOS Full build verifies static Core linkage and
+the CLI suites; macOS packages are not published yet.
+
 ## Executable artifacts
 
-The initial packages are Linux x64 and Windows x64, each shared/static Core,
-Release configuration. Windows uses the dynamic MSVC runtime. Packages contain
-`bin/otlv`, the shared Core runtime when applicable, license notices and build
-identity. They do not promise compatibility with all OS/runtime versions.
+The initial packages are Linux x64 and Windows x64 with static Core, Release
+configuration. Windows uses the dynamic MSVC runtime. Packages contain
+`bin/otlv`, license notices and build identity, but never a Core runtime
+library; packaging also checks the relocated executable's imports. They do not promise compatibility with all OS/runtime versions.
 The archive is unpacked into a separate directory and the CLI version contract
 and 154-case behavior baseline run against the relocated executable.
 
-Publication checks all four package identities and hashes, the complete existing
+Publication checks both package identities and hashes, the complete existing
 dependency evidence and same-attempt Full CI before creating SHA256SUMS and the
 release manifest. Every published archive and JSON record has a producer
 attestation, as do the manifest and checksum list. The publisher verifies them
@@ -120,7 +131,7 @@ actionlint
 pre-commit run --all-files
 ```
 
-Normal CMake/CTest and the shared/static dependency runners remain documented in
+Normal CMake/CTest and the dependency selection runner remain documented in
 the [development guide](development.md). Sanitizer execution enables ASan/UBSan
 and leak detection for CLI-owned process tests and the linked source dependency.
 It does not run the Core sanitizer suite.

@@ -87,17 +87,9 @@ target_compile_features(otlv PRIVATE cxx_std_11)
 target_compile_options(otlv PRIVATE
     "$<$<CXX_COMPILER_ID:GNU,Clang>:-Wall;-Wextra;-Wpedantic>"
 )
-opentlv_cli_copy_runtime(otlv)
 
-if(UNIX)
-    if(APPLE)
-        set(_cli_origin "@loader_path")
-    else()
-        set(_cli_origin "$ORIGIN")
-    endif()
-    file(RELATIVE_PATH _cli_lib_relative "${CMAKE_INSTALL_FULL_BINDIR}" "${CMAKE_INSTALL_FULL_LIBDIR}")
-    set_target_properties(otlv PROPERTIES INSTALL_RPATH "${_cli_origin}/${_cli_lib_relative}")
-endif()
+# Core is linked statically (cmake/Core.cmake), so the installed executable
+# needs neither a Core runtime beside it nor a library search path.
 install(TARGETS otlv RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR} COMPONENT cli-runtime)
 file(GENERATE OUTPUT "${PROJECT_BINARY_DIR}/cli-package-paths-$<CONFIG>.txt"
     CONTENT "$<TARGET_FILE:otlv>\n$<TARGET_FILE:OpenTLV::tlv>\n$<TARGET_PROPERTY:OpenTLV::tlv,TYPE>\n")

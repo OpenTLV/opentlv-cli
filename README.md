@@ -88,15 +88,14 @@ cmake --install build/default --config Release --prefix install-cli
 ```
 
 `otlv` is installed in the standard runtime directory, normally `bin`.
-When Core is built from source in the same build, its install rules also
-install the library runtime. Retain that installation layout. When consuming
-an installed shared Core package, make its runtime libraries available on the
-platform's library search path when deploying `otlv`.
+OpenTLV Core is always linked statically into `otlv`, so deploying the CLI
+needs no Core runtime library. Installed Core packages must provide static
+libraries; shared-only Core installations are rejected at configure time.
 
 ## Options and dependency updates
 
 The [development guide](docs/development.md#supported-core-configurations)
-describes supported shared/static and component configurations, test options,
+describes static Core linkage, supported component configurations, test options,
 and Debug/Release builds. Follow its
 [Core update procedure](docs/development.md#updating-the-pinned-core-revision)
 when changing the immutable dependency pin. Preserve historical migration

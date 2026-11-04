@@ -5,6 +5,14 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Changed
+
+- Link OpenTLV Core statically into `otlv` on Windows, Linux and macOS as the only supported linkage: local sibling sources and the pinned FetchContent fallback build static Core without changing `BUILD_SHARED_LIBS`, compatible installed static Core packages remain supported, and `OPENTLV_BUILD_SHARED_LIBS=ON` or a shared-only Core installation fails at configure time with remediation guidance. Core's own linkage policy is unchanged. (#12)
+- Remove the shared/static Core linkage axis and the `--shared` option from CLI CI, dependency checks and release packaging; packages contain the executable without a Core runtime, release evidence records `core_linkage: static` for one Linux and one Windows x64 package, and the Core DLL copy and install RPATH are gone. (#12)
+- Verify static Core linkage in every CLI build with the new `cli_static_core` CTest entry, which reads ELF, PE and Mach-O shared-library imports without platform tools, also checks relocated release packages, and runs in PR, Main smoke, Full and Release; Full CI adds a macOS Release build and test of the CLI. (#12)
+
 ## [0.2.0] - 2026-10-28
 
 ### Fixed

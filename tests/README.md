@@ -83,15 +83,14 @@ coverage or the native Core contracts.
 
 Two small consumers link only `OpenTLV::tlv` and `OpenTLV::tlv++`, exercising
 public headers, transitive linkage, and runtime version metadata. The C check
-also compares header and runtime Git revision metadata. Windows shared builds
-copy the Core DLL beside the executable and consumers using the public target's
-location.
+also compares header and runtime Git revision metadata. Core is always linked
+statically; `cli_static_core` runs `scripts/binary_linkage.py` on the built
+`otlv` and fails if the executable imports an OpenTLV Core shared library.
 
 Run the full integration matrix from the CLI root:
 
 ```sh
-python -B tests/check_core_dependency.py --shared ON
-python -B tests/check_core_dependency.py --shared OFF
+python -B tests/check_core_dependency.py
 ```
 
 The runner requires Python 3.10+, CMake, Git, and the compiler/build tools.
@@ -108,6 +107,8 @@ Each run checks:
 - Local override precedence with a valid installed package present.
 - Rejection of missing C/C++ public targets and the legacy `tlvpp` target.
 - Rejection of a C++-disabled Core checkout.
+- Rejection of a shared-only installed Core package and of
+  `OPENTLV_BUILD_SHARED_LIBS=ON`.
 - Failure for a missing explicit checkout without silently selecting a package.
 - The workspace preset from a separate checkout layout.
 
@@ -121,22 +122,23 @@ test run. No developer checkout is modified.
 For offline checks against existing checkouts:
 
 ```sh
-python -B tests/check_core_dependency.py --core-source ../opentlv --json-source /absolute/path/to/json --skip-git --shared ON
+python -B tests/check_core_dependency.py --core-source ../opentlv --json-source /absolute/path/to/json --skip-git
 ```
 
 This explicitly skips remote fallback validation. The JSON checkout must
 supply nlohmann/json 3.11.3. The full runner downloads dependencies when local
 sources are not supplied and requires network access. Per-command logs and
-`summary.json` retain selected revisions, dirty-state markers, linkage mode,
-and outcomes, compiler identity, CLI version, and all CTest results. Release CI
-and manual Full CI run the full matrix on Windows and Linux for shared/static
-Core. PR CI runs one Linux build, its suites and required static checks. Main CI
-runs only integration smoke tests. A local run does not establish hosted success.
+`summary.json` retain selected revisions, dirty-state markers, the selected
+Core target type, outcomes, compiler identity, CLI version, and all CTest
+results. Release CI and manual Full CI run the full matrix on Windows and
+Linux; Full additionally builds and tests the CLI on macOS. PR CI runs one Linux
+build, its suites and required static checks. Main CI runs only integration
+and linkage smoke tests. A local run does not establish hosted success.
 See [quality gates](../docs/quality-gates.md) for artifact and sanitizer coverage.
 
 `--release-request <request.json>` is reserved for the release workflow. It
 requires the exact clean CLI commit and pinned Core/JSON revisions, forbids
-overrides and skipped Git fallback, and checks all 11 CTest entries in each
+overrides and skipped Git fallback, and checks all 12 CTest entries in each
 of five successful dependency scenarios. It rejects unexpected suite skips;
 the two named Query fixture-provider exclusions remain explicit. See the
 [release guide](../docs/releases.md) for evidence and tag creation.

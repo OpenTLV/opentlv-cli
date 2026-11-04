@@ -9,9 +9,6 @@ target_link_libraries(core_cxx_smoke PRIVATE OpenTLV::tlv++)
 
 add_executable(core_capabilities core_capabilities.c)
 target_link_libraries(core_capabilities PRIVATE OpenTLV::tlv)
-foreach(_consumer IN ITEMS core_c_smoke core_cxx_smoke core_capabilities)
-    opentlv_cli_copy_runtime(${_consumer})
-endforeach()
 add_test(NAME core_c_smoke COMMAND core_c_smoke)
 add_test(NAME core_cxx_smoke COMMAND core_cxx_smoke)
 set_tests_properties(core_c_smoke core_cxx_smoke PROPERTIES LABELS "core-smoke")
@@ -35,6 +32,9 @@ file(WRITE "${CMAKE_CURRENT_BINARY_DIR}/core-selection.txt"
 find_package(Python3 3.10 REQUIRED COMPONENTS Interpreter)
 add_test(NAME cli_version COMMAND ${Python3_EXECUTABLE} -B
     "${CMAKE_CURRENT_SOURCE_DIR}/check_version.py" "$<TARGET_FILE:otlv>" "${PROJECT_BINARY_DIR}/cli-version.txt")
+# The executable itself, not the CMake selection, proves static Core linkage.
+add_test(NAME cli_static_core COMMAND ${Python3_EXECUTABLE} -B
+    "${PROJECT_SOURCE_DIR}/scripts/binary_linkage.py" "$<TARGET_FILE:otlv>")
 add_test(NAME cli_version_contract COMMAND ${Python3_EXECUTABLE} -B
     "${CMAKE_CURRENT_SOURCE_DIR}/test_version.py")
 add_test(NAME cli_release_gate COMMAND ${Python3_EXECUTABLE} -B
@@ -69,3 +69,4 @@ set_tests_properties(query-cli-conformance PROPERTIES LABELS "query;conformance;
     TIMEOUT 3600)
 set_property(TEST query-cli-conformance APPEND PROPERTY LABELS "cli")
 set_tests_properties(cli_version cli_version_contract cli_release_gate PROPERTIES LABELS "cli;tooling")
+set_tests_properties(cli_static_core PROPERTIES LABELS "cli;linkage")

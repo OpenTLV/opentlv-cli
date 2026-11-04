@@ -122,7 +122,7 @@ evidence available and does not create a release.
 ## Release evidence
 
 - `release-request-<attempt>`: CLI/Core/JSON/workflow SHAs, version, run ID and attempt.
-- `release-evidence-<attempt>-<platform>-<linkage>`: per-command logs, CTest XML,
+- `release-evidence-<attempt>-<platform>`: per-command logs, CTest XML,
   configured versions, baseline/Query reports and a matrix summary with
   compiler identity, architecture, C++ standard and Release configuration.
 - `cli-quality-<attempt>`: formatting/license and static-analysis logs.
@@ -130,16 +130,17 @@ evidence available and does not create a release.
   per-matrix summaries and their SHA-256 hashes, build and test counts, exact
   Full CI evidence and package records.
 - `cli-quality-full-<sha>-<attempt>`: exact revision, job results and configuration.
-- `release-binary-<platform>-<linkage>-<attempt>`: tested archives and build records.
-- GitHub Release assets: four CLI archives and their JSON records,
+- `release-binary-<platform>-<attempt>`: tested static-Core archives and build records.
+- GitHub Release assets: the Linux and Windows x64 CLI archives and their JSON records,
   `release-manifest.json` and `SHA256SUMS`, all with producer attestations.
 
-Each successful dependency scenario runs 11 CTest entries, 154 CLI behavior
+Each successful dependency scenario runs 12 CTest entries, 154 CLI behavior
 cases (153 original plus the independent version contract), and 338 Query
 backend checks. The two named external fixture-provider exclusions are
 recorded explicitly. Release validation covers five successful build modes
-and six expected configuration rejections per platform/linkage: 20 builds
-and 220 passing CTest entries across the complete matrix. Counts describe
+and eight expected configuration rejections per platform: 10 builds
+and 120 passing CTest entries across the complete matrix. Every build links
+Core statically; there is no linkage axis. Counts describe
 different test layers and must not be added together.
 
 Failure logs are uploaded even when a matrix job fails. Missing evidence

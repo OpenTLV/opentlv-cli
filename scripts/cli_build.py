@@ -11,9 +11,20 @@ import subprocess
 import sys
 import tempfile
 
+from binary_linkage import check_static_core
 from ci_support import ROOT, cache, compiler, digest, identity, pin, read, require, run, write
 from release import QUERY_EXCLUSIONS, ctest_results
 from verified_core import extract, resolve
+
+# Main's smoke tier: Core linkage, both public targets and the version contract.
+SMOKE = ('core_c_smoke', 'core_cxx_smoke', 'cli_version', 'cli_static_core')
+
+
+def platform_id():
+    system = {'Windows': 'windows', 'Darwin': 'macos'}.get(platform.system(), 'linux')
+    machine = platform.machine().lower()
+    architecture = {'amd64': 'x64', 'x86_64': 'x64', 'aarch64': 'arm64'}.get(machine, machine)
+    return system, architecture
 
 
 def validate_reports(build, configuration):
@@ -36,31 +47,31 @@ def core_source(build):
     return source
 
 
+def built_executable(build, configuration):
+    """Return the tested executable after proving Core was linked statically into it."""
+    paths = (build / f'cli-package-paths-{configuration}.txt').read_text(encoding='utf-8').splitlines()
+    require(len(paths) == 3 and paths[2] == 'STATIC_LIBRARY', 'The CLI requires a static OpenTLV::tlv')
+    executable = Path(paths[0])
+    check_static_core(executable)
+    return executable
+
+
 def package(build, output, record):
-    """Stage only the CLI and its Core runtime; test after archive relocation."""
-    paths = (build / f"cli-package-paths-{record['configuration']}.txt").read_text(encoding='utf-8').splitlines()
-    executable, core, linkage = Path(paths[0]), Path(paths[1]), paths[2]
-    require(linkage in ('SHARED_LIBRARY', 'STATIC_LIBRARY'), 'Unsupported Core library type')
-    require((linkage == 'SHARED_LIBRARY') == (record['shared'] == 'ON'), 'Wrong actual runtime linkage')
+    """Stage only the statically linked CLI; test after archive relocation."""
+    executable = built_executable(build, record['configuration'])
     output.mkdir(parents=True, exist_ok=False)
-    require(platform.machine().lower() in ('amd64', 'x86_64'), 'Approved packages require an x64 host')
+    require(platform_id() in (('linux', 'x64'), ('windows', 'x64')),
+            'Approved packages require a Linux or Windows x64 host')
     identifier = record['id']
     name = f"OpenTLV-CLI-{record['version']}-{identifier}"
     work = Path(tempfile.mkdtemp(prefix='package-check-', dir=build))
     stage = work / name
     (stage / 'bin').mkdir(parents=True, exist_ok=False)
-    # cmake --install applies the executable's relative install RPATH.
     run('cmake', '--install', build, '--config', record['configuration'], '--prefix', stage,
         '--component', 'cli-runtime')
-    require((stage / 'bin' / executable.name).is_file(), 'CLI install missing')
-    if linkage == 'SHARED_LIBRARY':
-        destination = stage / ('bin' if platform.system() == 'Windows' else 'lib')
-        destination.mkdir(exist_ok=True)
-        # Preserve SONAME aliases as regular copies, so extraction also works on Windows.
-        libraries = [core] if platform.system() == 'Windows' else list(core.parent.glob(core.name.split('.so')[0] + '.so*'))
-        require(libraries, 'Shared Core runtime missing')
-        for library in libraries:
-            shutil.copy2(library.resolve(), destination / library.name)
+    # Static Core: the package holds the executable alone, never a Core runtime.
+    require(sorted(p.relative_to(stage).as_posix() for p in stage.rglob('*')) ==
+            ['bin', 'bin/' + executable.name], 'CLI install must contain only the executable')
     licenses = stage / 'licenses'
     licenses.mkdir()
     shutil.copy2(ROOT / 'LICENSE', licenses / 'OpenTLV-CLI.txt')
@@ -79,8 +90,9 @@ def package(build, output, record):
     relocated = work / 'relocated'
     extract(archive, relocated)
     cli = relocated / name / 'bin' / executable.name
-    # Remove build-tree runtime search paths from the environment. Installed RPATH
-    # and colocated Windows DLLs must suffice even from a different working directory.
+    check_static_core(cli)
+    # Remove build-tree runtime search paths from the environment. The relocated
+    # executable must start without them, from a different working directory.
     environment = os.environ.copy()
     environment.pop('LD_LIBRARY_PATH', None)
     environment.pop('DYLD_LIBRARY_PATH', None)
@@ -100,7 +112,6 @@ def package(build, output, record):
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--build', type=Path, required=True)
-    parser.add_argument('--shared', choices=('ON', 'OFF'), default='ON')
     parser.add_argument('--configuration', choices=('Debug', 'Release'), default='Release')
     parser.add_argument('--smoke', action='store_true')
     parser.add_argument('--sanitize', action='store_true')
@@ -119,7 +130,7 @@ def main():
         dependency = {'mode': 'local-source', 'verified': False,
                       'commit': run('git', '-C', source, 'rev-parse', 'HEAD', capture=True)}
     else:
-        options, dependency = resolve(build / 'core', args.shared, args.configuration,
+        options, dependency = resolve(build / 'core', args.configuration,
                                       required=bool(args.release_tag), source_only=args.sanitize)
     if args.json_source:
         options.append(f'-DFETCHCONTENT_SOURCE_DIR_NLOHMANN_JSON={args.json_source.resolve().as_posix()}')
@@ -127,7 +138,7 @@ def main():
               '-DCMAKE_MSVC_RUNTIME_LIBRARY=MultiThreadedDLL', '-DCMAKE_EXPORT_COMPILE_COMMANDS=ON',
               '-DOPENTLV_BUILD_TESTS=OFF', '-DOPENTLV_BUILD_EXAMPLES=OFF',
               '-DOPENTLV_BUILD_BENCHMARKS=OFF', '-DOPENTLV_BUILD_PROPERTY_TESTS=OFF',
-              '-DOPENTLV_BUILD_CXX=ON', f'-DOPENTLV_BUILD_SHARED_LIBS={args.shared}',
+              '-DOPENTLV_BUILD_CXX=ON',
               '-DFETCHCONTENT_TRY_FIND_PACKAGE_MODE=NEVER', '-DOPENTLV_CLI_BUILD_TESTS=ON']
     if args.release_tag:
         common += [f'-DOPENTLV_CLI_CANDIDATE_VERSION={args.release_tag[1:]}',
@@ -145,14 +156,15 @@ def main():
     json_source = Path(selected['nlohmann_json_SOURCE_DIR'])
     require(run('git', '-C', json_source, 'rev-parse', 'HEAD', capture=True) == pin('Json'), 'Wrong JSON revision')
     run('cmake', '--build', build, '--parallel', '2')
-    selection = ['-R', '^(core_c_smoke|core_cxx_smoke|cli_version)$'] if args.smoke else []
+    selection = ['-R', '^(' + '|'.join(SMOKE) + ')$'] if args.smoke else []
     run('ctest', '--test-dir', build, '--output-on-failure', '--no-tests=error',
         '--output-junit', build / 'ctest.xml', *selection)
-    reports = ({'ctest': ctest_results(build / 'ctest.xml', {'core_c_smoke', 'core_cxx_smoke', 'cli_version'})}
+    reports = ({'ctest': ctest_results(build / 'ctest.xml', set(SMOKE))}
                if args.smoke else validate_reports(build, args.configuration))
-    system = 'windows' if platform.system() == 'Windows' else 'linux'
-    record = {'schema': 1, **identity(), 'id': f"{system}-x64-{'shared' if args.shared == 'ON' else 'static'}",
-              'version': (build / 'cli-version.txt').read_text().strip(), 'shared': args.shared,
+    built_executable(build, args.configuration)
+    system, architecture = platform_id()
+    record = {'schema': 1, **identity(), 'id': f'{system}-{architecture}-static',
+              'version': (build / 'cli-version.txt').read_text().strip(), 'core_linkage': 'static',
               'configuration': args.configuration, 'compiler': compiler(build), 'core': dependency,
               'architecture': platform.machine(), 'libc': list(platform.libc_ver()),
               'msvc_runtime': selected.get('CMAKE_MSVC_RUNTIME_LIBRARY') if system == 'windows' else None,
