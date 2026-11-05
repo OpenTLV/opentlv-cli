@@ -58,11 +58,11 @@ jobs:
         shell: bash
         run: |
           args=()
-          if [[ -n "$RELEASE_TAG" && "$RUNNER_OS" != macOS ]]; then args+=(--package build/artifacts); fi
+          if [[ -n "$RELEASE_TAG" ]]; then args+=(--package build/artifacts); fi
           python -B scripts/cli_build.py --build build/ci \
             --configuration "$CONFIGURATION" --release-tag "$RELEASE_TAG" "${args[@]}"
       - uses: actions/upload-artifact@v4
-        if: inputs.release_tag != '' && runner.os != 'macOS'
+        if: inputs.release_tag != ''
         with:
           name: cli-tested-package-${{ matrix.os }}-${{ github.run_attempt }}
           path: build/artifacts/*

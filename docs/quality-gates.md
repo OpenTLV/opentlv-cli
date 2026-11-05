@@ -19,7 +19,7 @@ exercised through CLI processes to verify the facade contract.
 Full CI has no push or scheduled trigger. PR checks have no branch-push trigger.
 Main does not repeat PR static analysis or the full test matrix. Release repeats
 Full independently for its exact candidate; historical PR results cannot replace
-it. Within that release attempt, Full's Linux/Windows workers package their
+it. Within that release attempt, Full's Linux/Windows/macOS workers package their
 already-tested executables and verify the relocated archives. The `binaries`
 job downloads those exact artifacts and attests them after Full succeeds; it
 does not configure, download dependencies, compile or repeat the build tests.
@@ -136,7 +136,7 @@ Quality caches pip downloads and pre-commit environments using the pinned
 requirements/hook configuration. The full dependency-selection runner keeps
 its real Git fallback test, then reuses those exact checked-out sources across
 local/package/workspace scenarios. Release packaging reuses Full's completed
-builds, avoiding another Core/JSON download and compilation on both platforms.
+builds, avoiding another Core/JSON download and compilation on all release targets.
 
 ## Static Core linkage
 
@@ -147,26 +147,24 @@ CTest entry reads the executable's shared-library imports (ELF, PE or Mach-O)
 and fails if any of them is an OpenTLV Core library. Build evidence records
 `core_linkage: static`. Core's own linkage configurations and its test suites
 are not run by CLI CI. The macOS Full build verifies static Core linkage and
-the CLI suites; macOS packages are not published yet.
+the CLI suites and supplies the arm64 release package.
 
 ## Executable artifacts
 
-The initial packages are Linux x64 and Windows x64 with static Core, Release
-configuration, built on Ubuntu 26.04 with GCC 15 and on Windows Server 2025
-with Visual Studio 2026. The Linux package therefore needs the glibc and
-libstdc++ of Ubuntu 26.04 or a newer distribution. Windows uses the dynamic
-MSVC runtime and needs the Visual C++ Redistributable from Visual Studio 2026
-or newer. Packages contain
-`bin/otlv`, license notices and build identity, but never a Core runtime
-library; packaging also checks the relocated executable's imports. They do not promise compatibility with all OS/runtime versions.
-The archive is unpacked into a separate directory and the CLI version contract
-and 154-case behavior baseline run against the relocated executable.
+The [release artifact policy](releases.md#release-artifact-policy) defines Linux
+x64, Windows x64 and macOS arm64 archives, their exact five-file layout, supported
+runtime dependencies and naming. All packages use static Core and the executable
+already tested by Full CI. Native producers verify the relocated version, startup,
+file encode/decode and invalid-input handling with five small smoke checks; they
+do not repeat the full CLI regression baseline.
 
-Publication checks both package identities and hashes, the complete existing
+Publication reopens every archive and checks its inventory, actual binary target,
+Core linkage, runtime imports, embedded build record and executable hash. It
+requires successful native smoke evidence from all three producers, the existing
 dependency evidence and same-attempt Full CI before creating SHA256SUMS and the
 release manifest. Every published archive and JSON record has a producer
 attestation, as do the manifest and checksum list. The publisher verifies them
-again against its workflow and commit before creating the tag and release.
+against its workflow and commit before creating the tag and release.
 
 The docs portal's `release-result-<attempt>/result.json` contract is preserved.
 The existing notifier runs only after the complete release workflow succeeds.

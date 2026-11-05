@@ -20,6 +20,11 @@ Node.js is needed for these tooling checks, not to build or run `otlv`.
 inherited workspace revisions, header relocation and mutation, actual JSON
 versions, startup rejection, and incomplete or inconsistent release provenance.
 Release assembly tests also reject missing metadata and shared Core imports.
+`test_ci_artifacts.py` inspects real ZIP/tar fixtures for every supported target,
+including wrong architectures, changed executable/metadata bytes, unexpected runtime
+imports, missing/extra/duplicate files, links and Unix permissions. Assembly tests
+require all three packages and their native smoke evidence. Synthetic fixtures do
+not establish native macOS execution; the release's macOS worker supplies that check.
 The default build produces provenance even with CTest disabled; see
 [build reconstruction](../docs/development.md#build-provenance-and-reconstruction).
 

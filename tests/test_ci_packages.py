@@ -16,6 +16,8 @@ from ci_support import digest, identity, read, write
 from test_release import request, summary
 from test_ci_gates import ENV
 from test_ci_metadata import release_metadata
+from test_ci_artifacts import fixture_archive
+from release_artifacts import SMOKE_CASES, TARGETS, verify_archive
 
 
 class Packages(unittest.TestCase):
@@ -30,25 +32,27 @@ class Packages(unittest.TestCase):
             for identifier in IDS:
                 folder = root / 'evidence' / identifier
                 folder.mkdir(parents=True)
-                system = 'Windows' if identifier.startswith('windows-') else 'Linux'
+                system = TARGETS[identifier][0]
                 report = summary(system)
                 report['release_request'] = candidate
-                write(folder / 'summary.json', report)
-                extension = '.zip' if system == 'Windows' else '.tar.gz'
-                archive = folder / f"OpenTLV-CLI-0.1.0-{identifier}{extension}"
-                archive.write_bytes(b'tested archive')
+                if system != 'Darwin':
+                    write(folder / 'summary.json', report)
                 first = report['results'][0]
-                package = {'schema': 1, **identity(), 'id': identifier, 'filename': archive.name,
-                           'sha256': digest(archive), 'configuration': 'Release', 'version': '0.1.0',
-                           'core_linkage': 'static', 'package_cases': 154, 'sanitizer': False,
+                package = {'schema': 1, **identity(), 'id': identifier,
+                           'configuration': 'Release', 'version': '0.1.0',
+                           'core_linkage': 'static', 'sanitizer': False,
                            'json_commit': candidate['json_sha'],
-                           'compiler': {'COMPILER_ID': 'MSVC' if system == 'Windows' else 'GNU',
+                           'compiler': {'COMPILER_ID': TARGETS[identifier][2],
                                         'SIZEOF_DATA_PTR': '8'},
                            'reports': {'ctest': first['ctest'], 'baseline_cases': 154, 'query': first['query']},
                            'core': {'verified': True, 'mode': 'verified-source',
                                     'release_id': 7, 'manifest_sha256': 'd' * 64,
                                     'commit': candidate['core_sha'], 'release_tag': 'v0.8.0'}}
                 package['provenance'] = release_metadata(package)
+                archive = fixture_archive(folder, package)
+                package.update(filename=archive.name, sha256=digest(archive),
+                               package_verification=verify_archive(archive, package) | {
+                                   'smoke': {'status': 'passed', 'cases': SMOKE_CASES}})
                 write(folder / (identifier + '.json'), package)
             if change:
                 change(root)
@@ -59,12 +63,20 @@ class Packages(unittest.TestCase):
             self.assertEqual(result['jobs'], {'validation': 'success', 'quality': 'success'})
             self.assertEqual(result['builds'], 10)
             self.assertEqual(result['ctest_passes'], 140)
-            self.assertEqual(len(result['artifacts']), 2)
-            self.assertEqual(IDS, {'linux-x64-static', 'windows-x64-static'})
-            self.assertTrue((root / 'publish/SHA256SUMS').is_file())
+            self.assertEqual(len(result['artifacts']), 3)
+            self.assertEqual(IDS, {'linux-x64-static', 'windows-x64-static', 'macos-arm64-static'})
+            checksums = (root / 'publish/SHA256SUMS').read_text().splitlines()
+            self.assertEqual(len(checksums), 7)
+            for line in checksums:
+                checksum, filename = line.split('  ')
+                self.assertEqual(checksum, digest(root / 'publish' / filename))
 
     def test_complete_matrix_preserves_portal_contract(self):
         self.exercise()
+
+    def test_missing_macos_package_blocks_publication(self):
+        with self.assertRaisesRegex(ValueError, 'Missing approved CLI packages'):
+            self.exercise(lambda root: (root / 'evidence/macos-arm64-static/macos-arm64-static.json').unlink())
 
     def test_missing_tampered_stale_unverified_or_incomplete_package_rejected(self):
         def change(root, mode):
@@ -91,11 +103,15 @@ class Packages(unittest.TestCase):
                 data['core_linkage'] = 'shared'
             if mode == 'provenance':
                 del data['provenance']
+            if mode == 'smoke':
+                data['package_verification']['smoke']['cases'] = ['version']
+            if mode == 'inventory':
+                data['package_verification']['files'] = {}
             if mode == 'runtime-core':
                 data['provenance']['binary']['runtime_imports'].append('tlv.dll')
             write(path, data)
         for mode in ('missing', 'tampered', 'stale', 'unverified', 'tests', 'changed-core', 'schema',
-                     'shared', 'provenance', 'runtime-core'):
+                     'shared', 'provenance', 'runtime-core', 'smoke', 'inventory'):
             with self.subTest(mode=mode), self.assertRaises(ValueError):
                 self.exercise(lambda root: change(root, mode))
 

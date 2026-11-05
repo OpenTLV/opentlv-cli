@@ -7,15 +7,14 @@ import os
 from pathlib import Path
 import platform
 import shutil
-import subprocess
-import sys
 import tempfile
 
 from binary_linkage import check_static_core
 from build_metadata import collect, validate_release
 from ci_support import ROOT, cache, compiler, digest, identity, pin, read, require, run, write
 from release import QUERY_EXCLUSIONS, ctest_results
-from verified_core import extract, resolve
+from verified_core import resolve
+from release_artifacts import TARGETS, archive_name, native_id, verify_archive
 from dependency_snapshot import resolved_dependencies
 
 # Main's smoke tier: Core linkage, both public targets and the version contract.
@@ -66,10 +65,10 @@ def package(build, output, record):
     require(digest(executable) == record['provenance']['binary']['sha256'],
             'Executable changed since build provenance was recorded')
     output.mkdir(parents=True, exist_ok=False)
-    require(platform_id() in (('linux', 'x64'), ('windows', 'x64')),
-            'Approved packages require a Linux or Windows x64 host')
+    require(record['id'] in TARGETS and native_id() == record['id'],
+            'Approved packages require a supported native release target')
     identifier = record['id']
-    name = f"OpenTLV-CLI-{record['version']}-{identifier}"
+    name = archive_name(record)[:-len(TARGETS[identifier][3])]
     work = Path(tempfile.mkdtemp(prefix='package-check-', dir=build))
     stage = work / name
     (stage / 'bin').mkdir(parents=True, exist_ok=False)
@@ -93,28 +92,9 @@ def package(build, output, record):
     write(stage / 'build-info.json', record)
     archive_format = 'zip' if platform.system() == 'Windows' else 'gztar'
     archive = Path(shutil.make_archive(str(output / name), archive_format, stage.parent, stage.name))
-    relocated = work / 'relocated'
-    extract(archive, relocated)
-    cli = relocated / name / 'bin' / executable.name
-    require(digest(cli) == record['provenance']['binary']['sha256'] and
-            check_static_core(cli) == record['provenance']['binary']['runtime_imports'],
-            'Packaged executable differs from verified build')
-    # Remove build-tree runtime search paths from the environment. The relocated
-    # executable must start without them, from a different working directory.
-    environment = os.environ.copy()
-    environment.pop('LD_LIBRARY_PATH', None)
-    environment.pop('DYLD_LIBRARY_PATH', None)
-    result = subprocess.run([str(cli), '--version'], cwd=relocated, env=environment,
-                            capture_output=True, text=True, check=True)
-    require(result.stdout.strip() == 'OpenTLV CLI ' + record['version'] and not result.stderr,
-            'Relocated executable version mismatch')
-    # All 154 observable CLI cases, not merely a --help/--version launch.
-    run(sys.executable, '-B', ROOT / 'tests/check_cli_baseline.py', '--cli', cli,
-        '--version', record['version'], '--report', output / 'package-baseline.json', env=environment)
-    report = read(output / 'package-baseline.json')
-    require(len(report['observations']) == 154 and not report['failures'], 'Packaged CLI behavior mismatch')
+    verification = verify_archive(archive, record, native=True)
     write(output / (identifier + '.json'), record | {'filename': archive.name, 'sha256': digest(archive),
-                                                   'package_cases': 154})
+                                                   'package_verification': verification})
 
 
 def main():

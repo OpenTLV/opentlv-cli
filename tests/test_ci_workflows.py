@@ -66,11 +66,11 @@ class Workflows(unittest.TestCase):
             with self.subTest(job=name):
                 self.assertNotIn('shared', str(job['strategy']['matrix']))
                 self.assertNotIn('--shared', str(job['steps']))
-        # Full builds static Core on each supported platform; macOS is not packaged yet.
+        # Full builds static Core on each supported platform; release packaging reuses all three builds.
         matrix = str(checks['build']['strategy']['matrix']['include'])
         for runner in ('ubuntu-26.04', 'windows-2025', 'macos-26'):
             self.assertIn(runner, matrix)
-        self.assertEqual(release['binaries']['strategy']['matrix']['os'], ['ubuntu-26.04', 'windows-2025'])
+        self.assertEqual(release['binaries']['strategy']['matrix']['os'], ['ubuntu-26.04', 'windows-2025', 'macos-26'])
 
     def test_cxx_jobs_use_the_supported_stable_compilers(self):
         checks = workflow('cli-checks.yml')['jobs']
@@ -91,6 +91,8 @@ class Workflows(unittest.TestCase):
         self.assertNotIn('cli_build.py', str(release['binaries']))
         self.assertIn('cli-tested-package-', str(release['binaries']))
         self.assertIn('--package build/artifacts', str(build['steps']))
+        self.assertNotIn('!= macOS', str(build['steps']))
+        self.assertNotIn("runner.os != 'macOS'", str(build['steps']))
         for job in (checks['dependencies'],):
             self.assertIn("'gcc-15'", job['env']['CC'])
             self.assertIn("'g++-15'", job['env']['CXX'])

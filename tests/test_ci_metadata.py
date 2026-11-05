@@ -22,7 +22,7 @@ def release_metadata(record):
                      'library_sha256': 'a' * 64, 'headers': {'sha256': 'b' * 64, 'files': 12}},
             'json': {'commit': record['json_commit'], 'dirty': False, 'version': '3.11.3',
                      'headers': {'sha256': 'c' * 64, 'files': 10}},
-            'toolchain': {'CMAKE_SYSTEM_NAME': 'Windows' if record['id'].startswith('windows-') else 'Linux',
+            'toolchain': {'CMAKE_SYSTEM_NAME': {'windows': 'Windows', 'linux': 'Linux', 'macos': 'Darwin'}[record['id'].split('-')[0]],
                           'CMAKE_SIZEOF_VOID_P': '8', 'CMAKE_C_COMPILER_ID': 'test',
                           'CMAKE_C_COMPILER_VERSION': '1', 'CMAKE_CXX_COMPILER_ID': 'test',
                           'CMAKE_CXX_COMPILER_VERSION': '2'},
@@ -120,7 +120,7 @@ class Metadata(unittest.TestCase):
                   'core': {'commit': pin('Core')}, 'json_commit': pin('Json'), 'id': 'linux-x64-static'}
         valid = release_metadata(record)
         validate_release(valid, record)
-        # Full CI also verifies the candidate on macOS, without publishing a package.
+        # Full CI also verifies the candidate on macOS, and publishes its existing arm64 target.
         macos = copy.deepcopy(valid)
         macos['toolchain']['CMAKE_SYSTEM_NAME'] = 'Darwin'
         macos['binary']['runtime_imports'] = ['/usr/lib/libSystem.B.dylib']
