@@ -18,6 +18,7 @@ add_custom_target(cli_version_metadata
     VERBATIM)
 
 include(GNUInstallDirs)
+include(cmake/Sanitizers.cmake)
 include(cmake/Core.cmake)
 # Check before creating our executable: embedding Core must provide libraries only.
 if(TARGET otlv)

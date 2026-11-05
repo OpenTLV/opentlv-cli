@@ -404,6 +404,62 @@ reserved for that workflow. It publishes tested executable archives with
 checksums and attestations. See the [quality gate policy](quality-gates.md)
 for Core artifact selection and the release activation prerequisite.
 
+## CLI sanitizers
+
+Use a fresh build directory. `OPENTLV_CLI_SANITIZER` accepts `none` (default),
+`address`, or `address-undefined`. GCC/Clang on Unix support both enabled modes;
+MSVC on Windows supports `address` only. These options instrument the CLI,
+header-only dependencies and the static Core source build in the CLI directory.
+Prebuilt Core packages are rejected because their instrumentation and runtime
+compatibility cannot be established. Core tests and fuzzing remain disabled.
+
+For Linux, install the compiler's matching sanitizer runtime and LLVM symbolizer:
+
+```sh
+CC=clang-22 CXX=clang++-22 cmake -S . -B build/sanitizer -G Ninja \
+  -DCMAKE_BUILD_TYPE=Debug -DOPENTLV_CLI_SANITIZER=address-undefined \
+  -DFETCHCONTENT_TRY_FIND_PACKAGE_MODE=NEVER -DOPENTLV_BUILD_CXX=ON
+cmake --build build/sanitizer --parallel 2
+ASAN_SYMBOLIZER_PATH=$(command -v llvm-symbolizer-22) \
+  ctest --test-dir build/sanitizer -L '^sanitizer$' --output-on-failure --no-tests=error
+```
+
+For Windows, install Visual Studio's C++ AddressSanitizer component and use a
+Visual Studio 2026 x64 developer shell (which also exposes the ASan runtime DLL):
+
+```powershell
+cmake -S . -B build/sanitizer-msvc -G Ninja -DCMAKE_BUILD_TYPE=Debug -DOPENTLV_CLI_SANITIZER=address -DFETCHCONTENT_TRY_FIND_PACKAGE_MODE=NEVER -DOPENTLV_BUILD_CXX=ON
+cmake --build build/sanitizer-msvc --parallel 2
+ctest --test-dir build/sanitizer-msvc -L '^sanitizer$' --output-on-failure --no-tests=error
+```
+
+Offline builds can add the documented explicit Core and JSON source overrides.
+The existing compiler minimums still apply. For MSVC, configuration removes
+`/RTC` checks and `/ZI` from inherited C/C++ flags, uses `/Zi`, and disables
+incremental linking, following [Microsoft's ASan requirements](https://learn.microsoft.com/en-us/cpp/sanitizers/asan).
+MSVC UBSan and leak detection are not enabled; Linux ASan enables leak detection.
+GCC/Clang reports use debug symbols, frame pointers and fatal UBSan diagnostics;
+see [Clang ASan](https://clang.llvm.org/docs/AddressSanitizer.html) and
+[UBSan](https://clang.llvm.org/docs/UndefinedBehaviorSanitizer.html).
+Sanitized executables are development artifacts and cannot be release packages.
+
+The `sanitizer` label selects the existing executable regression suite, the
+security boundary suite, version/static-linkage checks and detector self-checks.
+The latter run deliberate faults in a separate test executable and require both
+nonzero termination and the expected diagnostic with a source location. A plain
+crash, absent runtime or disabled instrumentation fails the check. These tests
+never inject faults into `otlv`. Run all ordinary tests in a separate unsanitized
+build; the focused sanitizer lane does not repeat the frozen baseline or Query
+corpus, Core unit tests or any fuzzing corpus.
+
+CTest supplies fatal sanitizer settings, and Linux leak detection, to the selected
+tests and their child processes. Unexpected process exit codes, timeouts and
+sanitizer text fail the process harness, including expected-error paths. Failure
+messages contain the command and captured stdout/stderr. Inspect
+`Testing/Temporary/LastTest.log` and `tests/sanitizer-*.log` in the build directory;
+CI uploads them with JUnit results even when tests fail. Missing source locations
+usually mean a missing symbolizer, runtime DLL or debug symbols.
+
 ## Troubleshooting
 
 | Symptom | Check or action |

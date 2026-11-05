@@ -102,7 +102,9 @@ class Workflows(unittest.TestCase):
             text = (ROOT / '.github/workflows' / name).read_text(encoding='utf-8')
             self.assertIn('clang-22', text)
             self.assertNotRegex(text, r'clang(\+\+|-tidy)?-(1[0-9]|2[01])\b')
-        self.assertEqual(checks['sanitizer']['env']['CXX'], 'clang++-22')
+        self.assertEqual(checks['sanitizer']['strategy']['matrix']['include'], [
+            {'os': 'ubuntu-26.04', 'cc': 'clang-22', 'cxx': 'clang++-22'},
+            {'os': 'windows-2025', 'cc': 'cl', 'cxx': 'cl'}])
         for name in ('build', 'dependencies', 'sanitizer'):
             self.assertNotIn('24.04', str(checks[name]))
 

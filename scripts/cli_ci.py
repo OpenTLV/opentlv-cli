@@ -38,7 +38,9 @@ def configuration(tier):
         names.append('release.yml')
     helpers = ['CMakeLists.txt', 'src/CMakeLists.txt', 'tests/CMakeLists.txt', 'cmake/Core.cmake',
                'cmake/Json.cmake', 'cmake/core-artifact.json', 'scripts/cli_build.py',
-               'cmake/Dependencies.cmake', 'scripts/dependency_snapshot.py',
+               'cmake/Dependencies.cmake', 'cmake/Sanitizers.cmake', 'scripts/dependency_snapshot.py',
+               'tests/check_executable.py', 'tests/check_security.py', 'tests/check_sanitizer.py',
+               'tests/sanitizer_probe.cpp', 'tests/run_cli_suite.cmake',
                'scripts/verified_core.py', 'scripts/cli_ci.py', 'scripts/ci_support.py',
                'scripts/check_static.py', 'scripts/check_tidy.py', 'scripts/binary_linkage.py',
                'cmake/Version.cmake', 'cmake/Compilers.cmake', 'tests/check_core_dependency.py']

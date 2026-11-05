@@ -59,6 +59,8 @@ endfunction()
 add_cli_suite(Integration_cli integration)
 add_cli_suite(Integration_cli_executable executable)
 set_tests_properties(Integration_cli_executable PROPERTIES LABELS "integration;cli;regression" TIMEOUT 180)
+add_cli_suite(Integration_cli_security security)
+set_tests_properties(Integration_cli_security PROPERTIES LABELS "integration;cli;security" TIMEOUT 180)
 add_cli_suite(Integration_cli_cpp_examples examples)
 set_tests_properties(Integration_cli_cpp_examples PROPERTIES LABELS "integration;cli;examples")
 add_test(NAME Integration_cli_baseline_runner
@@ -72,3 +74,31 @@ set_tests_properties(query-cli-conformance PROPERTIES LABELS "query;conformance;
 set_property(TEST query-cli-conformance APPEND PROPERTY LABELS "cli")
 set_tests_properties(cli_version cli_version_contract cli_release_gate PROPERTIES LABELS "cli;tooling")
 set_tests_properties(cli_static_core PROPERTIES LABELS "cli;linkage")
+
+if(NOT OPENTLV_CLI_SANITIZER STREQUAL "none")
+    add_executable(cli_sanitizer_probe sanitizer_probe.cpp)
+    add_test(NAME cli_sanitizer_address COMMAND ${Python3_EXECUTABLE} -B
+        "${CMAKE_CURRENT_SOURCE_DIR}/check_sanitizer.py"
+        --probe "$<TARGET_FILE:cli_sanitizer_probe>" --mode address
+        --log "${CMAKE_CURRENT_BINARY_DIR}/sanitizer-address-$<CONFIG>.log")
+    set(_sanitizer_tests cli_sanitizer_address cli_version cli_static_core
+        Integration_cli_executable Integration_cli_security)
+    if(OPENTLV_CLI_SANITIZER STREQUAL "address-undefined")
+        add_test(NAME cli_sanitizer_undefined COMMAND ${Python3_EXECUTABLE} -B
+            "${CMAKE_CURRENT_SOURCE_DIR}/check_sanitizer.py"
+            --probe "$<TARGET_FILE:cli_sanitizer_probe>" --mode undefined
+            --log "${CMAKE_CURRENT_BINARY_DIR}/sanitizer-undefined-$<CONFIG>.log")
+        list(APPEND _sanitizer_tests cli_sanitizer_undefined)
+    endif()
+    set_property(TEST ${_sanitizer_tests} APPEND PROPERTY LABELS sanitizer)
+    # Force fatal reports on error paths too. Keep logs on stderr so process
+    # assertions retain them; CTest saves complete output in LastTest.log.
+    set(_sanitizer_environment "ASAN_OPTIONS=halt_on_error=1:abort_on_error=0:exitcode=86")
+    if(CMAKE_SYSTEM_NAME STREQUAL "Linux")
+        string(APPEND _sanitizer_environment ":detect_leaks=1")
+    endif()
+    if(OPENTLV_CLI_SANITIZER STREQUAL "address-undefined")
+        list(APPEND _sanitizer_environment "UBSAN_OPTIONS=halt_on_error=1:print_stacktrace=1:exitcode=87")
+    endif()
+    set_tests_properties(${_sanitizer_tests} PROPERTIES ENVIRONMENT "${_sanitizer_environment}" TIMEOUT 300)
+endif()

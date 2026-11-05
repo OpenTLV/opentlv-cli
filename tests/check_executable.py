@@ -19,7 +19,7 @@ def text(data):
     return data.decode("utf-8").replace("\r\n", "\n")
 
 
-class ExecutableRegression(unittest.TestCase):
+class ProcessContract(unittest.TestCase):
     cli: Path
     version: str
     features: set[str]
@@ -41,6 +41,11 @@ class ExecutableRegression(unittest.TestCase):
             env=dict(os.environ, NO_COLOR="1", TERM="dumb"), check=False,
         )
         context = f"otlv {args!r}\nstdout={result.stdout!r}\nstderr={result.stderr!r}"
+        # Error-path tests may expect exit 1 and allow diagnostic text. Never
+        # mistake a sanitizer's failure for the expected application error.
+        for marker in (b"AddressSanitizer", b"LeakSanitizer", b"UndefinedBehaviorSanitizer",
+                       b"runtime error:"):
+            self.assertNotIn(marker, result.stderr, context)
         self.assertEqual(result.returncode, code, context)
         if stdout is not None:
             actual = result.stdout if isinstance(stdout, bytes) else text(result.stdout)
@@ -55,6 +60,8 @@ class ExecutableRegression(unittest.TestCase):
     def json_output(self, *args, **kwargs):
         return json.loads(self.invoke(*args, stdout=None, **kwargs).stdout)
 
+
+class ExecutableRegression(ProcessContract):
     def test_help(self):
         output = text(self.invoke("--help", stdout=None).stdout)
         self.assertIn("Usage:", output)
@@ -336,7 +343,7 @@ class ExecutableRegression(unittest.TestCase):
                 self.assertIn("max-case-size", result)
 
 
-def main():
+def main(test_class=ExecutableRegression):
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--cli", required=True, type=Path)
     parser.add_argument("--version-file", required=True, type=Path)
@@ -344,10 +351,10 @@ def main():
                         choices=("FIXED", "BER", "DER", "EMV", "BLUETOOTH_LTV", "NFC",
                                  "QUERY_FRONTEND", "DOCUMENT"))
     args = parser.parse_args()
-    ExecutableRegression.cli = args.cli.resolve(strict=True)
-    ExecutableRegression.version = args.version_file.read_text(encoding="utf-8").strip()
-    ExecutableRegression.features = set(args.features)
-    suite = unittest.defaultTestLoader.loadTestsFromTestCase(ExecutableRegression)
+    test_class.cli = args.cli.resolve(strict=True)
+    test_class.version = args.version_file.read_text(encoding="utf-8").strip()
+    test_class.features = set(args.features)
+    suite = unittest.defaultTestLoader.loadTestsFromTestCase(test_class)
     return 0 if unittest.TextTestRunner(verbosity=2).run(suite).wasSuccessful() else 1
 
 

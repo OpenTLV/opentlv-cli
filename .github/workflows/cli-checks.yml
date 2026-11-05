@@ -136,12 +136,20 @@ jobs:
 
   sanitizer:
     if: inputs.full
-    runs-on: ubuntu-26.04
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: ubuntu-26.04
+            cc: clang-22
+            cxx: clang++-22
+          - os: windows-2025
+            cc: cl
+            cxx: cl
+    runs-on: ${{ matrix.os }}
     env:
-      CC: clang-22
-      CXX: clang++-22
-      ASAN_OPTIONS: detect_leaks=1:halt_on_error=1
-      UBSAN_OPTIONS: halt_on_error=1:print_stacktrace=1
+      CC: ${{ matrix.cc }}
+      CXX: ${{ matrix.cxx }}
     steps:
       - uses: actions/checkout@v5
         with:
@@ -150,23 +158,38 @@ jobs:
       - uses: actions/setup-python@v6
         with:
           python-version: '3.12'
+      - uses: ilammy/msvc-dev-cmd@v1
+        if: runner.os == 'Windows'
+        with:
+          arch: x64
       - uses: actions/cache@v4
         with:
           path: .cache/core-downloads
           key: core-downloads-v1-${{ runner.os }}-Debug-${{ hashFiles('cmake/core-artifact.json') }}
-      - run: sudo apt-get update && sudo apt-get install -y clang-22 libclang-rt-22-dev ninja-build
-      - env:
+      - name: Install Linux sanitizer runtime and symbolizer
+        if: runner.os == 'Linux'
+        run: sudo apt-get update && sudo apt-get install -y clang-22 libclang-rt-22-dev llvm-22 ninja-build
+      - name: Select Linux symbolizer
+        if: runner.os == 'Linux'
+        run: echo "ASAN_SYMBOLIZER_PATH=$(command -v llvm-symbolizer-22)" >> "$GITHUB_ENV"
+      - name: Verify CLI security contracts and sanitizer detection
+        env:
           GH_TOKEN: ${{ github.token }}
+        shell: bash
         run: >-
           python -B scripts/cli_build.py --build build/sanitizer --sanitize
           --configuration Debug --release-tag "$RELEASE_TAG"
       - uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: cli-sanitizer-${{ github.run_attempt }}
+          name: cli-sanitizer-${{ matrix.os }}-${{ github.run_attempt }}
           path: |
             build/sanitizer/build-evidence.json
             build/sanitizer/ctest.xml
+            build/sanitizer/Testing/Temporary/*.log
+            build/sanitizer/tests/sanitizer-*.log
+            build/sanitizer/core/verification.json
+            build/sanitizer/CMakeFiles/CMakeConfigureLog.yaml
           if-no-files-found: error
 
   gate:

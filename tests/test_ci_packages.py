@@ -56,7 +56,7 @@ class Packages(unittest.TestCase):
             self.assertEqual(result['status'], 'passed')
             self.assertEqual(result['jobs'], {'validation': 'success', 'quality': 'success'})
             self.assertEqual(result['builds'], 10)
-            self.assertEqual(result['ctest_passes'], 130)
+            self.assertEqual(result['ctest_passes'], 140)
             self.assertEqual(len(result['artifacts']), 2)
             self.assertEqual(IDS, {'linux-x64-static', 'windows-x64-static'})
             self.assertTrue((root / 'publish/SHA256SUMS').is_file())
