@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- Pass the clang-tidy check set explicitly (`-*,clang-diagnostic-*,clang-analyzer-*`, the previous built-in default) so clang-tidy 22 on Ubuntu 26.04 no longer stops with "no checks enabled", and fail with a clear message if the installed clang-tidy provides no Clang Static Analyzer checks. (#13)
+
 ### Changed
 
 - Require ISO C++23 without compiler extensions for every CLI-owned C++ target: the standard is set after Core is added, `otlv` requires `cxx_std_23` and builds MSVC with `/permissive-`, and the new `src/cxx_requirements.cpp` fails the build when a flag selects an older standard or a GNU dialect. Core remains C99 with a C++11 public C++ facade. (#13)
