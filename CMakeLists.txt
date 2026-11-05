@@ -33,6 +33,7 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 include(cmake/Compilers.cmake)
 include(cmake/Json.cmake)
 add_subdirectory(src)
+include(cmake/Dependencies.cmake)
 
 option(OPENTLV_CLI_BUILD_TESTS "Build dependency smoke tests and CLI regression suites" ${PROJECT_IS_TOP_LEVEL})
 if(OPENTLV_CLI_BUILD_TESTS)

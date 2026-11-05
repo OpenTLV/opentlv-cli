@@ -120,8 +120,8 @@ class CoreConsumer(unittest.TestCase):
             self.assertEqual(command.call_count, 2)
 
     def test_authenticated_source_resolution_and_corrupt_archive(self):
-        for corrupt in (False, True):
-            with self.subTest(corrupt=corrupt), tempfile.TemporaryDirectory() as tmp:
+        for state in ('download', 'corrupt-download', 'cache', 'corrupt-cache', 'invalid-cache-attestation'):
+            with self.subTest(state=state), tempfile.TemporaryDirectory() as tmp:
                 root = Path(tmp)
                 data = manifest()
                 name = data['artifacts'][0]['filename']
@@ -136,7 +136,13 @@ class CoreConsumer(unittest.TestCase):
                 (root / 'SHA256SUMS').write_text(
                     f"{digest(root / 'release-manifest.json')}  release-manifest.json\n"
                     f"{digest(archive)}  {name}\n")
-                if corrupt:
+                cached = root / 'cache' / digest(archive) / name
+                if 'cache' in state:
+                    cached.parent.mkdir(parents=True)
+                    cached.write_bytes(archive.read_bytes())
+                if state == 'corrupt-cache':
+                    cached.write_bytes(b'changed')
+                if state == 'corrupt-download':
                     archive.write_bytes(b'changed')
                 release = {'id': 7, 'tag_name': LOCK['release_tag'], 'draft': False,
                            'assets': [{'name': n} for n in ('release-manifest.json', 'SHA256SUMS', name)]}
@@ -144,16 +150,23 @@ class CoreConsumer(unittest.TestCase):
 
                 def command(*args, **kwargs):
                     calls.append(args)
+                    if (state == 'invalid-cache-attestation' and args[:3] == ('gh', 'attestation', 'verify')
+                            and Path(args[3]).name == name):
+                        raise RuntimeError('invalid cached producer')
                     if args[:3] == ('gh', 'release', 'download'):
                         filename = args[args.index('--pattern') + 1]
                         destination = args[args.index('--dir') + 1]
                         (destination / filename).write_bytes((root / filename).read_bytes())
 
-                with patch('verified_core.lock', return_value=LOCK), \
+                with patch.dict('os.environ', {'OPENTLV_CLI_DOWNLOAD_CACHE': str(root / 'cache')}), \
+                        patch('verified_core.lock', return_value=LOCK), \
                         patch('verified_core.api', side_effect=[release, {'sha': LOCK['commit']}]), \
                         patch('verified_core.run', side_effect=command), \
                         patch('verified_core.compiler', return_value={}):
-                    if corrupt:
+                    if state == 'invalid-cache-attestation':
+                        with self.assertRaisesRegex(RuntimeError, 'invalid cached producer'):
+                            resolve(root / 'work', 'Debug', required=True, source_only=True)
+                    elif state.startswith('corrupt'):
                         with self.assertRaisesRegex(ValueError, 'checksum'):
                             resolve(root / 'work', 'Debug', required=True, source_only=True)
                     else:
@@ -165,6 +178,10 @@ class CoreConsumer(unittest.TestCase):
                         self.assertEqual(len(attestations), 3)
                         for call in attestations:
                             self.assertEqual(call[call.index('--source-digest') + 1], LOCK['commit'])
+                        downloads = [c[c.index('--pattern') + 1] for c in calls
+                                     if c[:3] == ('gh', 'release', 'download')]
+                        self.assertEqual(name in downloads, state == 'download')
+                        self.assertEqual(digest(cached), data['artifacts'][0]['sha256'])
 
     def test_verified_binary_selection_has_no_source_or_git_fallback(self):
         with tempfile.TemporaryDirectory() as tmp:
@@ -178,7 +195,7 @@ class CoreConsumer(unittest.TestCase):
             def authenticated(work, selected):
                 work.mkdir()
                 return ({'version': '0.8.0', 'artifacts': [record]}, {archive.name: digest(archive)},
-                        lambda name: archive, {'release_id': 7, 'manifest_sha256': 'd' * 64})
+                        lambda name, expected_digest: archive, {'release_id': 7, 'manifest_sha256': 'd' * 64})
 
             with patch('verified_core.lock', return_value=LOCK), \
                     patch('verified_core.authenticated_release', side_effect=authenticated), \

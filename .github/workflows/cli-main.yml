@@ -15,6 +15,7 @@ jobs:
     env:
       CC: gcc-15
       CXX: g++-15
+      OPENTLV_CLI_DOWNLOAD_CACHE: ${{ github.workspace }}/.cache/core-downloads
     steps:
       - uses: actions/checkout@v5
         with:
@@ -23,13 +24,47 @@ jobs:
       - uses: actions/setup-python@v6
         with:
           python-version: '3.12'
+      - uses: actions/cache@v4
+        with:
+          path: .cache/core-downloads
+          key: core-downloads-v1-${{ runner.os }}-Release-${{ hashFiles('cmake/core-artifact.json') }}
       - env:
           GH_TOKEN: ${{ github.token }}
         run: python -B scripts/cli_build.py --build build/main --smoke
+      - uses: actions/upload-artifact@v4
+        with:
+          name: cli-dependencies-${{ github.sha }}-${{ github.run_attempt }}
+          path: build/main/build-evidence.json
+          if-no-files-found: error
+  dependencies:
+    needs: smoke
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          persist-credentials: false
+      - uses: actions/download-artifact@v4
+        with:
+          name: cli-dependencies-${{ github.sha }}-${{ github.run_attempt }}
+          path: build/dependencies
+      - name: Publish verified Main dependencies
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: >-
+          python -B scripts/dependency_snapshot.py --evidence build/dependencies/build-evidence.json
+          --output build/dependencies/snapshot.json --submit
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: cli-dependency-submission-${{ github.sha }}-${{ github.run_attempt }}
+          path: build/dependencies/
+          if-no-files-found: error
   gate:
     name: CLI quality gate
     if: always()
-    needs: [smoke]
+    needs: [smoke, dependencies]
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v5

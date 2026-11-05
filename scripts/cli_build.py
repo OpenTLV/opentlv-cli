@@ -15,6 +15,7 @@ from binary_linkage import check_static_core
 from ci_support import ROOT, cache, compiler, digest, identity, pin, read, require, run, write
 from release import QUERY_EXCLUSIONS, ctest_results
 from verified_core import extract, resolve
+from dependency_snapshot import resolved_dependencies
 
 # Main's smoke tier: Core linkage, both public targets and the version contract.
 SMOKE = ('core_c_smoke', 'core_cxx_smoke', 'cli_version', 'cli_static_core')
@@ -155,6 +156,8 @@ def main():
         require(not run('git', '-C', source, 'status', '--porcelain', capture=True), 'Dirty Core checkout')
     json_source = Path(selected['nlohmann_json_SOURCE_DIR'])
     require(run('git', '-C', json_source, 'rev-parse', 'HEAD', capture=True) == pin('Json'), 'Wrong JSON revision')
+    require(not run('git', '-C', json_source, 'status', '--porcelain', '--untracked-files=all', capture=True),
+            'Dirty JSON checkout')
     run('cmake', '--build', build, '--parallel', '2')
     selection = ['-R', '^(' + '|'.join(SMOKE) + ')$'] if args.smoke else []
     run('ctest', '--test-dir', build, '--output-on-failure', '--no-tests=error',
@@ -170,6 +173,9 @@ def main():
               'msvc_runtime': selected.get('CMAKE_MSVC_RUNTIME_LIBRARY') if system == 'windows' else None,
               'runner_image': {'os': os.environ.get('ImageOS'), 'version': os.environ.get('ImageVersion')},
               'json_commit': pin('Json'), 'sanitizer': args.sanitize, 'reports': reports}
+    # Local Core overrides are intentionally not publishable dependency evidence.
+    if not args.core_source:
+        record['dependencies'] = resolved_dependencies(build, args.configuration, dependency, json_source)
     write(build / 'build-evidence.json', record)
     if args.package:
         require(not args.smoke and args.configuration == 'Release' and not args.sanitize,

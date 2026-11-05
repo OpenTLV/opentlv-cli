@@ -6,13 +6,15 @@ on:
     branches: [main]
 permissions:
   contents: read
-  actions: read
-  security-events: write
 concurrency:
   group: cli-pr-${{ github.ref }}
   cancel-in-progress: true
 jobs:
   checks:
+    permissions:
+      contents: read
+      actions: read
+      security-events: write
     uses: ./.github/workflows/cli-checks.yml
     with:
       full: false

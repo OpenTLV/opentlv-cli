@@ -86,12 +86,17 @@ class Workflows(unittest.TestCase):
             self.assertIn(entry, full)
         self.assertEqual(pr, '[{"os":"ubuntu-26.04","configuration":"Debug",'
                              '"cc":"clang-22","cxx":"clang++-22"}]')
-        # Release packages and the dependency matrix use Full's Linux and Windows compilers.
-        for job in (checks['dependencies'], release['binaries']):
+        # Release signs Full's tested packages without another compiler/build.
+        self.assertNotIn('env', release['binaries'])
+        self.assertNotIn('cli_build.py', str(release['binaries']))
+        self.assertIn('cli-tested-package-', str(release['binaries']))
+        self.assertIn('--package build/artifacts', str(build['steps']))
+        for job in (checks['dependencies'],):
             self.assertIn("'gcc-15'", job['env']['CC'])
             self.assertIn("'g++-15'", job['env']['CXX'])
             self.assertIn("'cl'", job['env']['CC'])
-        self.assertEqual(workflow('cli-main.yml')['jobs']['smoke']['env'], {'CC': 'gcc-15', 'CXX': 'g++-15'})
+        main_env = workflow('cli-main.yml')['jobs']['smoke']['env']
+        self.assertEqual((main_env['CC'], main_env['CXX']), ('gcc-15', 'g++-15'))
         # Clang-based analysis follows the PR compiler; no stale toolchain remains.
         for name in ('cli-checks.yml', 'quality.yml', 'cli-codeql.yml'):
             text = (ROOT / '.github/workflows' / name).read_text(encoding='utf-8')
@@ -113,6 +118,28 @@ class Workflows(unittest.TestCase):
         for name in ('cli-pr.yml', 'cli-full.yml'):
             timing_steps = workflow(name)['jobs']['timings']['steps']
             self.assertTrue(any('--scope cli' in step.get('run', '') for step in timing_steps))
+
+    def test_dependency_submission_is_main_only_with_isolated_write_permission(self):
+        main = workflow('cli-main.yml')
+        self.assertEqual(main['permissions'], {'contents': 'read'})
+        job = main['jobs']['dependencies']
+        self.assertEqual(job['needs'], 'smoke')
+        self.assertEqual(job['permissions'], {'contents': 'write'})
+        self.assertIn('dependencies', main['jobs']['gate']['needs'])
+        self.assertIn('github.run_attempt', str(job['steps']))
+        for filename in ('cli-pr.yml', 'cli-full.yml', 'cli-checks.yml', 'release.yml'):
+            self.assertNotIn('dependency_snapshot.py', str(workflow(filename)))
+        checkout = job['steps'][0]
+        self.assertIs(checkout['with']['persist-credentials'], False)
+
+    def test_cache_contains_downloads_only_without_restore_prefix(self):
+        for filename in ('cli-main.yml', 'cli-checks.yml'):
+            for job in workflow(filename)['jobs'].values():
+                for step in job.get('steps', []):
+                    if step.get('uses') == 'actions/cache@v4':
+                        self.assertEqual(step['with']['path'], '.cache/core-downloads')
+                        self.assertNotIn('restore-keys', step['with'])
+                        self.assertIn("hashFiles('cmake/core-artifact.json')", step['with']['key'])
 
 
 if __name__ == '__main__':

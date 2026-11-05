@@ -133,7 +133,8 @@ Core target type, outcomes, compiler identity, CLI version, and all CTest
 results. Release CI and manual Full CI run the full matrix on Windows and
 Linux; Full additionally builds and tests the CLI on macOS. PR CI runs one Linux
 build, its suites and required static checks. Main CI runs only integration
-and linkage smoke tests. A local run does not establish hosted success.
+and linkage smoke tests, followed by dependency metadata submission from that
+successful build. A local run does not establish hosted success.
 See [quality gates](../docs/quality-gates.md) for artifact and sanitizer coverage.
 
 `--release-request <request.json>` is reserved for the release workflow. It
@@ -144,6 +145,12 @@ the two named Query fixture-provider exclusions remain explicit. See the
 [release guide](../docs/releases.md) for evidence and tag creation.
 
 ## Fixture ownership and provenance
+
+CI tooling regression tests (`python -B -m unittest discover -s tests -p 'test_ci_*.py'`)
+cover dependency snapshots, unknown transitive edges, exact build identity,
+Main-only submission, corrupt download caches and renewed artifact authentication.
+The CMake selection tests also verify that cached Core test/fuzz/benchmark
+options cannot enable Core-owned verification in CLI builds.
 
 The [migration manifest](migration.json) records source paths, revisions and
 hashes. `python tests/check_migration.py --all-imports` also audits the initial

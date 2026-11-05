@@ -12,10 +12,9 @@ on:
         default: ''
 permissions:
   contents: read
-  actions: read
-  security-events: write
 env:
   RELEASE_TAG: ${{ inputs.release_tag }}
+  OPENTLV_CLI_DOWNLOAD_CACHE: ${{ github.workspace }}/.cache/core-downloads
 jobs:
   build:
     # Core is always linked statically; the matrix has no linkage axis. Each
@@ -38,6 +37,10 @@ jobs:
       - uses: actions/setup-python@v6
         with:
           python-version: '3.12'
+      - uses: actions/cache@v4
+        with:
+          path: .cache/core-downloads
+          key: core-downloads-v1-${{ runner.os }}-${{ matrix.configuration }}-${{ hashFiles('cmake/core-artifact.json') }}
       - uses: ilammy/msvc-dev-cmd@v1
         if: runner.os == 'Windows'
         with:
@@ -54,8 +57,16 @@ jobs:
           CONFIGURATION: ${{ matrix.configuration }}
         shell: bash
         run: |
+          args=()
+          if [[ -n "$RELEASE_TAG" && "$RUNNER_OS" != macOS ]]; then args+=(--package build/artifacts); fi
           python -B scripts/cli_build.py --build build/ci \
-            --configuration "$CONFIGURATION" --release-tag "$RELEASE_TAG"
+            --configuration "$CONFIGURATION" --release-tag "$RELEASE_TAG" "${args[@]}"
+      - uses: actions/upload-artifact@v4
+        if: inputs.release_tag != '' && runner.os != 'macOS'
+        with:
+          name: cli-tested-package-${{ matrix.os }}-${{ github.run_attempt }}
+          path: build/artifacts/*
+          if-no-files-found: error
       - uses: actions/upload-artifact@v4
         if: always()
         with:
@@ -115,6 +126,10 @@ jobs:
     uses: ./.github/workflows/quality.yml
 
   codeql:
+    permissions:
+      contents: read
+      actions: read
+      security-events: write
     uses: ./.github/workflows/cli-codeql.yml
     with:
       full: ${{ inputs.full }}
@@ -135,6 +150,10 @@ jobs:
       - uses: actions/setup-python@v6
         with:
           python-version: '3.12'
+      - uses: actions/cache@v4
+        with:
+          path: .cache/core-downloads
+          key: core-downloads-v1-${{ runner.os }}-Debug-${{ hashFiles('cmake/core-artifact.json') }}
       - run: sudo apt-get update && sudo apt-get install -y clang-22 libclang-rt-22-dev ninja-build
       - env:
           GH_TOKEN: ${{ github.token }}

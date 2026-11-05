@@ -342,6 +342,10 @@ those skips do not constitute full release validation.
 ## Tests and contributor checks
 
 After building, run `ctest --preset default` or `ctest --preset workspace`.
+Core's own test, benchmark, fuzz and example options are disabled within CLI
+source consumption, even if enabled in the CMake cache. JSON's own tests are
+also disabled. Run Core verification from its standalone repository.
+
 CTest includes dependency consumers, command regressions, the frozen baseline,
 Query conformance, version contracts and release-gate tests. Run all entries
 for complete coverage; filtering only the `integration` label omits Query and
@@ -394,8 +398,8 @@ other Core revisions without changing the CLI version.
 
 The [release guide](releases.md) is authoritative for version formats,
 prereleases, clean candidate builds and the release workflow. The gate checks
-the exact CLI commit and pinned Core/JSON revisions on both platforms and
-linkages before creating a new CLI tag. Candidate version overrides are
+the exact CLI commit and pinned Core/JSON revisions on Linux and Windows
+before creating a new CLI tag. Candidate version overrides are
 reserved for that workflow. It publishes tested executable archives with
 checksums and attestations. See the [quality gate policy](quality-gates.md)
 for Core artifact selection and the release activation prerequisite.

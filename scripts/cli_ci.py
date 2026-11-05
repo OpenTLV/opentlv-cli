@@ -22,7 +22,7 @@ IDS = {f'{system}-x64-static' for system in ('linux', 'windows')}
 
 
 def check_results(results, tier):
-    expected = {'smoke'} if tier == 'main' else JOBS
+    expected = {'smoke', 'dependencies'} if tier == 'main' else JOBS
     required = expected if tier in ('main', 'full') else PR
     require(isinstance(results, dict) and set(results) == expected, 'Missing/unexpected CI jobs')
     for name, item in results.items():
@@ -38,6 +38,7 @@ def configuration(tier):
         names.append('release.yml')
     helpers = ['CMakeLists.txt', 'src/CMakeLists.txt', 'tests/CMakeLists.txt', 'cmake/Core.cmake',
                'cmake/Json.cmake', 'cmake/core-artifact.json', 'scripts/cli_build.py',
+               'cmake/Dependencies.cmake', 'scripts/dependency_snapshot.py',
                'scripts/verified_core.py', 'scripts/cli_ci.py', 'scripts/ci_support.py',
                'scripts/check_static.py', 'scripts/check_tidy.py', 'scripts/binary_linkage.py',
                'cmake/Version.cmake', 'cmake/Compilers.cmake', 'tests/check_core_dependency.py']

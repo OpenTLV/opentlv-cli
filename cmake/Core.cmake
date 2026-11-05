@@ -16,6 +16,11 @@ endif()
 # source build only (Core's option() honors it under CMP0077). The global
 # BUILD_SHARED_LIBS and other dependencies are left unchanged.
 set(OPENTLV_BUILD_SHARED_LIBS OFF)
+# CLI consumes Core libraries. Keep all Core-owned verification out even when
+# a parent/cache enables it; directory scope does not change Core's own policy.
+foreach(_opentlv_cli_check IN ITEMS TESTS EXAMPLES BENCHMARKS PROPERTY_TESTS FUZZING)
+    set(OPENTLV_BUILD_${_opentlv_cli_check} OFF)
+endforeach()
 
 set(OPENTLV_CLI_CORE_PACKAGE "" CACHE PATH
     "Explicit Core package configuration directory; disables discovery and Git fallback")

@@ -24,6 +24,10 @@ class ExplicitPackage(unittest.TestCase):
             (root / 'CMakeLists.txt').write_text(
                 'cmake_minimum_required(VERSION 3.24)\nproject(Selection NONE)\n' + preamble +
                 f'include("{(ROOT / "cmake/Core.cmake").as_posix()}")\n' +
+                'foreach(check IN ITEMS TESTS EXAMPLES BENCHMARKS PROPERTY_TESTS FUZZING)\n'
+                '  if(OPENTLV_BUILD_${check})\n'
+                '    message(FATAL_ERROR "Core verification leaked into CLI")\n'
+                '  endif()\nendforeach()\n' +
                 # Static Core must not leak into the global default for other dependencies.
                 ('if(NOT BUILD_SHARED_LIBS OR OPENTLV_BUILD_SHARED_LIBS)\n'
                  '    message(FATAL_ERROR "Unexpected linkage variables")\nendif()\n' if preamble else ''))
@@ -63,6 +67,11 @@ class ExplicitPackage(unittest.TestCase):
 
     def test_explicit_static_option_keeps_global_default(self):
         result = self.configure(options=['-DOPENTLV_BUILD_SHARED_LIBS=OFF'], preamble='set(BUILD_SHARED_LIBS ON)\n')
+        self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+
+    def test_core_verification_options_cannot_leak_from_cache(self):
+        result = self.configure(options=[f'-DOPENTLV_BUILD_{name}=ON' for name in
+                                        ('TESTS', 'EXAMPLES', 'BENCHMARKS', 'PROPERTY_TESTS', 'FUZZING')])
         self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
 
 

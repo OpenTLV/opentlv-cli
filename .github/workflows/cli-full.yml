@@ -10,13 +10,15 @@ on:
         default: ''
 permissions:
   contents: read
-  actions: read
-  security-events: write
 concurrency:
   group: cli-full-${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: false
 jobs:
   checks:
+    permissions:
+      contents: read
+      actions: read
+      security-events: write
     uses: ./.github/workflows/cli-checks.yml
     with:
       full: true

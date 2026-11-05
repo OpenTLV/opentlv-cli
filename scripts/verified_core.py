@@ -3,8 +3,10 @@
 """Consume Core #637 schema-2 assets with producer and source authentication."""
 
 from pathlib import Path, PurePosixPath
+import os
 import platform
 import re
+import shutil
 import tarfile
 import zipfile
 
@@ -140,14 +142,27 @@ def authenticated_release(work, selected):
     resolved = api(f"repos/{REPOSITORY}/commits/{selected['release_tag']}")
     require(resolved.get('sha') == selected['commit'], 'Core tag moved away from locked commit')
 
-    def download(name):
+    def download(name, expected_digest=None):
         safe_name(name)
         require(sum(a['name'] == name for a in release['assets']) == 1, 'Missing/duplicate Core release asset: ' + name)
         path = work / name
-        run('gh', 'release', 'download', selected['release_tag'], '--repo', REPOSITORY,
-            '--pattern', name, '--dir', work)
+        cache_root = os.environ.get('OPENTLV_CLI_DOWNLOAD_CACHE')
+        cached = None
+        if cache_root and expected_digest:
+            require(re.fullmatch('[0-9a-f]{64}', expected_digest), 'Invalid cached Core digest')
+            cached = Path(cache_root) / expected_digest / name
+        if cached and cached.is_file():
+            shutil.copy2(cached, path)
+        else:
+            run('gh', 'release', 'download', selected['release_tag'], '--repo', REPOSITORY,
+                '--pattern', name, '--dir', work)
+        if expected_digest:
+            require(digest(path) == expected_digest, 'Core archive checksum mismatch; discard corrupt download cache')
         run('gh', 'attestation', 'verify', path, '--repo', REPOSITORY,
             '--signer-workflow', SIGNER, '--source-digest', selected['commit'])
+        if cached and not cached.exists():
+            cached.parent.mkdir(parents=True, exist_ok=True)
+            shutil.copy2(path, cached)
         return path
 
     manifest_path = download('release-manifest.json')
@@ -180,7 +195,7 @@ def resolve(work, configuration, *, required=False, source_only=False):
         sources = [r for r in manifest['artifacts'] if r.get('kind') == 'source']
         require(len(sources) == 1, 'Expected one Verified Source artifact')
         record, mode = sources[0], 'verified-source'
-    artifact = download(record['filename'])
+    artifact = download(record['filename'], record['sha256'])
     require(digest(artifact) == record['sha256'] == sums.get(artifact.name), 'Core archive checksum mismatch')
     destination = work / 'extracted'
     extract(artifact, destination)
