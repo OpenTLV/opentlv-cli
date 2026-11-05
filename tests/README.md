@@ -31,6 +31,7 @@ CTest includes both dependency smoke tests and the migrated command suites:
 
 | Test | Coverage |
 | --- | --- |
+| `Integration_cli_executable` | Maintained executable contracts for all command families, streams, exit codes, JSON and files |
 | `Integration_cli` | Original capability-aware command, argument, input/output, diagnostic, semantic-module and generation assertions |
 | `Integration_cli_cpp_examples` | CLI equivalents of Core C++ parsing, writing, Query and JSON examples |
 | `query-cli-conformance` | Pinned Query corpus through the auto and Document backends |
@@ -53,6 +54,59 @@ conformance requires BER, Query frontend and Document. The complete frozen
 baseline additionally requires DER, EMV, Bluetooth and NFC. Reduced builds
 explicitly skip suites whose capabilities are unavailable; they never compare
 a silently reduced baseline.
+
+## Executable regression contracts
+
+`check_executable.py` is the CLI-owned regression suite for ongoing development.
+It uses only Python's standard library and executes the built `otlv`, without
+importing Core implementation code or building Core unit tests. Run it through
+CTest, which supplies the executable, CLI version and selected public Core
+capabilities automatically:
+
+```sh
+ctest --test-dir build/default -C Release -R '^Integration_cli_executable$' --output-on-failure --no-tests=error
+```
+
+Use `build/workspace` with the workspace preset. The `regression` label selects
+this suite; normal CTest, PR and Full CI include it, and the release gate requires
+its successful result. The suite prints individual Python test names on failure
+or with `ctest -V`. Its coverage is organized around observable contracts:
+
+| Commands / boundary | Assertions |
+| --- | --- |
+| `--help`, `--version`, `formats` | Successful exit, empty stderr, usage, exact built version and enabled format list; bare `help`/`version` are rejected |
+| Argument parsing | Missing/unknown commands, required values, duplicate/conflicting/unknown options, invalid limits and shell arguments; exit 2 and empty stdout |
+| `dump`, `validate` | Literal hex, binary and hex files, paths with spaces, explicit/implicit stdin, empty/malformed inputs, tree layout, JSON structure and color controls |
+| Diagnostics | Exact human and compact text, parsed JSON fields and locations, exit 1, empty stdout; partial dump and recovery exit 4 with separate diagnostics |
+| `decode`, `encode` | Versioned JSON model, JSON stdin/file input, exact binary stdout/files, hex output, rejected documents leave no output file |
+| `query` | Path values and JSON matches, scalar results, variable binding, explain JSON on stderr, missing match exit 5, conflicting result options |
+| `diff` | Identical/changed files, exact text and JSON changes, selector filtering and required second file |
+| `tag`, `tags` | Known/unknown lookup, metadata types, case-insensitive search, sorted results, empty search results and malformed tags |
+| JSON escaping | Bluetooth display text containing quotes, backslashes, NUL, tabs and newlines survives JSON serialization |
+| `generate` | Fixed seed, exact file inventory, binary replay, JSON-to-binary integration and no-overwrite behavior |
+| `completion` | Bash, Zsh, Fish and PowerShell headers, registration forms, commands and generation options |
+| File/resource failures | Missing files, inaccessible child paths and output paths, unchanged sentinel files, input limit exit 3 |
+
+Each test uses an isolated temporary directory and literal, small fixtures.
+Every invocation checks its exit status and both output streams. Stable text
+uses exact comparisons; JSON is decoded and checked structurally instead of
+depending on object key order. Only textual stdout/stderr normalize CRLF to LF;
+binary streams and file bytes are exact, including LF, CR, Ctrl-Z and high bytes.
+Processes have a 20-second timeout and CTest bounds the suite to 180 seconds.
+Color environment settings are explicit. Inaccessible paths use a regular file
+as their parent, avoiding OS-specific permissions or elevated-user exceptions.
+
+On reduced Core builds, only tests needing disabled public capabilities are
+explicitly skipped by name. General command and fixed-format tests still run.
+Full release configurations enable all capabilities and run every case; the
+existing baseline/Query gates continue to reject reduced release builds.
+
+Extend this suite with hand-written expectations when CLI behavior changes.
+Keep the coverage table current and use a small integration example when a Core
+feature affects CLI behavior. Format conformance, parser algorithms and Query
+semantics remain Core responsibilities. The immutable migration baseline and
+legacy suites below remain independent evidence and must not be recaptured to
+make candidate behavior pass.
 
 ## Frozen behavior comparison
 
@@ -139,7 +193,7 @@ See [quality gates](../docs/quality-gates.md) for artifact and sanitizer coverag
 
 `--release-request <request.json>` is reserved for the release workflow. It
 requires the exact clean CLI commit and pinned Core/JSON revisions, forbids
-overrides and skipped Git fallback, and checks all 12 CTest entries in each
+overrides and skipped Git fallback, and checks all 13 CTest entries in each
 of five successful dependency scenarios. It rejects unexpected suite skips;
 the two named Query fixture-provider exclusions remain explicit. See the
 [release guide](../docs/releases.md) for evidence and tag creation.

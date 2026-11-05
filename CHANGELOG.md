@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Add executable-focused CTest regressions for every command family, argument errors, exit codes, separate output streams, diagnostics, JSON structure and escaping, file handling, generation and shell completions; require the suite in release evidence. (#15)
 - Generate GitHub Dependency Graph snapshots for OpenTLV Core and nlohmann_json from successful Main builds, evaluated CMake target links and immutable build pins; submit with a separate Main-only permission boundary and retain request/response diagnostics. (#14)
 
 ### Fixed
