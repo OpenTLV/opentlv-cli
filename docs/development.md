@@ -9,17 +9,46 @@ unless a step says otherwise. See the [command guide](README.md) for CLI use,
 ## Requirements
 
 - CMake 3.24 or newer.
-- A C compiler and a C++11-capable compiler, plus the generator's build tool.
-  Core requires Clang 18 or newer when using Clang.
+- A C compiler and a supported C++23 compiler, plus the generator's build
+  tool. See [Language standard and compilers](#language-standard-and-compilers).
 - Python 3.10+ when tests are enabled (the default), and for contributor tools.
 - Git and network access to clone the CLI and fetch dependencies that are not
   supplied locally. Use a full CLI clone with history and tags; shallow clones
   are rejected by version generation.
 
-The presets leave the generator to CMake. Windows can use Visual Studio 2022;
+The presets leave the generator to CMake. Windows can use Visual Studio 2026;
 for Ninja with MSVC, open a developer shell with the compiler environment
 initialized. Add `-G Ninja` at the first configure if desired. Use a separate
 build directory for each generator or compiler.
+
+## Language standard and compilers
+
+The CLI is an end-user application, so it requires ISO C++23 regardless of
+Core's language requirements. CMake builds every CLI-owned C++ target with
+`CMAKE_CXX_STANDARD=23`, `CMAKE_CXX_STANDARD_REQUIRED=ON` and
+`CMAKE_CXX_EXTENSIONS=OFF` (`-std=c++23`, not `-std=gnu++23`). MSVC has no
+extensions switch; `otlv` is built with `/permissive-` conformance mode.
+`src/cxx_requirements.cpp` fails the build if a compiler flag selects an older
+standard or a GNU dialect. These settings are applied after Core is added and
+do not change Core's own requirements: Core remains a C99 library and its
+public C++ facade still requires only C++11.
+
+| Compiler | Minimum supported | Validated in CI |
+| --- | --- | --- |
+| GCC (Linux) | 15 | GCC 15 on Ubuntu 26.04: Full, Main smoke, dependency matrix and Linux packages |
+| Clang (Linux) | 22 | Clang 22 on Ubuntu 26.04: PR build, sanitizers, clang-tidy and CodeQL |
+| MSVC (Windows) | 19.50 (Visual Studio 2026) | Visual Studio 2026 on Windows Server 2025: Full, dependency matrix and Windows packages |
+| AppleClang (macOS) | 17 (Xcode 26) | Xcode 26 on macOS 26: Full |
+
+The minimums are the stable toolchains of GitHub's current hosted runner
+images; CI uses no experimental or pre-release compiler. An older compiler
+that accepts C++23 may still build the CLI, but configuration warns that the
+build is unsupported. Clang-cl and other compilers are not supported. Each CI
+configuration exists once: there is no matrix of compilers or build
+configurations beyond the table, and Core's compiler compatibility is tested
+by Core, not here. New code that uses a C++23 language or library feature must
+build with every minimum above; PR CI checks Clang, Full CI checks GCC, MSVC
+and AppleClang.
 
 ## Standalone build
 

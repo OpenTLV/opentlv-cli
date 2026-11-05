@@ -1,6 +1,6 @@
-# OpenTLV CLI follows the Core C++ formatting style.
+# OpenTLV CLI follows the Core C++ formatting style, parsed as the CLI's C++23.
 BasedOnStyle: LLVM
-Standard: c++17
+Standard: Latest
 
 IndentWidth: 4
 TabWidth: 4

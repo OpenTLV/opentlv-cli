@@ -18,13 +18,18 @@ env:
   RELEASE_TAG: ${{ inputs.release_tag }}
 jobs:
   build:
-    # Core is always linked statically; the matrix has no linkage axis.
+    # Core is always linked statically; the matrix has no linkage axis. Each
+    # entry names its supported C++23 compiler (docs/development.md): PR uses
+    # Clang 22; Full uses GCC 15, Visual Studio 2026 MSVC and Xcode 26 AppleClang.
     name: ${{ matrix.os }} / ${{ matrix.configuration }}
     strategy:
       fail-fast: false
       matrix:
-        include: ${{ fromJSON(inputs.full && '[{"os":"ubuntu-24.04","configuration":"Release"},{"os":"windows-2022","configuration":"Release"},{"os":"macos-15","configuration":"Release"}]' || '[{"os":"ubuntu-24.04","configuration":"Debug"}]') }}
+        include: ${{ fromJSON(inputs.full && '[{"os":"ubuntu-26.04","configuration":"Release","cc":"gcc-15","cxx":"g++-15"},{"os":"windows-2025","configuration":"Release","cc":"cl","cxx":"cl"},{"os":"macos-26","configuration":"Release","cc":"clang","cxx":"clang++"}]' || '[{"os":"ubuntu-26.04","configuration":"Debug","cc":"clang-22","cxx":"clang++-22"}]') }}
     runs-on: ${{ matrix.os }}
+    env:
+      CC: ${{ matrix.cc }}
+      CXX: ${{ matrix.cxx }}
     steps:
       - uses: actions/checkout@v5
         with:
@@ -40,12 +45,9 @@ jobs:
       - name: Install Ninja on macOS
         if: runner.os == 'macOS'
         run: brew install ninja
-      - name: Select the PR Clang configuration
+      - name: Install the PR Clang toolchain
         if: ${{ !inputs.full }}
-        run: |
-          sudo apt-get update && sudo apt-get install -y clang-18
-          echo 'CC=clang-18' >> "$GITHUB_ENV"
-          echo 'CXX=clang++-18' >> "$GITHUB_ENV"
+        run: sudo apt-get update && sudo apt-get install -y clang-22
       - name: Build and verify CLI-owned behavior
         env:
           GH_TOKEN: ${{ github.token }}
@@ -71,8 +73,12 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-24.04, windows-2022]
+        os: [ubuntu-26.04, windows-2025]
     runs-on: ${{ matrix.os }}
+    env:
+      # Visual Studio generators ignore CC/CXX and use the newest Visual Studio.
+      CC: ${{ startsWith(matrix.os, 'windows') && 'cl' || 'gcc-15' }}
+      CXX: ${{ startsWith(matrix.os, 'windows') && 'cl' || 'g++-15' }}
     steps:
       - uses: actions/checkout@v5
         with:
@@ -115,10 +121,10 @@ jobs:
 
   sanitizer:
     if: inputs.full
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     env:
-      CC: clang-18
-      CXX: clang++-18
+      CC: clang-22
+      CXX: clang++-22
       ASAN_OPTIONS: detect_leaks=1:halt_on_error=1
       UBSAN_OPTIONS: halt_on_error=1:print_stacktrace=1
     steps:
@@ -129,7 +135,7 @@ jobs:
       - uses: actions/setup-python@v6
         with:
           python-version: '3.12'
-      - run: sudo apt-get update && sudo apt-get install -y clang-18 ninja-build
+      - run: sudo apt-get update && sudo apt-get install -y clang-22 libclang-rt-22-dev ninja-build
       - env:
           GH_TOKEN: ${{ github.token }}
         run: >-

@@ -263,7 +263,7 @@ def main():
         "json_revision": run("git", "-C", json_source, "rev-parse", "HEAD"),
         "json_dirty": bool(run("git", "-C", json_source, "status", "--porcelain")),
         "system": platform.system(), "architecture": platform.machine(),
-        "configuration": "Release", "cxx_standard": 11,
+        "configuration": "Release", "cxx_standard": 23,
         "release_request": request,
         "core_linkage": "static",
         "results": results,

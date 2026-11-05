@@ -7,7 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- Pass the clang-tidy check set explicitly (`-*,clang-diagnostic-*,clang-analyzer-*`, the previous built-in default) so clang-tidy 22 on Ubuntu 26.04 no longer stops with "no checks enabled", and fail with a clear message if the installed clang-tidy provides no Clang Static Analyzer checks. (#13)
+
 ### Changed
+
+- Require ISO C++23 without compiler extensions for every CLI-owned C++ target: the standard is set after Core is added, `otlv` requires `cxx_std_23` and builds MSVC with `/permissive-`, and the new `src/cxx_requirements.cpp` fails the build when a flag selects an older standard or a GNU dialect. Core remains C99 with a C++11 public C++ facade. (#13)
+- Support GCC 15, Clang 22, AppleClang 17 (Xcode 26) and MSVC 19.50 (Visual Studio 2026) as the minimum CLI compilers; configuration warns for older or other compilers, and the development guide documents the policy. (#13)
+- Move every CLI CI job that compiles or analyzes C++ to the current stable hosted toolchains with explicit compilers: PR builds, clang-tidy, CodeQL and sanitizers use Clang 22 on Ubuntu 26.04; Full, Main smoke, the dependency matrix and Linux packages use GCC 15 on Ubuntu 26.04; Windows uses Visual Studio 2026 on Windows Server 2025, and macOS uses Xcode 26 on macOS 26. cppcheck analyzes C++23, clang-format parses the latest standard, and the release gate requires C++23 dependency evidence. Linux packages now need the glibc and libstdc++ of Ubuntu 26.04 or newer, and Windows packages need the Visual Studio 2026 C++ runtime or newer. (#13)
 
 - Link OpenTLV Core statically into `otlv` on Windows, Linux and macOS as the only supported linkage: local sibling sources and the pinned FetchContent fallback build static Core without changing `BUILD_SHARED_LIBS`, compatible installed static Core packages remain supported, and `OPENTLV_BUILD_SHARED_LIBS=ON` or a shared-only Core installation fails at configure time with remediation guidance. Core's own linkage policy is unchanged. (#12)
 - Remove the shared/static Core linkage axis and the `--shared` option from CLI CI, dependency checks and release packaging; packages contain the executable without a Core runtime, release evidence records `core_linkage: static` for one Linux and one Windows x64 package, and the Core DLL copy and install RPATH are gone. (#12)

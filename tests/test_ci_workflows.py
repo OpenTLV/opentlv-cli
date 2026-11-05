@@ -68,9 +68,38 @@ class Workflows(unittest.TestCase):
                 self.assertNotIn('--shared', str(job['steps']))
         # Full builds static Core on each supported platform; macOS is not packaged yet.
         matrix = str(checks['build']['strategy']['matrix']['include'])
-        for runner in ('ubuntu-24.04', 'windows-2022', 'macos-15'):
+        for runner in ('ubuntu-26.04', 'windows-2025', 'macos-26'):
             self.assertIn(runner, matrix)
-        self.assertEqual(release['binaries']['strategy']['matrix']['os'], ['ubuntu-24.04', 'windows-2022'])
+        self.assertEqual(release['binaries']['strategy']['matrix']['os'], ['ubuntu-26.04', 'windows-2025'])
+
+    def test_cxx_jobs_use_the_supported_stable_compilers(self):
+        checks = workflow('cli-checks.yml')['jobs']
+        release = workflow('release.yml')['jobs']
+        # PR: Linux Clang Debug. Full: GCC, MSVC and AppleClang Release, one entry each.
+        build = checks['build']
+        self.assertEqual(build['env'], {'CC': '${{ matrix.cc }}', 'CXX': '${{ matrix.cxx }}'})
+        matrix = build['strategy']['matrix']['include']
+        full, pr = matrix.split("'")[1], matrix.split("'")[3]
+        for entry in ('"os":"ubuntu-26.04","configuration":"Release","cc":"gcc-15","cxx":"g++-15"',
+                      '"os":"windows-2025","configuration":"Release","cc":"cl","cxx":"cl"',
+                      '"os":"macos-26","configuration":"Release","cc":"clang","cxx":"clang++"'):
+            self.assertIn(entry, full)
+        self.assertEqual(pr, '[{"os":"ubuntu-26.04","configuration":"Debug",'
+                             '"cc":"clang-22","cxx":"clang++-22"}]')
+        # Release packages and the dependency matrix use Full's Linux and Windows compilers.
+        for job in (checks['dependencies'], release['binaries']):
+            self.assertIn("'gcc-15'", job['env']['CC'])
+            self.assertIn("'g++-15'", job['env']['CXX'])
+            self.assertIn("'cl'", job['env']['CC'])
+        self.assertEqual(workflow('cli-main.yml')['jobs']['smoke']['env'], {'CC': 'gcc-15', 'CXX': 'g++-15'})
+        # Clang-based analysis follows the PR compiler; no stale toolchain remains.
+        for name in ('cli-checks.yml', 'quality.yml', 'cli-codeql.yml'):
+            text = (ROOT / '.github/workflows' / name).read_text(encoding='utf-8')
+            self.assertIn('clang-22', text)
+            self.assertNotRegex(text, r'clang(\+\+|-tidy)?-(1[0-9]|2[01])\b')
+        self.assertEqual(checks['sanitizer']['env']['CXX'], 'clang++-22')
+        for name in ('build', 'dependencies', 'sanitizer'):
+            self.assertNotIn('24.04', str(checks[name]))
 
     def test_static_checks_run_in_both_pr_and_full(self):
         jobs = workflow('cli-checks.yml')['jobs']

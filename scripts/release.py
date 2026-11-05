@@ -101,7 +101,7 @@ def validate_summary(report, request):
             "Core evidence is dirty or from a different revision")
     require(report.get("json_revision") == request["json_sha"] and report.get("json_dirty") is False,
             "JSON evidence is dirty or from a different revision")
-    require(report.get("configuration") == "Release" and report.get("cxx_standard") == 11,
+    require(report.get("configuration") == "Release" and report.get("cxx_standard") == 23,
             "Unexpected release build configuration")
     require(report.get("core_linkage") == "static", "Release evidence requires static Core linkage")
     key = report.get("system")

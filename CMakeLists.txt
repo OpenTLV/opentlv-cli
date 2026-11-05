@@ -17,16 +17,20 @@ add_custom_target(cli_version_metadata
         -P "${CMAKE_CURRENT_SOURCE_DIR}/cmake/GenerateVersion.cmake"
     VERBATIM)
 
-set(CMAKE_CXX_STANDARD 11)
-set(CMAKE_CXX_STANDARD_REQUIRED ON)
-set(CMAKE_CXX_EXTENSIONS OFF)
-
 include(GNUInstallDirs)
 include(cmake/Core.cmake)
 # Check before creating our executable: embedding Core must provide libraries only.
 if(TARGET otlv)
     message(FATAL_ERROR "Core's CLI must not be built by the standalone CLI; use OPENTLV_BUILD_CLI=OFF")
 endif()
+
+# CLI-owned C++ targets are ISO C++23 without compiler-specific extensions.
+# Set after Core is added so an embedded Core keeps its own language
+# requirements; Core's public C++ facade still only requires C++11.
+set(CMAKE_CXX_STANDARD 23)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_CXX_EXTENSIONS OFF)
+include(cmake/Compilers.cmake)
 include(cmake/Json.cmake)
 add_subdirectory(src)
 

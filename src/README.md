@@ -3,8 +3,10 @@
 This directory contains the `otlv` implementation migrated from
 [Core `tools/cli/src`](https://github.com/OpenTLV/opentlv/tree/e9cbb29897652fa75753ea89459e3f5e26671d3a/tools/cli/src)
 in [issue #3](https://github.com/OpenTLV/opentlv-cli/issues/3).
-The migration preserves the C++11 sources, original license notices,
-executable name, command behavior and Core version output.
+The migration preserved the C++11 sources, original license notices,
+executable name, command behavior and Core version output. Since
+[issue #13](https://github.com/OpenTLV/opentlv-cli/issues/13) the CLI is
+compiled as ISO C++23 without compiler extensions.
 
 Commands, argument parsing, diagnostics, JSON presentation, and shell
 completion belong here. Generic TLV processing remains in Core and is consumed
