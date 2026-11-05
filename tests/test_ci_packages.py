@@ -15,6 +15,7 @@ from cli_ci import IDS, JOBS, assemble, configuration
 from ci_support import digest, identity, read, write
 from test_release import request, summary
 from test_ci_gates import ENV
+from test_ci_metadata import release_metadata
 
 
 class Packages(unittest.TestCase):
@@ -47,6 +48,7 @@ class Packages(unittest.TestCase):
                            'core': {'verified': True, 'mode': 'verified-source',
                                     'release_id': 7, 'manifest_sha256': 'd' * 64,
                                     'commit': candidate['core_sha'], 'release_tag': 'v0.8.0'}}
+                package['provenance'] = release_metadata(package)
                 write(folder / (identifier + '.json'), package)
             if change:
                 change(root)
@@ -87,9 +89,13 @@ class Packages(unittest.TestCase):
                 data['schema'] = 2
             if mode == 'shared':
                 data['core_linkage'] = 'shared'
+            if mode == 'provenance':
+                del data['provenance']
+            if mode == 'runtime-core':
+                data['provenance']['binary']['runtime_imports'].append('tlv.dll')
             write(path, data)
         for mode in ('missing', 'tampered', 'stale', 'unverified', 'tests', 'changed-core', 'schema',
-                     'shared'):
+                     'shared', 'provenance', 'runtime-core'):
             with self.subTest(mode=mode), self.assertRaises(ValueError):
                 self.exercise(lambda root: change(root, mode))
 

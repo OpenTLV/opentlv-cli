@@ -14,6 +14,7 @@ import tempfile
 from ci_support import ROOT, digest, identity, read, require, run, same_identity, write
 from release import QUERY_EXCLUSIONS, TESTS, aggregate, prepare
 from verified_core import authenticated_release, lock, safe_name
+from build_metadata import validate_release
 
 JOBS = {'build', 'dependencies', 'quality', 'sanitizer', 'codeql'}
 PR = {'build', 'quality', 'codeql'}
@@ -39,6 +40,7 @@ def configuration(tier):
     helpers = ['CMakeLists.txt', 'src/CMakeLists.txt', 'tests/CMakeLists.txt', 'cmake/Core.cmake',
                'cmake/Json.cmake', 'cmake/core-artifact.json', 'scripts/cli_build.py',
                'cmake/Dependencies.cmake', 'cmake/Sanitizers.cmake', 'scripts/dependency_snapshot.py',
+               'cmake/BuildMetadata.cmake', 'scripts/build_metadata.py',
                'tests/check_executable.py', 'tests/check_security.py', 'tests/check_sanitizer.py',
                'tests/sanitizer_probe.cpp', 'tests/run_cli_suite.cmake',
                'scripts/verified_core.py', 'scripts/cli_ci.py', 'scripts/ci_support.py',
@@ -138,6 +140,7 @@ def assemble(request, quality, evidence, destination):
         require(all(dependency.get(key) == value for key, value in request['core_release'].items()),
                 'Core release assets changed since preflight')
         require(record.get('json_commit') == request['json_sha'], 'Wrong JSON dependency')
+        validate_release(record.get('provenance', {}), record)
         filename = safe_name(record['filename'])
         extension = '.zip' if identifier.startswith('windows-') else '.tar.gz'
         require(filename == f"OpenTLV-CLI-{request['version']}-{identifier}{extension}", 'Wrong CLI archive name')

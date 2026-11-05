@@ -12,6 +12,7 @@ import sys
 import tempfile
 
 from binary_linkage import check_static_core
+from build_metadata import collect, validate_release
 from ci_support import ROOT, cache, compiler, digest, identity, pin, read, require, run, write
 from release import QUERY_EXCLUSIONS, ctest_results
 from verified_core import extract, resolve
@@ -62,6 +63,8 @@ def built_executable(build, configuration):
 def package(build, output, record):
     """Stage only the statically linked CLI; test after archive relocation."""
     executable = built_executable(build, record['configuration'])
+    require(digest(executable) == record['provenance']['binary']['sha256'],
+            'Executable changed since build provenance was recorded')
     output.mkdir(parents=True, exist_ok=False)
     require(platform_id() in (('linux', 'x64'), ('windows', 'x64')),
             'Approved packages require a Linux or Windows x64 host')
@@ -93,7 +96,9 @@ def package(build, output, record):
     relocated = work / 'relocated'
     extract(archive, relocated)
     cli = relocated / name / 'bin' / executable.name
-    check_static_core(cli)
+    require(digest(cli) == record['provenance']['binary']['sha256'] and
+            check_static_core(cli) == record['provenance']['binary']['runtime_imports'],
+            'Packaged executable differs from verified build')
     # Remove build-tree runtime search paths from the environment. The relocated
     # executable must start without them, from a different working directory.
     environment = os.environ.copy()
@@ -171,6 +176,8 @@ def main():
     reports = ({'ctest': ctest_results(build / 'ctest.xml', expected)}
                if args.smoke or args.sanitize else validate_reports(build, args.configuration))
     built_executable(build, args.configuration)
+    provenance = collect(build, args.configuration, verify_startup=True)
+    write(build / f'build-info-{args.configuration}.json', provenance)
     system, architecture = platform_id()
     record = {'schema': 1, **identity(), 'id': f'{system}-{architecture}-static',
               'version': (build / 'cli-version.txt').read_text().strip(), 'core_linkage': 'static',
@@ -179,7 +186,10 @@ def main():
               'msvc_runtime': selected.get('CMAKE_MSVC_RUNTIME_LIBRARY') if system == 'windows' else None,
               'runner_image': {'os': os.environ.get('ImageOS'), 'version': os.environ.get('ImageVersion')},
               'json_commit': pin('Json'), 'sanitizer': args.sanitize,
-              'sanitizer_mode': selected['OPENTLV_CLI_SANITIZER'], 'reports': reports}
+              'sanitizer_mode': selected['OPENTLV_CLI_SANITIZER'], 'reports': reports,
+              'provenance': provenance}
+    if args.release_tag:
+        validate_release(provenance, record)
     # Local Core overrides are intentionally not publishable dependency evidence.
     if not args.core_source:
         record['dependencies'] = resolved_dependencies(build, args.configuration, dependency, json_source)

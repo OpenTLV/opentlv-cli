@@ -16,6 +16,13 @@ notifications, safe resend, stale attempts and rejected evidence. They do not
 send real notifications or replace hosted end-to-end publication validation.
 Node.js is needed for these tooling checks, not to build or run `otlv`.
 
+`test_ci_metadata.py` covers package content identity, source exports without
+inherited workspace revisions, header relocation and mutation, actual JSON
+versions, startup rejection, and incomplete or inconsistent release provenance.
+Release assembly tests also reject missing metadata and shared Core imports.
+The default build produces provenance even with CTest disabled; see
+[build reconstruction](../docs/development.md#build-provenance-and-reconstruction).
+
 ## Sanitizer and security coverage
 
 `Integration_cli_security` shares the process harness and small fixtures with
