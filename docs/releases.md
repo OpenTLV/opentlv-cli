@@ -123,6 +123,17 @@ evidence available and does not create a release.
 
 ## Release evidence
 
+Builds carry configuration-specific [build provenance](development.md#build-provenance-and-reconstruction)
+in `build-info-<configuration>.json`; the same data is nested under `provenance`
+in CI build evidence and packaged `build-info.json`. It records actual dependency
+identities, C and C++ toolchains, target configuration, executable SHA-256,
+runtime imports and native startup verification. The release gate rejects
+missing provenance, wrong or dirty revisions, incomplete compiler/target data,
+shared Core imports and missing startup results. Package relocation must preserve
+the tested executable's hash and imports. These checks preserve static Core
+linkage while allowing system runtime linkage; they do not claim byte-for-byte
+reproducibility across toolchains or platforms.
+
 - `release-request-<attempt>`: CLI/Core/JSON/workflow SHAs, version, run ID and attempt.
 - `release-evidence-<attempt>-<platform>`: per-command logs, CTest XML,
   configured versions, baseline/Query reports and a matrix summary with

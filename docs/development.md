@@ -11,7 +11,7 @@ unless a step says otherwise. See the [command guide](README.md) for CLI use,
 - CMake 3.24 or newer.
 - A C compiler and a supported C++23 compiler, plus the generator's build
   tool. See [Language standard and compilers](#language-standard-and-compilers).
-- Python 3.10+ when tests are enabled (the default), and for contributor tools.
+- Python 3.10+ for build provenance, tests and contributor tools.
 - Git and network access to clone the CLI and fetch dependencies that are not
   supplied locally. Use a full CLI clone with history and tags; shallow clones
   are rejected by version generation.
@@ -459,6 +459,70 @@ messages contain the command and captured stdout/stderr. Inspect
 `Testing/Temporary/LastTest.log` and `tests/sanitizer-*.log` in the build directory;
 CI uploads them with JUnit results even when tests fail. Missing source locations
 usually mean a missing symbolizer, runtime DLL or debug symbols.
+
+## Build provenance and reconstruction
+
+Every default build writes `build-info-<configuration>.json` in its build
+directory through the `cli_build_metadata` target, including builds with tests
+disabled. It records the CLI version, actual Git commit and dirty status;
+resolved Core/JSON commits when available; selected JSON header version;
+static Core library and public-header SHA-256 identities; both C and C++
+compiler identities and versions; target OS, architecture, pointer size,
+generator, SDK/sysroot settings, configuration, flags and sanitizer mode.
+The configuration-specific input file is `cli-build-inputs-<configuration>.json`.
+Building only `otlv` does not run the metadata target; request it explicitly
+afterwards if needed.
+
+Requested dependency pins are separate from observed revisions. A local sibling
+override remains supported, including a dirty checkout. An installed package or
+source export without its own Git repository has a null commit, never the parent
+workspace's revision. The selected static library and public headers identify
+package content; those hashes do not authenticate its producer. Release CI adds
+the existing authenticated Core artifact identity and forbids local overrides.
+Keep modified sources separately: a dirty flag and commit cannot reconstruct
+uncommitted edits. Source exports also need their original archive.
+
+The metadata includes the executable SHA-256 and direct runtime imports from
+ELF, PE (including delay imports) or Mach-O. A shared Core import, unreadable
+format or empty import inventory fails the build. System C/C++ runtimes may
+remain dynamic; this check does not promise a fully static executable or audit
+the entire transitive loader graph. Inspect the listed system runtimes when
+selecting a deployment image. To record a native startup check as well, run:
+
+```sh
+python -B scripts/build_metadata.py --build build/default --configuration Release --verify-startup
+```
+
+This requires exit zero and the exact CLI version with empty stderr. Ordinary
+build metadata marks startup `not-run`; it never executes a cross-compiled
+program. CI requires a successful startup check and includes the metadata in
+`build-evidence.json` and packaged `build-info.json`. Packaging also checks
+that the relocated executable has the recorded hash and imports before running
+the existing version and 154-case behavior checks. Rebuilding refreshes the
+metadata and resets startup to `not-run`; rerun native verification afterwards.
+
+To reconstruct a clean pinned-source build:
+
+1. Check out `cli.commit` with full Git history and tags. Obtain the recorded
+   Core and JSON revisions, or the exact authenticated Core package/source
+   artifact referenced by release evidence. Do not resolve a moving branch.
+2. Install the recorded CMake version, generator/build tool, both compiler
+   versions, target SDK/sysroot and system runtimes. Preserve any toolchain file
+   (its SHA-256 is recorded). Paths must be adapted to the new machine.
+3. Configure a fresh directory with the recorded configuration and settings.
+   For source reconstruction, pass explicit Core/JSON source overrides and
+   `-DFETCHCONTENT_TRY_FIND_PACKAGE_MODE=NEVER`; for package reconstruction,
+   select the matching static Core package with `OPENTLV_CLI_CORE_PACKAGE`.
+   Reapply the recorded flags, sanitizer and MSVC runtime selection. Candidate
+   release version/SHA settings require the same clean CLI commit.
+4. Build, run CTest and the native startup verification above. Compare dependency
+   identities, compiler/target settings and runtime imports with the original.
+
+This reconstructs the recorded configuration, not guaranteed identical bytes.
+Compiler/linker versions, SDK and system runtime revisions, absolute paths,
+debug records, archive ordering, timestamps and platform defaults can change
+binary hashes. Retain the toolchain image and original dependencies when exact
+environment recovery matters. No byte-for-byte reproducibility is claimed.
 
 ## Troubleshooting
 

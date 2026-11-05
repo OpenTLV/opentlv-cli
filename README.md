@@ -27,8 +27,8 @@ selection, offline use and Core updates.
   Studio 2026) or newer; see the
   [development guide](docs/development.md#language-standard-and-compilers).
 - Git and network access for dependencies not supplied locally or installed.
-- Python 3.10+ for the command regression suites, dependency matrix runner,
-  and contributor tools.
+- Python 3.10+ for build provenance (also with tests disabled), the command
+  regression suites, dependency matrix runner and contributor tools.
 
 Windows can use the installed Visual Studio generator. For Ninja, initialize
 the compiler environment and add `-G Ninja` when configuring. The presets

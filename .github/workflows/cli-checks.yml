@@ -73,6 +73,7 @@ jobs:
           name: cli-build-${{ matrix.os }}-${{ github.run_attempt }}
           path: |
             build/ci/build-evidence.json
+            build/ci/build-info-*.json
             build/ci/ctest.xml
             build/ci/core/verification.json
             build/ci/tests/**/baseline-report.json
@@ -185,6 +186,7 @@ jobs:
           name: cli-sanitizer-${{ matrix.os }}-${{ github.run_attempt }}
           path: |
             build/sanitizer/build-evidence.json
+            build/sanitizer/build-info-*.json
             build/sanitizer/ctest.xml
             build/sanitizer/Testing/Temporary/*.log
             build/sanitizer/tests/sanitizer-*.log
