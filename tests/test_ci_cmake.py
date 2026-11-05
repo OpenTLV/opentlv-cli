@@ -53,6 +53,11 @@ class ExplicitPackage(unittest.TestCase):
         self.assertNotEqual(result.returncode, 0)
         self.assertIn('cannot be combined', result.stderr)
 
+    def test_sanitizer_rejects_uninstrumented_package(self):
+        result = self.configure(options=['-DOPENTLV_CLI_SANITIZER=address'])
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn('instrumented static Core source build', result.stderr)
+
     def test_shared_only_package_is_rejected_with_guidance(self):
         result = self.configure(linkage='SHARED')
         self.assertNotEqual(result.returncode, 0)

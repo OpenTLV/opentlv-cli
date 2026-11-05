@@ -62,6 +62,13 @@ endforeach()
 # Installed packages carry the linkage they were built with; a shared-only
 # installation cannot be turned static here and must not be used silently.
 get_target_property(_opentlv_cli_core_type OpenTLV::tlv TYPE)
+get_target_property(_opentlv_cli_core_imported OpenTLV::tlv IMPORTED)
+if(OPENTLV_CLI_SANITIZER AND NOT OPENTLV_CLI_SANITIZER STREQUAL "none" AND _opentlv_cli_core_imported)
+    message(FATAL_ERROR
+        "CLI sanitizers require an instrumented static Core source build. Use "
+        "FETCHCONTENT_SOURCE_DIR_OPENTLV_CORE or FETCHCONTENT_TRY_FIND_PACKAGE_MODE=NEVER "
+        "and remove OPENTLV_CLI_CORE_PACKAGE/CMAKE_PREFIX_PATH package selection.")
+endif()
 if(NOT _opentlv_cli_core_type STREQUAL "STATIC_LIBRARY")
     message(FATAL_ERROR
         "Selected Core is incompatible: OpenTLV::tlv is a ${_opentlv_cli_core_type}, but the "

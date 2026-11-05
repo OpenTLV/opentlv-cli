@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Add CLI sanitizer configurations for Unix ASan/UBSan and Windows MSVC ASan with instrumented static Core, focused executable/security regressions, symbolized detector self-checks and retained failure logs in Full CI; cover bounded argument, input, JSON ownership and output-path failures without running Core tests or fuzzing. (#16)
 - Add executable-focused CTest regressions for every command family, argument errors, exit codes, separate output streams, diagnostics, JSON structure and escaping, file handling, generation and shell completions; require the suite in release evidence. (#15)
 - Generate GitHub Dependency Graph snapshots for OpenTLV Core and nlohmann_json from successful Main builds, evaluated CMake target links and immutable build pins; submit with a separate Main-only permission boundary and retain request/response diagnostics. (#14)
 

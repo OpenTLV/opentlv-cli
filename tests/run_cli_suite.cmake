@@ -18,8 +18,8 @@ if(SUITE STREQUAL "integration")
         list(APPEND _command "-DHAS_${_capability}=${HAS_${_capability}}")
     endforeach()
     list(APPEND _command -P "${CMAKE_CURRENT_LIST_DIR}/test.cmake")
-elseif(SUITE STREQUAL "executable")
-    set(_command "${PYTHON}" -B "${CMAKE_CURRENT_LIST_DIR}/check_executable.py"
+elseif(SUITE STREQUAL "executable" OR SUITE STREQUAL "security")
+    set(_command "${PYTHON}" -B "${CMAKE_CURRENT_LIST_DIR}/check_${SUITE}.py"
         --cli "${CLI}" --version-file "${CLI_VERSION_FILE}" --features)
     foreach(_capability IN ITEMS FIXED BER DER EMV BLUETOOTH_LTV NFC QUERY_FRONTEND DOCUMENT)
         if(HAS_${_capability})

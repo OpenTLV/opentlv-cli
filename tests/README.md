@@ -16,6 +16,21 @@ notifications, safe resend, stale attempts and rejected evidence. They do not
 send real notifications or replace hosted end-to-end publication validation.
 Node.js is needed for these tooling checks, not to build or run `otlv`.
 
+## Sanitizer and security coverage
+
+`Integration_cli_security` shares the process harness and small fixtures with
+`Integration_cli_executable`. It adds long/overflowing arguments, byte-limit
+boundaries across files and stdin, malformed JSON with existing-output
+preservation, SAX vector growth, nested JSON cleanup, and invalid output paths.
+All cases have bounded inputs and process timeouts. The executable suite covers
+JSON escaping, binary output, generation/no-overwrite and command lifecycles.
+Neither suite imports Core implementation tests or fuzzing cases.
+
+Sanitizer builds add a `sanitizer` CTest label and separate detector probes.
+The focused inventory is five entries on MSVC ASan and six on Unix ASan/UBSan.
+See [local sanitizer commands and diagnostics](../docs/development.md#cli-sanitizers).
+The deliberate-fault probe is test-only and never linked into the CLI.
+
 ## Run the regression suites
 
 With Core and nlohmann/json available as described in the
@@ -31,6 +46,7 @@ CTest includes both dependency smoke tests and the migrated command suites:
 
 | Test | Coverage |
 | --- | --- |
+| `Integration_cli_security` | Bounded argument/input limits, JSON ownership and rejection, output-path failures and sentinel preservation |
 | `Integration_cli_executable` | Maintained executable contracts for all command families, streams, exit codes, JSON and files |
 | `Integration_cli` | Original capability-aware command, argument, input/output, diagnostic, semantic-module and generation assertions |
 | `Integration_cli_cpp_examples` | CLI equivalents of Core C++ parsing, writing, Query and JSON examples |
@@ -193,7 +209,7 @@ See [quality gates](../docs/quality-gates.md) for artifact and sanitizer coverag
 
 `--release-request <request.json>` is reserved for the release workflow. It
 requires the exact clean CLI commit and pinned Core/JSON revisions, forbids
-overrides and skipped Git fallback, and checks all 13 CTest entries in each
+overrides and skipped Git fallback, and checks all 14 CTest entries in each
 of five successful dependency scenarios. It rejects unexpected suite skips;
 the two named Query fixture-provider exclusions remain explicit. See the
 [release guide](../docs/releases.md) for evidence and tag creation.

@@ -11,9 +11,9 @@ exercised through CLI processes to verify the facade contract.
 
 | Workflow | Trigger | Required verification |
 | --- | --- | --- |
-| `cli-pr.yml` | PR targeting `main` | Linux Clang 22 Debug CLI, all 13 CTest entries including executable regressions and the static Core linkage check, pre-commit, cppcheck, clang-tidy, tooling regression tests and CodeQL |
+| `cli-pr.yml` | PR targeting `main` | Linux Clang 22 Debug CLI, all 14 CTest entries including executable regressions and the static Core linkage check, pre-commit, cppcheck, clang-tidy, tooling regression tests and CodeQL |
 | `cli-main.yml` | Push to `main` | One Linux GCC 15 build, C/C++ linkage, static Core linkage and CLI version smoke; submit resolved dependency snapshot |
-| `cli-full.yml` | Manual or reusable release call | Linux/GCC 15, Windows/MSVC (Visual Studio 2026) and macOS/AppleClang (Xcode 26) Release; all CLI suites; complete dependency selection matrix on Linux and Windows; Linux Clang 22 Debug ASan/UBSan with leak detection; all static checks and CodeQL |
+| `cli-full.yml` | Manual or reusable release call | Linux/GCC 15, Windows/MSVC (Visual Studio 2026) and macOS/AppleClang (Xcode 26) Release; all CLI suites; complete dependency selection matrix on Linux and Windows; Linux Clang 22 Debug ASan/UBSan with leak detection and Windows MSVC Debug ASan; all static checks and CodeQL |
 | `release.yml` | Manual from `main`, only `tag` | Closed changelog, locked dispatch SHA and dependencies, same-attempt Full CI, validated CLI packages, SHA-256, producer attestations, tag and GitHub Release |
 
 Full CI has no push or scheduled trigger. PR checks have no branch-push trigger.
@@ -36,8 +36,12 @@ compiler, configuration, dependencies and test results. Core native tests are
 disabled at the CLI's Core consumption boundary, including dependency-selection,
 static-analysis and local source builds. Directory-scoped settings also disable
 Core examples, benchmarks, property tests and fuzzing, plus JSON's own tests.
-They do not change Core's standalone configuration. The Full sanitizer job is
-one CLI process-integration configuration, not Core's comprehensive suite.
+They do not change Core's standalone configuration. The Full sanitizer job uses
+two focused configurations: Linux Clang ASan/UBSan
+and Windows MSVC ASan. Each runs the maintained executable suite, bounded security
+cases, static-linkage/version checks and detector self-checks. It does not repeat
+the migration baseline, Query corpus or Core suites. PR and Main add no sanitizer
+builds; all ordinary regression builds include the security cases.
 
 The full dependency runner retains five successful build modes and eight rejected
 configurations per platform. These test CLI's CMake consumption contract;
@@ -205,6 +209,7 @@ pre-commit run --all-files
 ```
 
 Normal CMake/CTest and the dependency selection runner remain documented in
-the [development guide](development.md). Sanitizer execution enables ASan/UBSan
-and leak detection for CLI-owned process tests and the linked source dependency.
-It does not run the Core sanitizer suite.
+the [development guide](development.md). See [CLI sanitizers](development.md#cli-sanitizers)
+for local commands, supported modes, runtime requirements and failure diagnostics.
+Full CI retains CTest output, deliberate-fault logs and Core verification evidence
+per platform; a missing runtime or unsymbolized detector report fails the lane.

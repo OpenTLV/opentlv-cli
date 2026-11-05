@@ -19,6 +19,8 @@ from dependency_snapshot import resolved_dependencies
 
 # Main's smoke tier: Core linkage, both public targets and the version contract.
 SMOKE = ('core_c_smoke', 'core_cxx_smoke', 'cli_version', 'cli_static_core')
+SANITIZER = {'cli_version', 'cli_static_core', 'Integration_cli_executable',
+             'Integration_cli_security', 'cli_sanitizer_address'}
 
 
 def platform_id():
@@ -124,6 +126,7 @@ def main():
     build = args.build.resolve()
     require(not (build / 'CMakeCache.txt').exists(), 'Use a fresh CI build directory')
     require(not args.release_tag or not args.smoke, 'Release cannot use smoke-only tests')
+    require(not args.sanitize or not args.smoke, 'Sanitizers require executable regression tests')
     require(not args.release_tag or not (args.core_source or args.json_source), 'Release forbids local overrides')
     if args.core_source:
         source = args.core_source.resolve()
@@ -145,9 +148,8 @@ def main():
         common += [f'-DOPENTLV_CLI_CANDIDATE_VERSION={args.release_tag[1:]}',
                    f"-DOPENTLV_CLI_CANDIDATE_SHA={os.environ['GITHUB_SHA']}"]
     if args.sanitize:
-        flags = '-fsanitize=address,undefined -fno-omit-frame-pointer -fno-sanitize-recover=all'
-        common += [f'-DCMAKE_C_FLAGS={flags}', f'-DCMAKE_CXX_FLAGS={flags}',
-                   '-DCMAKE_EXE_LINKER_FLAGS=-fsanitize=address,undefined']
+        mode = 'address' if platform.system() == 'Windows' else 'address-undefined'
+        common += [f'-DOPENTLV_CLI_SANITIZER={mode}']
     run('cmake', '-S', ROOT, '-B', build, *common, *options)
     selected = cache(build)
     if dependency['mode'] == 'pinned-git':
@@ -160,10 +162,14 @@ def main():
             'Dirty JSON checkout')
     run('cmake', '--build', build, '--parallel', '2')
     selection = ['-R', '^(' + '|'.join(SMOKE) + ')$'] if args.smoke else []
+    expected = set(SMOKE)
+    if args.sanitize:
+        expected = SANITIZER | ({'cli_sanitizer_undefined'} if mode == 'address-undefined' else set())
+        selection = ['-L', '^sanitizer$']
     run('ctest', '--test-dir', build, '--output-on-failure', '--no-tests=error',
         '--output-junit', build / 'ctest.xml', *selection)
-    reports = ({'ctest': ctest_results(build / 'ctest.xml', set(SMOKE))}
-               if args.smoke else validate_reports(build, args.configuration))
+    reports = ({'ctest': ctest_results(build / 'ctest.xml', expected)}
+               if args.smoke or args.sanitize else validate_reports(build, args.configuration))
     built_executable(build, args.configuration)
     system, architecture = platform_id()
     record = {'schema': 1, **identity(), 'id': f'{system}-{architecture}-static',
@@ -172,7 +178,8 @@ def main():
               'architecture': platform.machine(), 'libc': list(platform.libc_ver()),
               'msvc_runtime': selected.get('CMAKE_MSVC_RUNTIME_LIBRARY') if system == 'windows' else None,
               'runner_image': {'os': os.environ.get('ImageOS'), 'version': os.environ.get('ImageVersion')},
-              'json_commit': pin('Json'), 'sanitizer': args.sanitize, 'reports': reports}
+              'json_commit': pin('Json'), 'sanitizer': args.sanitize,
+              'sanitizer_mode': selected['OPENTLV_CLI_SANITIZER'], 'reports': reports}
     # Local Core overrides are intentionally not publishable dependency evidence.
     if not args.core_source:
         record['dependencies'] = resolved_dependencies(build, args.configuration, dependency, json_source)
