@@ -50,8 +50,8 @@ development builds derive their version from Git even when built in Release.
 
 The [Core-aligned quality gates](quality-gates.md) separate Linux Pull Request
 validation, lightweight Main integration, manual Full CI and release publication.
-PR and Full require formatting, static analysis and CodeQL. Main runs only
-a build and narrow integration smoke checks.
+PR and Full require formatting, static analysis and CodeQL. Main runs
+a build and narrow integration smoke checks, then submits resolved dependency metadata.
 
 Cppcheck analyzes CLI sources, including conditional command implementations;
 it uses normal checking depth to keep development checks fast and does not
@@ -97,8 +97,10 @@ The workflow:
 2. Locks CLI/Core/JSON/workflow SHAs, the Core artifact policy, version, run and attempt.
 3. Runs Full CI for the exact CLI SHA: platform/linkage and dependency scenarios,
    CLI suites, sanitizers, static analysis and CodeQL. Core suites are not repeated.
-4. Authenticates Core artifacts, builds and tests CLI executables, then validates
-   their archives after extraction into a separate location.
+4. Reuses the Linux/Windows executables built and tested by that Full attempt.
+   Those workers authenticate Core and validate their CLI archives after
+   extraction into a separate location. The signing job consumes the same
+   tested archives after Full succeeds, without another build.
 5. Rejects incomplete, failed, skipped or stale evidence and mismatched artifacts.
 6. Generates SHA-256 checksums and attestations, verifies every producer identity,
    creates the tag and publishes the GitHub Release. Tags/assets are not replaced.

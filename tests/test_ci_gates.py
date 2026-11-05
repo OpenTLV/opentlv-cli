@@ -22,7 +22,7 @@ ENV = {'GITHUB_REPOSITORY': 'OpenTLV/opentlv-cli', 'GITHUB_SHA': 'a' * 40,
 class Gates(unittest.TestCase):
     def test_each_required_job_rejects_failed_cancelled_skipped_or_missing(self):
         for tier in ('pr', 'main', 'full'):
-            names = {'smoke'} if tier == 'main' else JOBS
+            names = {'smoke', 'dependencies'} if tier == 'main' else JOBS
             required = PR if tier == 'pr' else names
             results = {name: {'result': 'success' if name in required else 'skipped'} for name in names}
             check_results(results, tier)

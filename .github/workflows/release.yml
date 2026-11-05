@@ -51,33 +51,17 @@ jobs:
       matrix:
         os: [ubuntu-26.04, windows-2025]
     runs-on: ${{ matrix.os }}
-    env:
-      # Packages use the supported C++23 compilers tested by Full CI.
-      CC: ${{ startsWith(matrix.os, 'windows') && 'cl' || 'gcc-15' }}
-      CXX: ${{ startsWith(matrix.os, 'windows') && 'cl' || 'g++-15' }}
     permissions:
       contents: read
       id-token: write
       attestations: write
     steps:
-      - uses: actions/checkout@v5
+      # Same-run, same-attempt Full workers package the exact executable they
+      # tested. This job only signs those bytes after the complete gate passes.
+      - uses: actions/download-artifact@v4
         with:
-          fetch-depth: 0
-          persist-credentials: false
-      - uses: actions/setup-python@v6
-        with:
-          python-version: '3.12'
-      - uses: ilammy/msvc-dev-cmd@v1
-        if: runner.os == 'Windows'
-        with:
-          arch: x64
-      - name: Verify Core and test the executable that will be packaged
-        shell: bash
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: |
-          python -B scripts/cli_build.py --build build/package \
-            --release-tag "$RELEASE_TAG" --package build/artifacts
+          name: cli-tested-package-${{ matrix.os }}-${{ github.run_attempt }}
+          path: build/artifacts
       - uses: actions/attest@v4
         with:
           subject-path: build/artifacts/*
