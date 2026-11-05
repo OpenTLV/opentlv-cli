@@ -28,7 +28,7 @@ def summary(system="Linux"):
     return {"release_request": request(), "cli_revision": "a" * 40, "cli_dirty": False,
             "core_revision": "b" * 40, "core_dirty": False, "json_revision": "c" * 40,
             "json_dirty": False, "system": system, "core_linkage": "static",
-            "configuration": "Release", "cxx_standard": 11,
+            "configuration": "Release", "cxx_standard": 23,
             "results": [{"case": name, "result": "passed", "cli_version": "0.1.0",
                          "baseline_cases": 154, "baseline_failures": [],
                          "query": {"checks": 338, "exclusions": QUERY_EXCLUSIONS},
@@ -121,7 +121,7 @@ class ReleaseGate(unittest.TestCase):
     def test_stale_or_dirty_provenance(self):
         for key, value in (("cli_revision", "f" * 40), ("core_revision", "f" * 40),
                            ("json_revision", "f" * 40), ("cli_dirty", True), ("core_dirty", True),
-                           ("json_dirty", True), ("configuration", "Debug"), ("cxx_standard", 17),
+                           ("json_dirty", True), ("configuration", "Debug"), ("cxx_standard", 20),
                            ("system", "Darwin"), ("release_request", dict(request(), run_attempt="2"))):
             with self.subTest(key=key), self.assertRaises(ValueError):
                 validate_summary(dict(summary(), **{key: value}), request())

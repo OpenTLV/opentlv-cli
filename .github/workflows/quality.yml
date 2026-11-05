@@ -10,7 +10,8 @@ permissions:
 
 jobs:
   checks:
-    runs-on: ubuntu-24.04
+    # cppcheck analyzes the C++23 sources; use the CLI's current Linux image.
+    runs-on: ubuntu-26.04
     steps:
       - uses: actions/checkout@v5
         with:
@@ -51,17 +52,17 @@ jobs:
           if-no-files-found: error
 
   clang-tidy:
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     steps:
       - uses: actions/checkout@v5
         with:
           fetch-depth: 0
           persist-credentials: false
-      - run: sudo apt-get update && sudo apt-get install -y clang-18 clang-tidy-18 ninja-build
+      - run: sudo apt-get update && sudo apt-get install -y clang-22 clang-tidy-22 ninja-build
       - name: Configure CLI compilation database
         env:
-          CC: clang-18
-          CXX: clang++-18
+          CC: clang-22
+          CXX: clang++-22
         run: >-
           cmake -S . -B build/tidy -G Ninja -DCMAKE_BUILD_TYPE=Debug
           -DCMAKE_EXPORT_COMPILE_COMMANDS=ON -DOPENTLV_BUILD_TESTS=OFF

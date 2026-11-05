@@ -22,8 +22,10 @@ selection, offline use and Core updates.
 ## Requirements
 
 - CMake 3.24 or newer.
-- A C compiler and a C++11-capable compiler, plus the generator's build tool.
-  Core requires Clang 18 or newer when using Clang.
+- A C compiler and a C++23 compiler, plus the generator's build tool. The CLI
+  supports GCC 15, Clang 22, AppleClang 17 (Xcode 26) and MSVC 19.50 (Visual
+  Studio 2026) or newer; see the
+  [development guide](docs/development.md#language-standard-and-compilers).
 - Git and network access for dependencies not supplied locally or installed.
 - Python 3.10+ for the command regression suites, dependency matrix runner,
   and contributor tools.

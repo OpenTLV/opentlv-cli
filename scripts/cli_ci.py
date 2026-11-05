@@ -40,7 +40,7 @@ def configuration(tier):
                'cmake/Json.cmake', 'cmake/core-artifact.json', 'scripts/cli_build.py',
                'scripts/verified_core.py', 'scripts/cli_ci.py', 'scripts/ci_support.py',
                'scripts/check_static.py', 'scripts/check_tidy.py', 'scripts/binary_linkage.py',
-               'cmake/Version.cmake', 'tests/check_core_dependency.py']
+               'cmake/Version.cmake', 'cmake/Compilers.cmake', 'tests/check_core_dependency.py']
     return {'release_tag': os.environ.get('RELEASE_TAG', ''),
             'workflows': {name: {'sha256': digest(ROOT / '.github/workflows' / name),
                                  'definition': (ROOT / '.github/workflows' / name).read_text(encoding='utf-8')}

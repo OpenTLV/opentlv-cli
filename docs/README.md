@@ -4,7 +4,7 @@ The `otlv` executable inspects and structurally validates TLV
 data, converts it to and from a [versioned JSON document](json-schema.md), and
 recovers elements from damaged input, using the public C library through the
 `tlv++` wrapper. Building it
-requires a C++11 (or newer) compiler; the underlying library itself remains a
+requires a C++23 compiler; the underlying library itself remains a
 dependency-free C99 core, so this requirement affects only the CLI target.
 
 `otlv --version` reports the independently versioned CLI. See

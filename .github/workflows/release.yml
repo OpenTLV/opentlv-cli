@@ -49,8 +49,12 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-24.04, windows-2022]
+        os: [ubuntu-26.04, windows-2025]
     runs-on: ${{ matrix.os }}
+    env:
+      # Packages use the supported C++23 compilers tested by Full CI.
+      CC: ${{ startsWith(matrix.os, 'windows') && 'cl' || 'gcc-15' }}
+      CXX: ${{ startsWith(matrix.os, 'windows') && 'cl' || 'g++-15' }}
     permissions:
       contents: read
       id-token: write

@@ -78,14 +78,18 @@ set(SOURCES
     completion/completion_command.cpp
 )
 
-add_executable(otlv ${HEADERS} ${SOURCES} core_requirements.cpp)
+add_executable(otlv ${HEADERS} ${SOURCES} core_requirements.cpp cxx_requirements.cpp)
 add_dependencies(otlv cli_version_metadata)
 target_include_directories(otlv PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}"
     "${PROJECT_BINARY_DIR}/generated")
 target_link_libraries(otlv PRIVATE OpenTLV::tlv++ nlohmann_json::nlohmann_json)
-target_compile_features(otlv PRIVATE cxx_std_11)
+# ISO C++23 without extensions (top-level CMakeLists.txt); cxx_requirements.cpp
+# rejects a weaker language mode. MSVC has no extensions switch: /permissive-
+# keeps its standards conformance mode explicit.
+target_compile_features(otlv PRIVATE cxx_std_23)
 target_compile_options(otlv PRIVATE
     "$<$<CXX_COMPILER_ID:GNU,Clang>:-Wall;-Wextra;-Wpedantic>"
+    "$<$<CXX_COMPILER_ID:MSVC>:/permissive->"
 )
 
 # Core is linked statically (cmake/Core.cmake), so the installed executable

@@ -15,5 +15,5 @@ if __name__ == '__main__':
              if Path(item['file']).resolve().is_relative_to(ROOT / 'src')}
     require(files == set((ROOT / 'src').rglob('*.cpp')), 'Incomplete CLI compilation database')
     for source in sorted(files):
-        run('clang-tidy-18', '-quiet', '-p', args.build, '--warnings-as-errors=*',
+        run('clang-tidy-22', '-quiet', '-p', args.build, '--warnings-as-errors=*',
             '--header-filter=' + str(ROOT / 'src'), source)
