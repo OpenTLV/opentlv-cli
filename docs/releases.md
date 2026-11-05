@@ -97,7 +97,7 @@ The workflow:
 2. Locks CLI/Core/JSON/workflow SHAs, the Core artifact policy, version, run and attempt.
 3. Runs Full CI for the exact CLI SHA: platform/linkage and dependency scenarios,
    CLI suites, sanitizers, static analysis and CodeQL. Core suites are not repeated.
-4. Reuses the Linux/Windows executables built and tested by that Full attempt.
+4. Reuses the Linux/Windows/macOS executables built and tested by that Full attempt.
    Those workers authenticate Core and validate their CLI archives after
    extraction into a separate location. The signing job consumes the same
    tested archives after Full succeeds, without another build.
@@ -144,7 +144,7 @@ reproducibility across toolchains or platforms.
   Full CI evidence and package records.
 - `cli-quality-full-<sha>-<attempt>`: exact revision, job results and configuration.
 - `release-binary-<platform>-<attempt>`: tested static-Core archives and build records.
-- GitHub Release assets: the Linux and Windows x64 CLI archives and their JSON records,
+- GitHub Release assets: the Linux x64, Windows x64 and macOS arm64 CLI archives and their JSON records,
   `release-manifest.json` and `SHA256SUMS`, all with producer attestations.
 
 Each successful dependency scenario runs 14 CTest entries (including the maintained
@@ -171,14 +171,73 @@ a controlled hosted release. A publication-service failure can leave a tag witho
 a release or a partial release. Inspect and recover manually; a new dispatch
 rejects an existing tag.
 
-For [CLI #25](https://github.com/OpenTLV/opentlv-cli/issues/25), verify the published
-tag resolves to the tested CLI SHA, the notes match the `0.2.0` changelog section,
-and all ten expected assets are present: four platform/linkage archives, four
-matching JSON records, `release-manifest.json` and `SHA256SUMS`. Verify downloaded
-checksums and producer attestations against the release workflow and CLI SHA.
-Record the release URL and successful Main/release run evidence in
-[Core #718](https://github.com/OpenTLV/opentlv/issues/718) only after publication.
-Candidate preparation alone does not satisfy the issue's acceptance criteria.
+## Release artifact policy
+
+The supported package matrix follows the existing Full CI targets:
+
+| Operating system | Architecture | Producer | Archive |
+| --- | --- | --- | --- |
+| Linux | x64 | Ubuntu 26.04, GCC 15 | `OpenTLV-CLI-<version>-linux-x64-static.tar.gz` |
+| Windows | x64 | Windows Server 2025, Visual Studio 2026 | `OpenTLV-CLI-<version>-windows-x64-static.zip` |
+| macOS | arm64 | macOS 26, Xcode 26 | `OpenTLV-CLI-<version>-macos-arm64-static.tar.gz` |
+
+`<version>` excludes the Git tag's `v` prefix and includes any prerelease suffix.
+The existing `-static` suffix means Core linkage; system runtimes remain dynamic.
+The `macos-26` runner already used by Full CI is arm64. Intel macOS, universal
+binaries and additional Linux/Windows architectures are outside this matrix.
+Packaging does not add compiler compatibility jobs or repeat Core tests.
+
+Each archive has one root named exactly like the archive without its extension:
+
+```text
+OpenTLV-CLI-<version>-<os>-<architecture>-static/
+  bin/otlv                 # bin/otlv.exe on Windows
+  build-info.json
+  licenses/OpenTLV-CLI.txt
+  licenses/OpenTLV.txt
+  licenses/nlohmann-json.txt
+```
+
+These five files are the complete contract: no headers, static libraries,
+Core shared libraries, debug symbols or development files. License files preserve
+the original CLI, Core and JSON notices. `build-info.json` contains the build
+record and provenance described above; the external `<os>-<architecture>-static.json`
+adds the archive checksum and `package_verification` results. Verification records
+SHA-256 for every packaged file, runtime imports, target and native smoke results.
+
+Full CI runs the complete CLI suites once per build. Only when called for a release,
+its native workers install that tested executable, archive it, extract it into a
+fresh temporary directory and run five bounded checks: exact version, help, binary
+file encoding, file decoding through `dump`, and invalid-input exit code/diagnostic.
+The 154-case baseline is not repeated on each archive. Smoke execution removes
+loader environment overrides and restricts PATH to system runtime locations.
+
+The producer and publisher both inspect the actual executable OS/architecture,
+static Core linkage, executable hash, imports, embedded metadata and exact archive
+inventory. Archives with missing/extra/duplicate files, links, special files,
+unsafe paths or missing Unix executable permissions are rejected. The publisher
+repeats these byte-level checks on all three archives and requires the same-attempt
+native smoke evidence; it does not try to execute foreign-platform binaries.
+
+Runtime imports must match the explicit allowlists in
+[`scripts/release_artifacts.py`](../scripts/release_artifacts.py): Linux glibc,
+libstdc++, libgcc and their system loader; Windows system DLLs and release MSVC/UCRT
+libraries; macOS `/usr/lib/libSystem.B.dylib`, `libc++.1.dylib` and `libc++abi.dylib`.
+Unexpected libraries, debug/sanitizer runtimes and build-local library paths fail
+verification. Core is included statically and never requires a separate install.
+Linux packages target the glibc/libstdc++ supplied by Ubuntu 26.04 or newer;
+Windows requires the Visual Studio 2026 C++ runtime or newer; macOS packages target
+macOS 26 on Apple Silicon. Native runner smoke checks do not establish compatibility
+with older operating systems. GitHub producer attestations are not Apple Developer
+ID signing or notarization; downloaded macOS binaries remain subject to Gatekeeper.
+
+A release has eight assets: three archives, three matching JSON records,
+`release-manifest.json` and `SHA256SUMS`. The checksum list covers every other asset.
+All assets receive producer attestations. Missing packages, failed verification,
+changed archive bytes or stale/incomplete evidence block tag creation and publication.
+To verify a downloaded release, check `SHA256SUMS` and producer attestations against
+`.github/workflows/release.yml` and the released CLI commit. Published historical
+releases retain their original contents and naming contracts.
 
 ## Documentation publication
 

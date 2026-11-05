@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Standardize release archives for Linux x64, Windows x64 and the existing macOS arm64 target, with exact file inventories, binary OS/architecture and runtime dependency checks, native package smoke tests and publication-time reinspection; reuse Full CI binaries without repeating the full CLI baseline, and document package layout, runtime requirements and checksums. (#18)
 - Record configuration-specific CLI build provenance with actual CLI/Core/JSON identities, package content hashes, C/C++ toolchains, target settings and binary runtime imports; require Python 3.10+ even with tests disabled, native startup and matching packaged executable hashes in release evidence, preserve development overrides and document build reconstruction without claiming byte-for-byte reproducibility. (#17)
 - Add CLI sanitizer configurations for Unix ASan/UBSan and Windows MSVC ASan with instrumented static Core, focused executable/security regressions, symbolized detector self-checks and retained failure logs in Full CI; cover bounded argument, input, JSON ownership and output-path failures without running Core tests or fuzzing. (#16)
 - Add executable-focused CTest regressions for every command family, argument errors, exit codes, separate output streams, diagnostics, JSON structure and escaping, file handling, generation and shell completions; require the suite in release evidence. (#15)

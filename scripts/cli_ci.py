@@ -15,11 +15,12 @@ from ci_support import ROOT, digest, identity, read, require, run, same_identity
 from release import QUERY_EXCLUSIONS, TESTS, aggregate, prepare
 from verified_core import authenticated_release, lock, safe_name
 from build_metadata import validate_release
+from release_artifacts import SMOKE_CASES, TARGETS, verify_archive
 
 JOBS = {'build', 'dependencies', 'quality', 'sanitizer', 'codeql'}
 PR = {'build', 'quality', 'codeql'}
 # Approved release packages; every package links Core statically.
-IDS = {f'{system}-x64-static' for system in ('linux', 'windows')}
+IDS = set(TARGETS)
 
 
 def check_results(results, tier):
@@ -45,6 +46,7 @@ def configuration(tier):
                'tests/sanitizer_probe.cpp', 'tests/run_cli_suite.cmake',
                'scripts/verified_core.py', 'scripts/cli_ci.py', 'scripts/ci_support.py',
                'scripts/check_static.py', 'scripts/check_tidy.py', 'scripts/binary_linkage.py',
+               'scripts/release_artifacts.py',
                'cmake/Version.cmake', 'cmake/Compilers.cmake', 'tests/check_core_dependency.py']
     return {'release_tag': os.environ.get('RELEASE_TAG', ''),
             'workflows': {name: {'sha256': digest(ROOT / '.github/workflows' / name),
@@ -121,7 +123,7 @@ def assemble(request, quality, evidence, destination):
         seen.add(identifier)
         require(record.get('schema') == 1 and record.get('version') == request['version'] and
                 record.get('configuration') == 'Release' and
-                record.get('package_cases') == 154 and not record.get('sanitizer'), 'Invalid package evidence')
+                not record.get('sanitizer'), 'Invalid package evidence')
         reports = record.get('reports', {})
         tests = reports.get('ctest', {})
         require(tests.get('names') == sorted(TESTS) and tests.get('tests') == len(TESTS) and
@@ -131,7 +133,7 @@ def assemble(request, quality, evidence, destination):
                 reports['query'].get('exclusions') == QUERY_EXCLUSIONS, 'Incomplete packaged build test evidence')
         require(record.get('core_linkage') == 'static' and
                 record.get('compiler', {}).get('SIZEOF_DATA_PTR') == '8' and
-                record['compiler'].get('COMPILER_ID') == ('MSVC' if identifier.startswith('windows-') else 'GNU'),
+                record['compiler'].get('COMPILER_ID') == TARGETS[identifier][2],
                 'Wrong package platform/linkage/compiler')
         dependency = record.get('core', {})
         require(dependency.get('verified') is True and dependency.get('commit') == request['core_sha'] and
@@ -145,6 +147,9 @@ def assemble(request, quality, evidence, destination):
         extension = '.zip' if identifier.startswith('windows-') else '.tar.gz'
         require(filename == f"OpenTLV-CLI-{request['version']}-{identifier}{extension}", 'Wrong CLI archive name')
         require(digest(path.parent / filename) == record['sha256'], 'CLI package checksum mismatch')
+        verification = verify_archive(path.parent / filename, record)
+        require(record.get('package_verification') == verification | {
+            'smoke': {'status': 'passed', 'cases': SMOKE_CASES}}, 'Incomplete package verification evidence')
         shutil.copy2(path.parent / filename, destination / filename)
         shutil.copy2(path, destination / path.name)
         records.append(record)
