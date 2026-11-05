@@ -21,7 +21,8 @@ REJECTION_CASES = {"fallback-package-trap", "missing-cxx", "legacy-cxx", "missin
                    "cxx-disabled", "invalid-source", "shared-package", "shared-option"}
 TESTS = {"core_c_smoke", "core_cxx_smoke", "cli_version", "cli_static_core", "cli_version_contract",
          "cli_release_gate", "Integration_cli_migration", "Integration_cli", "Integration_cli_cpp_examples",
-         "Integration_cli_baseline_runner", "Integration_cli_baseline", "query-cli-conformance"}
+         "Integration_cli_baseline_runner", "Integration_cli_baseline", "query-cli-conformance",
+         "Integration_cli_executable"}
 QUERY_EXCLUSIONS = [{"id": name, "reason": "requires external fixture name resolver"}
                     for name in ("f3-function-name-positive", "f3-function-name-negative")]
 

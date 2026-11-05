@@ -57,6 +57,8 @@ function(add_cli_suite name suite)
 endfunction()
 
 add_cli_suite(Integration_cli integration)
+add_cli_suite(Integration_cli_executable executable)
+set_tests_properties(Integration_cli_executable PROPERTIES LABELS "integration;cli;regression" TIMEOUT 180)
 add_cli_suite(Integration_cli_cpp_examples examples)
 set_tests_properties(Integration_cli_cpp_examples PROPERTIES LABELS "integration;cli;examples")
 add_test(NAME Integration_cli_baseline_runner

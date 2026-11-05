@@ -11,7 +11,7 @@ exercised through CLI processes to verify the facade contract.
 
 | Workflow | Trigger | Required verification |
 | --- | --- | --- |
-| `cli-pr.yml` | PR targeting `main` | Linux Clang 22 Debug CLI, all 12 CTest entries including the static Core linkage check, pre-commit, cppcheck, clang-tidy, tooling regression tests and CodeQL |
+| `cli-pr.yml` | PR targeting `main` | Linux Clang 22 Debug CLI, all 13 CTest entries including executable regressions and the static Core linkage check, pre-commit, cppcheck, clang-tidy, tooling regression tests and CodeQL |
 | `cli-main.yml` | Push to `main` | One Linux GCC 15 build, C/C++ linkage, static Core linkage and CLI version smoke; submit resolved dependency snapshot |
 | `cli-full.yml` | Manual or reusable release call | Linux/GCC 15, Windows/MSVC (Visual Studio 2026) and macOS/AppleClang (Xcode 26) Release; all CLI suites; complete dependency selection matrix on Linux and Windows; Linux Clang 22 Debug ASan/UBSan with leak detection; all static checks and CodeQL |
 | `release.yml` | Manual from `main`, only `tag` | Closed changelog, locked dispatch SHA and dependencies, same-attempt Full CI, validated CLI packages, SHA-256, producer attestations, tag and GitHub Release |

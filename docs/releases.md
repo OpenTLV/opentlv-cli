@@ -136,12 +136,13 @@ evidence available and does not create a release.
 - GitHub Release assets: the Linux and Windows x64 CLI archives and their JSON records,
   `release-manifest.json` and `SHA256SUMS`, all with producer attestations.
 
-Each successful dependency scenario runs 12 CTest entries, 154 CLI behavior
+Each successful dependency scenario runs 13 CTest entries (including the maintained
+executable regression suite), 154 CLI behavior
 cases (153 original plus the independent version contract), and 338 Query
 backend checks. The two named external fixture-provider exclusions are
 recorded explicitly. Release validation covers five successful build modes
 and eight expected configuration rejections per platform: 10 builds
-and 120 passing CTest entries across the complete matrix. Every build links
+and 130 passing CTest entries across the complete matrix. Every build links
 Core statically; there is no linkage axis. Counts describe
 different test layers and must not be added together.
 

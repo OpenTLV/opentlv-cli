@@ -167,7 +167,7 @@ class ReleaseGate(unittest.TestCase):
             result = aggregate(request(), root)
             self.assertEqual(result["status"], "passed")
             self.assertEqual(result["builds"], 10)
-            self.assertEqual(result["ctest_passes"], 120)
+            self.assertEqual(result["ctest_passes"], 130)
             duplicate = root / "extra/summary.json"
             duplicate.parent.mkdir()
             duplicate.write_bytes(path.read_bytes())
@@ -187,8 +187,17 @@ class ReleaseGate(unittest.TestCase):
                 with self.subTest(replacement=replacement), self.assertRaises(ValueError):
                     ctest_results(path)
 
+    def test_executable_regression_is_required_release_evidence(self):
+        report = summary()
+        tests = report["results"][0]["ctest"]
+        tests["names"].remove("Integration_cli_executable")
+        tests["tests"] -= 1
+        tests["passed"] -= 1
+        with self.assertRaises(ValueError):
+            validate_summary(report, request())
+
     def test_tag_authorization_requires_successful_jobs_and_matching_request(self):
-        result = {"status": "passed", "request": request(), "builds": 10, "ctest_passes": 120}
+        result = {"status": "passed", "request": request(), "builds": 10, "ctest_passes": 130}
         with self.assertRaises(ValueError):
             authorize_tag(result, "a" * 40, "v0.1.0", "d" * 40, "123", "1")
         finalize(result, "success", "success")
